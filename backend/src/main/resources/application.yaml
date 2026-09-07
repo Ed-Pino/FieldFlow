@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fieldflow
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8081
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+app:
+  jwt:
+    secret: Y2hhbmdlTWVUbG9uZ1NlY3JldEtleUZvckZpZWxkRmxvd1Byb2plY3QyMDI2SGV4YVN0cmluZw==
+    expiration-ms: 86400000
+
+logging:
+  level:
+    org.springframework.security: INFO
