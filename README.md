@@ -28,6 +28,8 @@ Plataforma full-stack centralizada para la gestión de servicios técnicos de ca
 
 Ubicado en [`backend/`](backend/). API REST en Spring Boot que expone órdenes de trabajo, trazabilidad, conformidad, catálogos, y autenticación JWT con acceso basado en roles.
 
+Documento de arquitectura con diagramas: [`docs/architecture.md`](docs/architecture.md)
+
 ### Dependencias
 
 - `spring-boot-starter-webmvc`, `spring-boot-starter-security`, `spring-boot-starter-oauth2-resource-server`, `spring-boot-starter-data-jpa`
