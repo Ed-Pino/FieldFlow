@@ -1,147 +1,201 @@
 # FieldFlow Backend
 
-REST API for **FieldFlow**, the centralized platform for managing field technical services. Handles authentication with roles (TECNICO/ADMIN), work-order management, technician assignment, state tracking and trazability, checklists, photographic evidence, and conformity sign-off with client signature.
+REST API para **FieldFlow**, la plataforma centralizada de gestión de servicios técnicos en campo. Cubre autenticación con roles (TECNICO/ADMIN), gestión de órdenes de trabajo, asignación de técnicos, seguimiento de estados, trazabilidad de equipos, checklists, evidencia fotográfica, y conformidad con firma del cliente.
 
 ## Stack
 
-- **Java 17** (tested with Java 21 LTS)
+- **Java 17** (compatible con Java 21 LTS)
 - **Spring Boot 4.1.1**
-- **Spring Security 7** (JWT via resource server, role-based access)
+- **Spring Security 7** (JWT HS256 vía OAuth2 Resource Server, control de acceso por rol)
 - **Spring Data JPA / Hibernate**
-- **PostgreSQL** (default profile) / **H2** (demo profile)
-- **Maven wrapper** (Maven 4 +)
+- **PostgreSQL** (perfil por defecto) / **H2** (perfil demo)
+- **Maven Wrapper** (Maven 4+)
 - **Springdoc OpenAPI 3 / Swagger UI**
-- Tests with JUnit 5 + Spring Boot Test
+- Tests con JUnit 5 + Spring Boot Test
 
-## Project structure
+---
+
+## Estructura del proyecto
 
 ```
 src/main/java/com/fieldflow/backend/
   config/      → CorsConfig, OpenApiConfig (Swagger), DataSeeder
   controller/  → AuthController, CatalogoController, OrdenController, HomeController
-  dto/         → request/response records
-  entity/      → JPA entities (Usuario, Cliente, Sede, Equipo, Tecnico, OrdenTrabajo, CheckItem)
+  dto/         → records de request/response
+  entity/      → entidades JPA (Usuario, Cliente, Sede, Equipo, Tecnico, OrdenTrabajo, CheckItem)
   exception/   → GlobalExceptionHandler (400/401/403/404/500)
-  repository/  → Spring Data JPA repositories
+  repository/  → repositorios Spring Data JPA
   security/    → SecurityConfig, TokenService
   service/     → AuthService, CatalogoService, OrdenService
 ```
 
+---
+
 ## Endpoints
 
-### Auth
+### Autenticación — `/api/auth` (público)
+
 ```
-POST /api/auth/login        → {token, username, rol}
-POST /api/auth/register     → create user (rol: TECNICO | ADMIN)
+POST /api/auth/login      → {token, username, role}
+POST /api/auth/register   → crea usuario (role: TECNICO | ADMIN)
 ```
 
-### Work orders
-```
-GET  /api/ordenes                    → list work orders (TECNICO/ADMIN)
-GET  /api/ordenes/{id}               → detail
-GET  /api/ordenes/{id}/trazabilidad  → history by equipment
-POST /api/ordenes                    → create (ADMIN only)
-PUT  /api/ordenes/{id}/estado        → update state
-POST /api/ordenes/{id}/conformidad   → notes + signature (finalizes OT)
-```
+### Catálogo — `/api` (ADMIN)
 
-### Catalogs (ADMIN)
 ```
 GET /api/clientes
 GET /api/sedes?clienteId=
 GET /api/equipos?sedeId=
 GET /api/tecnicos
+GET /api/tecnicos/disponibles   → filtra técnicos con disponible=true
 ```
 
-## Quick access
+### Órdenes de Trabajo — `/api/ordenes` (TECNICO + ADMIN)
 
 ```
-GET /  → 302 redirect → Swagger UI
+GET  /api/ordenes                       → lista todas las órdenes
+GET  /api/ordenes/{id}                  → detalle de una orden
+GET  /api/ordenes/{id}/trazabilidad     → historial de OTs del mismo equipo
+GET  /api/ordenes/agenda/{tecnicoId}    → agenda del técnico ordenada por fecha programada
+POST /api/ordenes                       → crea OT (solo ADMIN)
+PUT  /api/ordenes/{id}/estado           → actualiza estado
+POST /api/ordenes/{id}/conformidad      → guarda notas + firma del cliente, finaliza OT
+```
+
+### Acceso rápido
+
+```
+GET /  → redirect 302 → Swagger UI
 ```
 
 - Swagger UI: http://localhost:8081/swagger-ui.html
 - OpenAPI JSON: http://localhost:8081/v3/api-docs
 
-## Testing with Swagger
+---
 
-The API can be fully tested from the interactive Swagger UI.
+## Modelo de Orden de Trabajo
 
-1. Start the backend (demo profile recommended): `.\mvnw.cmd "-Dspring-boot.run.profiles=demo" spring-boot:run`
-2. Open **http://localhost:8081/swagger-ui.html**.
-3. Login: `POST /api/auth/login` with seed credentials (see table below) → returns `{token, username, rol}`.
-4. Click **Authorize** (top right) and paste **only the raw JWT** (no quotes, no spaces, no `Bearer` prefix). Swagger appends `Bearer ` automatically — pasting extra characters results in `401 Bearer token is malformed`.
-5. Execute the endpoints from Swagger UI.
+Campos principales al crear una OT (`POST /api/ordenes`):
 
-### Validation flow
+```json
+{
+  "tipoServicio": "Mantenimiento preventivo",
+  "fechaProgramada": "2026-09-15",
+  "descripcion": "Revisión completa del sistema de refrigeración",
+  "clienteId": 1,
+  "sedeId": 2,
+  "equipoId": 3,
+  "tecnicoId": 4,
+  "prioridad": "alta",
+  "duracionEstimadaMin": 90,
+  "checklist": [
+    { "texto": "Verificar presión", "hecho": false }
+  ]
+}
+```
 
-| # | Endpoint | Expected result |
-|---|----------|-----------------|
-| 1 | `POST /api/auth/login` (admin) | 200 → JWT + rol ADMIN |
-| 2 | `GET /api/clientes`, `/sedes`, `/equipos`, `/tecnicos` | 200 (seed data) |
-| 3 | `GET /api/ordenes` | 200 (OT-1001 with checklist) |
-| 4 | `POST /api/ordenes` (ADMIN) | 201 → new OT |
-| 5 | `GET /api/ordenes/{id}` | 200 → detail |
-| 6 | `PUT /api/ordenes/{id}/estado` | 200 → state changed |
-| 7 | `GET /api/ordenes/{id}/trazabilidad` | 200 → history by equipment |
-| 8 | `POST /api/ordenes/{id}/conformidad` | 200 → OT finalized |
-| 9 | `POST /api/ordenes` as **tecnico1** | **403** (ADMIN only) |
-| 10 | `GET /api/ordenes` with no token | **401** |
+**Valores de `prioridad`:** `baja` · `media` *(default)* · `alta` · `urgente`
 
-Also check: wrong credentials → **401**, inexistent route (`/no-existe`) → **404**, `GET /` → redirects to Swagger.
+### Ciclo de estados
 
-### Seed users (demo profile)
+```
+pendiente → asignada → enCamino → enEjecucion → pendienteConformidad → finalizada
+                │           │           │                │
+                └───────────┴───────────┴────────────────┘
+                                    ↓
+                              reprogramada → pendiente
+```
 
-| Username | Password | Role |
-|----------|----------|------|
+---
+
+## Pruebas con Swagger UI
+
+1. Iniciar el backend (perfil demo recomendado):
+   ```
+   .\mvnw.cmd "-Dspring-boot.run.profiles=demo" spring-boot:run
+   ```
+2. Abrir **http://localhost:8081/swagger-ui.html**
+3. Login: `POST /api/auth/login` con credenciales de seed → obtener `token`
+4. Click en **Authorize** (arriba a la derecha) y pegar el JWT sin comillas, sin espacios, sin prefijo `Bearer` — Swagger lo agrega automáticamente.
+5. Ejecutar endpoints desde la UI.
+
+### Flujo de validación sugerido
+
+| # | Endpoint | Resultado esperado |
+|---|---|---|
+| 1 | `POST /api/auth/login` (admin) | 200 → JWT + role ADMIN |
+| 2 | `GET /api/clientes`, `/sedes`, `/equipos`, `/tecnicos` | 200 (datos seed) |
+| 3 | `GET /api/tecnicos/disponibles` | 200 (técnicos disponibles) |
+| 4 | `GET /api/ordenes` | 200 (OT-1001 con checklist) |
+| 5 | `POST /api/ordenes` (ADMIN, con `prioridad` y `duracionEstimadaMin`) | 201 → nueva OT |
+| 6 | `GET /api/ordenes/{id}` | 200 → detalle completo |
+| 7 | `PUT /api/ordenes/{id}/estado` | 200 → estado actualizado |
+| 8 | `GET /api/ordenes/{id}/trazabilidad` | 200 → historial del equipo |
+| 9 | `GET /api/ordenes/agenda/{tecnicoId}` | 200 → agenda ordenada por fecha |
+| 10 | `POST /api/ordenes/{id}/conformidad` | 200 → OT finalizada con firma |
+| 11 | `POST /api/ordenes` como **tecnico1** | **403** (solo ADMIN) |
+| 12 | `GET /api/ordenes` sin token | **401** |
+
+Verificar también: credenciales incorrectas → **401**, ruta inexistente → **404**, `GET /` → redirect a Swagger.
+
+### Usuarios seed (perfil demo)
+
+| Username | Password | Rol |
+|---|---|---|
 | `admin` | `admin123` | ADMIN |
 | `tecnico1` | `tecnico123` | TECNICO |
 | `tecnico2` | `tecnico123` | TECNICO |
 
-## Security
+---
 
-- Stateless JWT (HS256) with `spring-boot-starter-oauth2-resource-server`.
-- Role claim (`role`) mapped to Spring authorities: `ROLE_TECNICO`, `ROLE_ADMIN`.
-- Protected routes via `SecurityFilterChain` + `@PreAuthorize`.
-- Passwords hashed with BCrypt (strength 12).
-- CORS enabled for the React frontend.
-- 401 for missing/invalid tokens, 403 for role violations.
+## Seguridad
 
-## Run
+- JWT stateless firmado con HS256 (`spring-boot-starter-oauth2-resource-server`)
+- Claim `role` mapeado a authorities de Spring: `ROLE_TECNICO`, `ROLE_ADMIN`
+- Rutas protegidas via `SecurityFilterChain` + `@PreAuthorize`
+- Passwords hasheados con BCrypt (factor 12)
+- CORS habilitado para el frontend React
+- 401 para tokens ausentes/inválidos, 403 para violaciones de rol
 
-Prerequisites: JDK 17+. No Maven installation needed (wrapper included).
+---
+
+## Ejecutar
+
+Prerequisito: JDK 17+. No se requiere Maven instalado (wrapper incluido).
 
 ```bash
-# Demo profile (H2 in-memory, auto-seeded, no database required):
+# Perfil demo (H2 in-memory, seed automático, sin base de datos externa):
 .\mvnw.cmd "-Dspring-boot.run.profiles=demo" spring-boot:run
 
-# Default profile (PostgreSQL):
-#   - create DB: fieldflow
-#   - adjust credentials in application.yaml
+# Perfil por defecto (PostgreSQL):
+#   - crear DB: fieldflow
+#   - ajustar credenciales en application.yaml
 .\mvnw.cmd spring-boot:run
 ```
 
-The API runs on **http://localhost:8081**.
+La API corre en **http://localhost:8081**.
 
-Swagger UI: http://localhost:8081/swagger-ui.html
-OpenAPI JSON: http://localhost:8081/v3/api-docs
+---
 
-## Configuration
+## Configuración
 
-- `src/main/resources/application.yaml` — default profile: PostgreSQL URL/credentials, port 8081, JWT secret (`app.jwt.secret`) and expiration (`app.jwt.expiration-ms`).
-- `src/main/resources/application-demo.yaml` — demo profile: H2 in-memory, ddl-auto create-drop.
+- `src/main/resources/application.yaml` — perfil default: URL/credenciales PostgreSQL, puerto 8081, JWT secret (`app.jwt.secret`) y expiración (`app.jwt.expiration-ms`).
+- `src/main/resources/application-demo.yaml` — perfil demo: H2 in-memory, `ddl-auto: create-drop`.
 
-> Set a secure `app.jwt.secret` via environment variable in production.
+> Usar una variable de entorno segura para `app.jwt.secret` en producción.
 
-## Build & test
+---
+
+## Build y tests
 
 ```bash
-# Run all tests (demo profile to avoid external DB):
+# Ejecutar todos los tests (perfil demo para evitar DB externa):
 .\mvnw.cmd "-Dspring.profiles.active=demo" test
 
-# Package the jar:
+# Empaquetar el jar:
 .\mvnw.cmd "-Dspring.profiles.active=demo" package
 # Output: target/backend-0.0.1-SNAPSHOT.jar
 
-# Run the packaged jar:
+# Correr el jar empaquetado:
 java -jar target/backend-0.0.1-SNAPSHOT.jar --spring.profiles.active=demo
 ```
