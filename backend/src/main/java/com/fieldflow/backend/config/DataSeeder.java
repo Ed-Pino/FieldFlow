@@ -54,7 +54,8 @@ public class DataSeeder {
                     "OT-1001", "Mantenimiento Preventivo", OrdenTrabajo.EstadoOT.asignada,
                     LocalDateTime.now().minusDays(1), LocalDate.now(),
                     "Revision periodica de caldera, valvula y presion",
-                    c1, s1, e1, t1);
+                    c1, s1, e1, t1,
+                    OrdenTrabajo.Prioridad.media, 120);
             ot.setChecklist(List.of(
                     new CheckItem("Revisar presion", false),
                     new CheckItem("Revisar valvula de seguridad", false),

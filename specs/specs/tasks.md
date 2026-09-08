@@ -9,7 +9,7 @@
 
 ## Backend
 
-### Autenticación y seguridad
+### REQ-1 · Autenticación y seguridad
 - [x] Configurar Spring Security con JWT (HS256) y sesiones stateless
 - [x] Configurar `SecurityFilterChain` — reglas de rutas por rol (`/api/auth/**` público, `/api/ordenes/**` TECNICO+ADMIN, `/api/**` solo ADMIN)
 - [x] Implementar `AuthController` — POST `/api/auth/login` y `/api/auth/register`
@@ -18,7 +18,13 @@
 - [x] Implementar `JwtAuthenticationConverter` — mapea claim `role` a `ROLE_XXX`
 - [x] Configurar CORS desde `CorsConfig`
 
-### Entidades y modelo de dominio
+### REQ-2 · Catálogo
+- [x] Implementar `CatalogoController` — GET `/api/clientes`, `/sedes`, `/equipos`, `/tecnicos`
+- [x] Implementar `CatalogoService` con filtros opcionales por `clienteId` / `sedeId`
+- [x] Implementar repositorios JPA: `ClienteRepository`, `SedeRepository`, `EquipoRepository`, `TecnicoRepository`
+- [ ] Implementar GET `/api/tecnicos/disponibles` — filtra por `disponible=true` (REQ-2.5)
+
+### Entidades y modelo de dominio (REQ-2, REQ-3)
 - [x] Crear entidad `Cliente` (nombre, nit único, sedes)
 - [x] Crear entidad `Sede` (nombre, dirección, ciudad, cliente, equipos)
 - [x] Crear entidad `Equipo` (código único, nombre, tipo, último mantenimiento, sede)
@@ -26,90 +32,108 @@
 - [x] Crear entidad `OrdenTrabajo` con enum `EstadoOT` (7 estados), relaciones y colecciones embebidas
 - [x] Crear embeddable `CheckItem` (texto, hecho)
 - [x] Crear entidad `Usuario` (username único, password BCrypt, role)
-- [ ] Agregar campo `prioridad: Prioridad` (enum `baja|media|alta|urgente`, default `media`) a `OrdenTrabajo`
-- [ ] Agregar campo `duracionEstimadaMin: Integer` (nullable) a `OrdenTrabajo`
+- [ ] Agregar campo `prioridad: Prioridad` (enum `baja|media|alta|urgente`, default `media`) a `OrdenTrabajo` (REQ-3.6)
+- [ ] Agregar campo `duracionEstimadaMin: Integer` (nullable) a `OrdenTrabajo` (REQ-3.7)
 - [ ] Exponer `prioridad` y `duracionEstimadaMin` en `OrdenRequest` y `OrdenResponse`
 
-### Catálogo (solo lectura)
-- [x] Implementar `CatalogoController` — GET `/api/clientes`, `/sedes`, `/equipos`, `/tecnicos`
-- [x] Implementar `CatalogoService` con filtros opcionales por `clienteId` / `sedeId`
-- [x] Implementar repositorios JPA: `ClienteRepository`, `SedeRepository`, `EquipoRepository`, `TecnicoRepository`
-- [ ] Implementar GET `/api/tecnicos/disponibles` — filtra por `disponible=true` (`TecnicoRepository.findByDisponibleTrue` ya existe)
+### REQ-3 · Creación de Órdenes de Trabajo
+- [x] Implementar `OrdenController.create` — POST `/api/ordenes` con `@PreAuthorize ADMIN` (REQ-3.1)
+- [x] Implementar `OrdenService.create` — generación de código `OT-100x` (REQ-3.4), estado inicial `pendiente` (REQ-3.5), checklist del request (REQ-3.8), historial inicializado con `"OT creada"` (REQ-3.9), materialización lazy
+- [x] Validar existencia de cliente, sede, equipo y técnico → 404 si no existen (REQ-3.10)
+- [ ] Aplicar `prioridad` por defecto `media` si no se envía en el request (REQ-3.6)
 
-### Órdenes de Trabajo
-- [x] Implementar `OrdenController` — GET lista, GET detalle, POST crear, PUT estado, POST conformidad, GET trazabilidad
-- [x] Implementar `OrdenService.create` — generación de código automático `OT-100x`, estado inicial `pendiente`, inicialización de historial con `"OT creada"`, materialización de colecciones lazy en `OrdenResponse`
-- [x] Implementar `OrdenService.updateEstado` — cambio de estado con validación de transiciones
-- [x] Implementar `OrdenService.guardarConformidad` — guarda `notas` + `firmaBase64`, registra `"Finalizada con conformidad"` en historial, cambia estado a `finalizada`
-- [x] Implementar `OrdenService.getTrazabilidadDeEquipo` — historial de OTs del mismo equipo
-- [x] Implementar `OrdenTrabajoRepository`
-- [x] Implementar `UsuarioRepository`
-- [ ] Implementar GET `/api/ordenes/agenda/{tecnicoId}` — OTs del técnico ordenadas por `fechaProgramada` ASC
+### REQ-4 · Seguimiento de estados
+- [x] Implementar `OrdenService.updateEstado` — cambio de estado con registro en historial (REQ-4.5)
+- [ ] Validar que `reprogramada` solo se permite desde: `asignada`, `enCamino`, `enEjecucion`, `pendienteConformidad` (REQ-4.3)
+- [ ] Validar que una OT `reprogramada` puede volver a `pendiente` (REQ-4.4)
+
+### REQ-5 · Agenda del técnico
+- [ ] Implementar GET `/api/ordenes/agenda/{tecnicoId}` — OTs ordenadas por `fechaProgramada` ASC (REQ-5.1, REQ-5.2)
 - [ ] Agregar `findByTecnicoIdOrderByFechaProgramadaAsc` en `OrdenTrabajoRepository`
+
+### REQ-6 · Registro de evidencia
+- [x] Campo `notas` en `OrdenTrabajo` para observaciones del técnico (REQ-6.1)
+- [x] `CheckItem` embeddable con campo `hecho` para marcar ítems completados (REQ-6.2)
+- [x] Campo `fotos` (List de URLs) en `OrdenTrabajo` para evidencia fotográfica (REQ-6.3)
+
+### REQ-7 · Conformidad del cliente
+- [x] Implementar `OrdenService.guardarConformidad` — guarda `notas` + `firmaBase64` (REQ-7.1), cambia estado a `finalizada` (REQ-7.2), registra `"Finalizada con conformidad"` en historial (REQ-7.3)
+- [ ] Validar que conformidad solo se registra cuando estado es `pendienteConformidad` (REQ-7.4)
+
+### REQ-8 · Trazabilidad del equipo
+- [x] Implementar `OrdenService.getTrazabilidadDeEquipo` — OTs del mismo equipo ordenadas por fecha DESC (REQ-8.1, REQ-8.2)
+- [x] Implementar GET `/api/ordenes/{id}/trazabilidad`
 
 ### Configuración y datos
 - [x] Implementar `HomeController`
 - [x] Configurar `DataSeeder` — datos iniciales de clientes, sedes, equipos, técnicos y usuarios
 - [x] Configurar `OpenApiConfig` — Swagger UI con autenticación JWT Bearer
 - [x] Configurar `GlobalExceptionHandler` — 401 / 403 / 400 / 404 / 500
+- [x] Implementar `OrdenTrabajoRepository`
+- [x] Implementar `UsuarioRepository`
 - [x] Crear DTOs: `OrdenRequest`, `OrdenResponse`, `ConformidadRequest`, `EstadoRequest`, `AuthResponse`, `LoginRequest`, `RegisterRequest`, `ClienteResponse`, `SedeResponse`, `EquipoResponse`, `TecnicoResponse`
 
-### Lógica de transiciones de estado (pendiente de validación explícita)
-- [ ] Validar que `reprogramada` solo se permite desde: `asignada`, `enCamino`, `enEjecucion`, `pendienteConformidad`
-- [ ] Validar que una OT `reprogramada` puede volver a `pendiente`
-- [ ] Validar que `conformidad` solo se puede registrar cuando el estado es `pendienteConformidad`
-
 ### Tests Backend
-- [ ] Test: solo ADMIN puede crear una OT (`POST /api/ordenes` con rol TECNICO → 403)
-- [ ] Test: TECNICO puede actualizar estado de una OT
-- [ ] Test: transición válida — `pendiente → asignada → enCamino → enEjecucion → pendienteConformidad → finalizada`
-- [ ] Test: `reprogramada` válida desde `asignada`, `enCamino`, `enEjecucion`, `pendienteConformidad`
-- [ ] Test: OT `reprogramada` puede volver a `pendiente`
-- [ ] Test: conformidad rechazada si estado ≠ `pendienteConformidad`
-- [ ] Test: al crear OT el historial contiene `"OT creada"`
-- [ ] Test: al guardar conformidad el historial contiene `"Finalizada con conformidad"`
-- [ ] Test: código de OT generado automáticamente con formato `OT-100x`
-- [ ] Test: `prioridad` por defecto es `media` si no se envía en el request
-- [ ] Test: agenda del técnico devuelve OTs ordenadas por `fechaProgramada` ASC
-- [ ] Test: `/api/tecnicos/disponibles` solo devuelve técnicos con `disponible=true`
-- [ ] Test: trazabilidad devuelve OTs del mismo equipo ordenadas por fecha
-- [ ] Test: creación de OT falla con 404 si cliente/sede/equipo no existen
-- [ ] Test: JWT inválido o expirado → 401 en endpoints protegidos
-- [ ] Test: catálogo filtrado por `clienteId` devuelve solo sedes de ese cliente
-- [ ] Test: catálogo filtrado por `sedeId` devuelve solo equipos de esa sede
+- [ ] Test: solo ADMIN puede crear una OT — rol TECNICO → 403 (REQ-1.5, REQ-3.1)
+- [ ] Test: credenciales incorrectas → 401 (REQ-1.2)
+- [ ] Test: JWT inválido o expirado → 401 (REQ-1.4)
+- [ ] Test: TECNICO no puede acceder a catálogo → 403 (REQ-1.5)
+- [ ] Test: catálogo filtrado por `clienteId` devuelve solo sedes de ese cliente (REQ-2.2)
+- [ ] Test: catálogo filtrado por `sedeId` devuelve solo equipos de esa sede (REQ-2.3)
+- [ ] Test: `/api/tecnicos/disponibles` solo devuelve técnicos con `disponible=true` (REQ-2.5)
+- [ ] Test: creación de OT falla con 404 si cliente/sede/equipo no existen (REQ-3.10)
+- [ ] Test: código de OT generado automáticamente con formato `OT-100x` (REQ-3.4)
+- [ ] Test: OT creada con estado `pendiente` (REQ-3.5)
+- [ ] Test: `prioridad` por defecto es `media` si no se envía (REQ-3.6)
+- [ ] Test: historial contiene `"OT creada"` al crear (REQ-3.9)
+- [ ] Test: transición válida — `pendiente → asignada → enCamino → enEjecucion → pendienteConformidad → finalizada` (REQ-4.2)
+- [ ] Test: `reprogramada` válida desde `asignada`, `enCamino`, `enEjecucion`, `pendienteConformidad` (REQ-4.3)
+- [ ] Test: OT `reprogramada` puede volver a `pendiente` (REQ-4.4)
+- [ ] Test: cambio de estado registra evento con timestamp en historial (REQ-4.5)
+- [ ] Test: agenda del técnico devuelve OTs ordenadas por `fechaProgramada` ASC (REQ-5.2)
+- [ ] Test: conformidad rechazada si estado ≠ `pendienteConformidad` (REQ-7.4)
+- [ ] Test: conformidad cambia estado a `finalizada` y registra `"Finalizada con conformidad"` (REQ-7.2, REQ-7.3)
+- [ ] Test: trazabilidad devuelve OTs del mismo equipo ordenadas por fecha DESC (REQ-8.1, REQ-8.2)
 
 ---
 
 ## Frontend
 
-### Autenticación
+### REQ-1 · Autenticación
 - [ ] Pantalla de Login (username + contraseña)
 - [ ] Almacenamiento seguro del JWT en cliente
 - [ ] Redirección post-login según rol (ADMIN → dashboard, TECNICO → mis órdenes)
 - [ ] Logout y limpieza de sesión
 
-### Dashboard ADMIN
-- [ ] Vista principal con resumen de OTs por estado (pendiente, asignada, en ejecución, finalizada)
-- [ ] Listado de OTs con filtros por estado, técnico, cliente y fecha
-- [ ] Formulario de creación de OT — selección encadenada: cliente → sede → equipo → técnico disponible (usando `/api/tecnicos/disponibles`)
-- [ ] Soporte para `prioridad` y `duracionEstimadaMin` en el formulario de creación
-- [ ] Detalle de OT con información completa (cliente, sede, equipo, técnico, checklist, fotos, historial de eventos)
-- [ ] Actualización de estado desde el detalle de OT
-
-### Vista TECNICO
-- [ ] Listado de OTs asignadas al técnico autenticado
-- [ ] Agenda del técnico — OTs ordenadas por fecha programada (`GET /api/ordenes/agenda/{tecnicoId}`)
-- [ ] Detalle de OT con instrucciones, checklist e información del equipo
-- [ ] Actualización de estado (`enCamino`, `enEjecucion`, `pendienteConformidad`)
-- [ ] Registro de notas y observaciones en la OT
-- [ ] Captura y adjunto de fotos de evidencia
-- [ ] Pantalla de conformidad — firma digital del cliente + notas finales
-- [ ] Vista de historial / trazabilidad del equipo
-
-### Catálogo (ADMIN)
+### REQ-2 · Catálogos (ADMIN)
 - [ ] Listado de clientes con sus sedes
 - [ ] Listado de equipos por sede con fecha de último mantenimiento
 - [ ] Listado de técnicos con especialidades y disponibilidad
+
+### REQ-3 · Gestión de OTs (ADMIN)
+- [ ] Vista principal con resumen de OTs por estado (pendiente, asignada, en ejecución, finalizada)
+- [ ] Listado de OTs con filtros por estado, técnico, cliente y fecha
+- [ ] Formulario de creación de OT — selección encadenada: cliente → sede → equipo → técnico disponible
+- [ ] Soporte para `prioridad` y `duracionEstimadaMin` en el formulario
+- [ ] Detalle de OT con toda la información (cliente, sede, equipo, técnico, checklist, fotos, historial)
+
+### REQ-4 · Seguimiento de estados
+- [ ] Actualización de estado desde el detalle de OT (ADMIN)
+- [ ] Actualización de estado desde la vista del técnico (`enCamino`, `enEjecucion`, `pendienteConformidad`)
+
+### REQ-5 · Agenda del técnico
+- [ ] Agenda del técnico — OTs ordenadas por fecha programada (GET `/api/ordenes/agenda/{tecnicoId}`)
+
+### REQ-6 · Registro de evidencia (TECNICO)
+- [ ] Detalle de OT con instrucciones y checklist interactivo
+- [ ] Registro de notas y observaciones en la OT
+- [ ] Captura y adjunto de fotos de evidencia
+
+### REQ-7 · Conformidad del cliente (TECNICO)
+- [ ] Pantalla de conformidad — firma digital del cliente + notas finales
+
+### REQ-8 · Trazabilidad (ADMIN + TECNICO)
+- [ ] Vista de historial / trazabilidad del equipo desde el detalle de OT
 
 ---
 
