@@ -4,19 +4,65 @@
 
 FieldFlow es una plataforma web para la gestión centralizada de servicios técnicos en campo. La arquitectura sigue un modelo en capas clásico de Spring Boot (Controller → Service → Repository), con seguridad stateless basada en JWT y base de datos PostgreSQL.
 
+Servidor: `:8081`
+
 ---
 
 ## Stack tecnológico
 
 | Capa | Tecnología |
 |---|---|
-| Backend | Java 17 · Spring Boot 4.x · Spring Security · Spring Data JPA |
-| Autenticación | JWT (HS256) · OAuth2 Resource Server |
+| Backend | Java 17 · Spring Boot 4.1.1 · Spring Security 7 · Spring Data JPA |
+| Autenticación | JWT (HS256) · OAuth2 Resource Server (claims: iss, sub, role, exp) |
 | Base de datos (prod) | PostgreSQL |
-| Base de datos (test) | H2 (in-memory) |
+| Base de datos (test/dev) | H2 (in-memory) |
 | Documentación API | SpringDoc OpenAPI 3 (Swagger UI) |
 | Build | Maven |
 | Utilidades | Lombok |
+
+---
+
+## Arquitectura de capas
+
+```
+[ Frontend React (PWA) / Swagger UI ]
+              │
+        [ :8081 Backend ]
+              │
+    [ SecurityFilterChain + JWT ]
+              │
+    ┌─────────────────────────┐
+    │     Controller (REST)   │
+    │  HomeController         │
+    │  AuthController         │
+    │  CatalogoController     │
+    │  OrdenController        │
+    └────────────┬────────────┘
+                 │
+    ┌────────────▼────────────┐
+    │   Service (negocio)     │
+    │  AuthService            │
+    │  CatalogoService        │
+    │  OrdenService           │  ← @Transactional
+    └────────────┬────────────┘
+                 │
+    ┌────────────▼────────────┐
+    │  Repository (JPA)       │
+    │  ClienteRepository      │
+    │  SedeRepository         │
+    │  EquipoRepository       │
+    │  TecnicoRepository      │
+    │  OrdenTrabajoRepository │
+    │  UsuarioRepository      │
+    └────────────┬────────────┘
+                 │
+    ┌────────────▼────────────┐
+    │  Base de datos          │
+    │  PostgreSQL / H2        │
+    └─────────────────────────┘
+              │
+    GlobalExceptionHandler (401/403/400/404/500)
+```
 
 ---
 
@@ -51,15 +97,17 @@ Equipo
 Tecnico
   ├── id: Long
   ├── nombre: String
-  ├── especialidades: Set<String>
+  ├── especialidades: Set<String>  ← tabla tecnico_especialidades
   ├── disponible: boolean
   └── ordenes: List<OrdenTrabajo>
 
 OrdenTrabajo (Aggregate Root)
   ├── id: Long
-  ├── codigo: String (único)
+  ├── codigo: String (único, generado: "OT-100x")
   ├── tipoServicio: String
   ├── estado: EstadoOT
+  ├── prioridad: Prioridad (baja | media | alta | urgente, default: media)
+  ├── duracionEstimadaMin: Integer (minutos, nullable)
   ├── fechaCreacion: LocalDateTime
   ├── fechaProgramada: LocalDate
   ├── descripcion: String
@@ -69,9 +117,9 @@ OrdenTrabajo (Aggregate Root)
   ├── sede: Sede
   ├── equipo: Equipo
   ├── tecnico: Tecnico
-  ├── checklist: List<CheckItem>
-  ├── fotos: List<String>  ← URLs
-  └── historial: List<String> ← log de eventos
+  ├── checklist: List<CheckItem>   ← tabla ot_checklist
+  ├── fotos: List<String>          ← tabla ot_fotos (URLs)
+  └── historial: List<String>      ← tabla ot_historial (log de eventos)
 
 CheckItem (Embeddable)
   ├── texto: String
@@ -79,32 +127,62 @@ CheckItem (Embeddable)
 
 Usuario
   ├── id: Long
-  ├── username: String
-  ├── password: String (BCrypt)
+  ├── username: String (único)
+  ├── password: String (BCrypt factor 12)
   └── role: String  ← "ADMIN" | "TECNICO"
 ```
 
 ### Estados de una Orden de Trabajo
 
 ```
+                          ┌─────────────────────────────────┐
+                          ▼                                 │
 pendiente → asignada → enCamino → enEjecucion → pendienteConformidad → finalizada
-                                                                      ↘ reprogramada
+                │           │           │                │
+                └───────────┴───────────┴────────────────┘
+                                    │
+                               reprogramada
+                                    │
+                                pendiente  (reanudación)
 ```
+
+Todas las transiciones a `reprogramada` son válidas desde: `asignada`, `enCamino`, `enEjecucion`, `pendienteConformidad`.
+Una OT `reprogramada` puede volver a `pendiente`.
 
 ---
 
-## Arquitectura de capas
+## Seguridad y autenticación
+
+### Flujo de login y emisión de JWT
 
 ```
-[ Cliente HTTP ]
-      │
-[ Controller ]  ← Valida entrada, delega al Service
-      │
-[ Service ]     ← Lógica de negocio, transacciones
-      │
-[ Repository ]  ← Spring Data JPA (interfaces)
-      │
-[ Base de datos ]  PostgreSQL / H2
+POST /api/auth/login {username, password}
+  → AuthService.login
+  → UsuarioRepository.findByUsername
+      ├── no existe → BadCredentialsException (401)
+      └── existe → BCrypt.matches
+          ├── password incorrecto → 401
+          └── OK → TokenService.generateToken
+              → JwtEncoder HS256
+                claims: iss=fieldflow, sub=username, role=ROLE_X, exp
+              → AuthResponse {token, username, role}
+```
+
+### Validación de JWT en cada request
+
+```
+Authorization: Bearer <token>
+  → SecurityConfig.oauth2ResourceServer
+  → JwtDecoder (valida firma + expiración)
+      ├── inválido → 401 invalid_token
+      └── válido → JwtAuthenticationConverter
+          → claim "role" → "ROLE_XXX"
+          → evalúa reglas de rutas:
+              /api/auth/**         → permitAll
+              /swagger-ui/**       → permitAll
+              /api/ordenes/**      → hasAnyRole(TECNICO, ADMIN)
+              /api/**              → hasRole(ADMIN)
+          → @PreAuthorize a nivel de método (create OT → solo ADMIN)
 ```
 
 ### Roles y autorización
@@ -121,36 +199,73 @@ pendiente → asignada → enCamino → enEjecucion → pendienteConformidad →
 
 ### Autenticación — `/api/auth`
 
-| Método | Ruta | Roles | Descripción |
+| Método | Ruta | Rol | Descripción |
 |---|---|---|---|
-| POST | `/api/auth/login` | público | Autentica y devuelve JWT |
-| POST | `/api/auth/register` | público | Registra nuevo usuario |
+| POST | `/api/auth/login` | público | Autentica, devuelve JWT |
+| POST | `/api/auth/register` | público | Registra usuario, devuelve JWT |
 
-### Catálogo (solo lectura) — `/api`
+### Catálogo — `/api`
 
-| Método | Ruta | Roles | Descripción |
+| Método | Ruta | Rol | Descripción |
 |---|---|---|---|
-| GET | `/api/clientes` | ADMIN | Lista todos los clientes |
-| GET | `/api/sedes?clienteId=` | ADMIN | Lista sedes (filtro opcional por cliente) |
-| GET | `/api/equipos?sedeId=` | ADMIN | Lista equipos (filtro opcional por sede) |
+| GET | `/api/clientes` | ADMIN | Lista clientes |
+| GET | `/api/sedes?clienteId=` | ADMIN | Lista sedes (filtro opcional) |
+| GET | `/api/equipos?sedeId=` | ADMIN | Lista equipos (filtro opcional) |
 | GET | `/api/tecnicos` | ADMIN | Lista todos los técnicos |
+| GET | `/api/tecnicos/disponibles` | ADMIN | Lista técnicos con `disponible=true` |
 
 ### Órdenes de Trabajo — `/api/ordenes`
 
-| Método | Ruta | Roles | Descripción |
+| Método | Ruta | Rol | Descripción |
 |---|---|---|---|
 | GET | `/api/ordenes` | ADMIN, TECNICO | Lista todas las órdenes |
 | GET | `/api/ordenes/{id}` | ADMIN, TECNICO | Detalle de una orden |
-| GET | `/api/ordenes/{id}/trazabilidad` | ADMIN, TECNICO | Historial de intervenciones del equipo |
-| POST | `/api/ordenes` | ADMIN | Crea nueva orden de trabajo |
-| PUT | `/api/ordenes/{id}/estado` | ADMIN, TECNICO | Actualiza estado de la orden |
-| POST | `/api/ordenes/{id}/conformidad` | ADMIN, TECNICO | Registra firma y notas de conformidad |
+| GET | `/api/ordenes/{id}/trazabilidad` | ADMIN, TECNICO | OTs del mismo equipo (historial) |
+| GET | `/api/ordenes/agenda/{tecnicoId}` | ADMIN, TECNICO | Agenda del técnico ordenada por fecha programada |
+| POST | `/api/ordenes` | ADMIN | Crea OT (código auto, estado=pendiente, historial inicializado) |
+| PUT | `/api/ordenes/{id}/estado` | ADMIN, TECNICO | Cambia estado |
+| POST | `/api/ordenes/{id}/conformidad` | ADMIN, TECNICO | Guarda notas + firma, registra evento en historial |
+
+---
+
+## Flujo detallado — Crear Orden de Trabajo
+
+```
+POST /api/ordenes + JWT ADMIN
+  → SecurityFilterChain (valida token)
+  → OrdenController.create (@PreAuthorize ADMIN)
+  → OrdenService.create (@Transactional)
+      → ClienteRepository.findById   ← 404 si no existe
+      → SedeRepository.findById      ← 404 si no existe
+      → EquipoRepository.findById    ← 404 si no existe
+      → TecnicoRepository.findById   ← 404 si no existe (opcional)
+      → genera código "OT-100x"
+      → new OrdenTrabajo(estado=pendiente)
+      → setChecklist(items del request)
+      → historial.add("OT creada")
+      → OrdenTrabajoRepository.save
+      → OrdenResponse.from(ot)  ← materializa colecciones lazy
+  → 201 Created + OrdenResponse JSON
+```
+
+## Flujo detallado — Conformidad
+
+```
+POST /api/ordenes/{id}/conformidad + JWT
+  → OrdenService.guardarConformidad
+      → ot.setNotas(request.notas)
+      → ot.setFirmaBase64(request.firmaBase64)
+      → historial.add("Finalizada con conformidad")
+      → estado → finalizada
+      → save
+  → OrdenResponse
+```
 
 ---
 
 ## DTOs clave
 
-**OrdenRequest** — creación de OT
+**OrdenRequest**
 ```json
 {
   "tipoServicio": "Mantenimiento preventivo",
@@ -160,15 +275,13 @@ pendiente → asignada → enCamino → enEjecucion → pendienteConformidad →
   "sedeId": 2,
   "equipoId": 3,
   "tecnicoId": 4,
-  "checklist": [
-    { "texto": "Verificar presión", "hecho": false }
-  ]
+  "prioridad": "alta",
+  "duracionEstimadaMin": 90,
+  "checklist": [{ "texto": "Verificar presión", "hecho": false }]
 }
 ```
 
-**OrdenResponse** — respuesta completa de OT (incluye cliente, sede, equipo, técnico, checklist, fotos, historial)
-
-**ConformidadRequest** — firma del cliente
+**ConformidadRequest**
 ```json
 {
   "notas": "Trabajo realizado correctamente",
@@ -179,7 +292,7 @@ pendiente → asignada → enCamino → enEjecucion → pendienteConformidad →
 **AuthResponse**
 ```json
 {
-  "token": "<JWT>",
+  "token": "<JWT HS256>",
   "username": "admin",
   "role": "ADMIN"
 }
@@ -187,64 +300,28 @@ pendiente → asignada → enCamino → enEjecucion → pendienteConformidad →
 
 ---
 
-## Base de datos — Tablas principales
+## Base de datos — Tablas
 
 | Tabla | Descripción |
 |---|---|
 | `clientes` | Empresas clientes |
-| `sedes` | Instalaciones de cada cliente |
-| `equipos` | Activos físicos en cada sede |
-| `tecnicos` | Técnicos de campo disponibles |
-| `tecnico_especialidades` | Especialidades por técnico (colección) |
-| `ordenes_trabajo` | Órdenes de trabajo (núcleo) |
-| `ot_checklist` | Ítems del checklist de cada OT |
-| `ot_fotos` | URLs de fotos de evidencia por OT |
-| `ot_historial` | Log de eventos por OT |
-| `usuarios` | Cuentas de acceso al sistema |
-
----
-
-## Seguridad
-
-- Tokens JWT firmados con HS256 (secreto configurable vía `app.jwt.secret`)
-- Passwords cifrados con BCrypt (factor 12)
-- Sesiones stateless — sin cookies ni estado en servidor
-- CORS configurado desde `CorsConfig`
-- Autorización por método con `@PreAuthorize`
-
----
-
-## Flujo principal — Ciclo de vida de una Orden de Trabajo
-
-```
-1. ADMIN crea OT (POST /api/ordenes)
-     → estado: pendiente
-     
-2. ADMIN asigna técnico y actualiza estado (PUT /api/ordenes/{id}/estado)
-     → estado: asignada
-     
-3. Técnico se desplaza (PUT estado)
-     → estado: enCamino
-     
-4. Técnico inicia intervención (PUT estado)
-     → estado: enEjecucion
-     
-5. Técnico completa trabajo, actualiza checklist/fotos/notas
-     → estado: pendienteConformidad
-     
-6. Cliente firma conformidad (POST /api/ordenes/{id}/conformidad)
-     → estado: finalizada
-     
-7. [Alternativo] OT se reprograma
-     → estado: reprogramada
-```
+| `sedes` | Instalaciones por cliente |
+| `equipos` | Activos físicos por sede |
+| `tecnicos` | Técnicos de campo |
+| `tecnico_especialidades` | `@ElementCollection` de especialidades |
+| `ordenes_trabajo` | Órdenes de trabajo (núcleo) — incluye `prioridad` y `duracion_estimada_min` |
+| `ot_checklist` | `@ElementCollection` — ítems checklist |
+| `ot_fotos` | `@ElementCollection` — URLs de fotos |
+| `ot_historial` | `@ElementCollection` — log de eventos |
+| `usuarios` | Cuentas de acceso |
 
 ---
 
 ## Pendientes / Extensiones futuras
 
 - Subida de fotos a almacenamiento externo (S3 / similar) — actualmente se almacenan URLs
-- Mantenimientos preventivos recurrentes con programación automática
-- Notificaciones push/email al técnico al asignar una OT
+- Mantenimientos preventivos recurrentes con programación automática de OTs
+- Notificaciones push/email al técnico al ser asignado a una OT
 - Dashboard de métricas operativas para ADMIN
-- App móvil para técnicos en campo
+- Filtro de técnicos disponibles al asignar una OT
+- App móvil para técnicos en campo (PWA o nativa)

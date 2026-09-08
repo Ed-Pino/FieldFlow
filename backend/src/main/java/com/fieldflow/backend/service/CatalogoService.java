@@ -47,4 +47,8 @@ public class CatalogoService {
     public List<TecnicoResponse> getTecnicos() {
         return tecnicoRepository.findAll().stream().map(TecnicoResponse::from).toList();
     }
+
+    public List<TecnicoResponse> getTecnicosDisponibles() {
+        return tecnicoRepository.findByDisponibleTrue().stream().map(TecnicoResponse::from).toList();
+    }
 }

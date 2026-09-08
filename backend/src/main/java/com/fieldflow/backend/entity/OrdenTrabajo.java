@@ -20,6 +20,10 @@ public class OrdenTrabajo {
         pendiente, asignada, enCamino, enEjecucion, pendienteConformidad, finalizada, reprogramada
     }
 
+    public enum Prioridad {
+        baja, media, alta, urgente
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,6 +43,13 @@ public class OrdenTrabajo {
 
     @Column(name = "fecha_programada", nullable = false)
     private LocalDate fechaProgramada;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Prioridad prioridad = Prioridad.media;
+
+    @Column(name = "duracion_estimada_min")
+    private Integer duracionEstimadaMin;
 
     @Column(nullable = false, length = 1000)
     private String descripcion;
@@ -81,7 +92,8 @@ public class OrdenTrabajo {
 
     public OrdenTrabajo(String codigo, String tipoServicio, EstadoOT estado,
                         LocalDateTime fechaCreacion, LocalDate fechaProgramada,
-                        String descripcion, Cliente cliente, Sede sede, Equipo equipo, Tecnico tecnico) {
+                        String descripcion, Cliente cliente, Sede sede, Equipo equipo, Tecnico tecnico,
+                        Prioridad prioridad, Integer duracionEstimadaMin) {
         this.codigo = codigo;
         this.tipoServicio = tipoServicio;
         this.estado = estado;
@@ -92,5 +104,7 @@ public class OrdenTrabajo {
         this.sede = sede;
         this.equipo = equipo;
         this.tecnico = tecnico;
+        this.prioridad = prioridad != null ? prioridad : Prioridad.media;
+        this.duracionEstimadaMin = duracionEstimadaMin;
     }
 }

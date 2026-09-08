@@ -17,6 +17,8 @@ public record OrdenRequest(
         @NotNull Long equipoId,
         Long tecnicoId,
         @NotNull @FutureOrPresent LocalDate fechaProgramada,
+        com.fieldflow.backend.entity.OrdenTrabajo.Prioridad prioridad,
+        Integer duracionEstimadaMin,
         List<CheckItem> checklist) {
 
     public OrdenRequest {

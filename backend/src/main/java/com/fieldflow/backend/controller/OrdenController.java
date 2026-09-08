@@ -38,6 +38,11 @@ public class OrdenController {
         return ordenService.getTrazabilidadDeEquipo(id);
     }
 
+    @GetMapping("/agenda/{tecnicoId}")
+    public List<OrdenResponse> getAgendaTecnico(@PathVariable Long tecnicoId) {
+        return ordenService.getAgendaTecnico(tecnicoId);
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<OrdenResponse> create(@Valid @RequestBody OrdenRequest request) {

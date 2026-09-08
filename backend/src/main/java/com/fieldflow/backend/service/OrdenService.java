@@ -54,6 +54,11 @@ public class OrdenService {
         return getTrazabilidad(ot.getEquipo().getId());
     }
 
+    public List<OrdenResponse> getAgendaTecnico(Long tecnicoId) {
+        return ordenRepository.findByTecnicoIdOrderByFechaProgramadaAsc(tecnicoId)
+                .stream().map(OrdenResponse::from).toList();
+    }
+
     @Transactional
     public OrdenResponse create(OrdenRequest request) {
         Cliente cliente = clienteRepository.findById(request.clienteId())
@@ -70,7 +75,8 @@ public class OrdenService {
         OrdenTrabajo ot = new OrdenTrabajo(
                 codigo, request.tipoServicio(), OrdenTrabajo.EstadoOT.pendiente,
                 LocalDateTime.now(), request.fechaProgramada(), request.descripcion(),
-                cliente, sede, equipo, tecnico);
+                cliente, sede, equipo, tecnico,
+                request.prioridad(), request.duracionEstimadaMin());
         ot.setChecklist(request.checklist());
         ot.setHistorial(List.of("OT " + codigo + " creada"));
         return OrdenResponse.from(ordenRepository.save(ot));

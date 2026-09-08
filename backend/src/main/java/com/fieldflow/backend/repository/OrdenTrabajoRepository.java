@@ -8,5 +8,6 @@ import java.util.List;
 public interface OrdenTrabajoRepository extends JpaRepository<OrdenTrabajo, Long> {
     List<OrdenTrabajo> findByEquipoIdOrderByFechaCreacionDesc(Long equipoId);
     List<OrdenTrabajo> findByTecnicoIdOrderByFechaCreacionDesc(Long tecnicoId);
+    List<OrdenTrabajo> findByTecnicoIdOrderByFechaProgramadaAsc(Long tecnicoId);
     long countByEstado(OrdenTrabajo.EstadoOT estado);
 }

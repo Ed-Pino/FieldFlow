@@ -18,8 +18,8 @@ flowchart TB
         subgraph CTRL["Controller (REST)"]
             A1["HomeController"]
             A2["AuthController<br/>/api/auth"]
-            A3["CatalogoController<br/>/api/clientes|sedes|equipos|tecnicos"]
-            A4["OrdenController<br/>/api/ordenes<br/>+preAuthorize ADMIN en create"]
+            A3["CatalogoController<br/>/api/clientes|sedes|equipos|tecnicos|tecnicos/disponibles"]
+            A4["OrdenController<br/>/api/ordenes<br/>+agenda/{tecnicoId}<br/>+preAuthorize ADMIN en create"]
         end
 
         CTRL --> SVC
@@ -178,6 +178,8 @@ erDiagram
         varchar codigo UK
         varchar tipo_servicio
         varchar estado
+        varchar prioridad "baja|media|alta|urgente"
+        int duracion_estimada_min
         datetime fecha_creacion
         date fecha_programada
         varchar descripcion

@@ -38,4 +38,9 @@ public class CatalogoController {
     public List<TecnicoResponse> getTecnicos() {
         return catalogoService.getTecnicos();
     }
+
+    @GetMapping("/tecnicos/disponibles")
+    public List<TecnicoResponse> getTecnicosDisponibles() {
+        return catalogoService.getTecnicosDisponibles();
+    }
 }
