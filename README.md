@@ -9,9 +9,10 @@ Plataforma full-stack centralizada para la gestión de servicios técnicos en ca
 | Integrante | Rol |
 |---|---|
 | **Agustina Corei** | Project Manager |
-| **Eduin Pino** | Fullstack Developer (Frontend/Backend) |
+|  (Frontend/Backend) |
 | **Carla Vallejos Ari** | Fullstack Developer (Frontend/Backend) |
 | **Gregori Rafael Urbaneja Morales** | Frontend Developer + QA |
+**Eduin Pino** | Fullstack Developer
 
 ---
 
