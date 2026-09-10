@@ -188,8 +188,8 @@
           <div style="background:#fff; border:1px solid #1b4f9c; border-radius:10px; padding:20px">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:16px">
               <div>
-                <div style="font-size:15px; font-weight:600">Alta de cliente</div>
-                <div style="font-size:12px; color:#64748b; margin-top:2px">Paso 1 de 3 — luego se cargan sedes y equipos para poder crear OT.</div>
+                <div style="font-size:15px; font-weight:600">Nuevo cliente</div>
+                <div style="font-size:12px; color:#64748b; margin-top:2px">Los equipos se cargan después, desde la ficha del cliente.</div>
               </div>
               <div onClick="{{ closeClienteForm }}" style="font-size:20px; color:#94a3b8; cursor:pointer; line-height:1">×</div>
             </div>
@@ -225,14 +225,22 @@
                 <div style="font-size:11px; color:#64748b; margin-top:5px">A esta dirección se envían avisos de mantenimiento y comprobantes de conformidad.</div>
               </div>
               <div>
-                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Dirección principal <span style="color:#94a3b8; font-weight:400">(opcional)</span></label>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Dirección de facturación <span style="color:#94a3b8; font-weight:400">(opcional)</span></label>
                 <input placeholder="Gorriti 4820, CABA" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
-                <div style="font-size:11px; color:#64748b; margin-top:5px">Si se completa, se crea como primera sede del cliente.</div>
               </div>
             </div>
-            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; align-items:center">
-              <div onClick="{{ saveCliente }}" style="padding:12px 18px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">Guardar y agregar sede</div>
-              <div onClick="{{ saveCliente }}" style="padding:12px 16px; border:1px solid #d5dae2; background:#fff; border-radius:7px; font-size:13.5px; font-weight:500; cursor:pointer">Guardar cliente</div>
+            <div style="margin-top:18px; padding:15px 16px; border-radius:9px; background:#f6f7f9; border:1px solid #e2e6ec; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between">
+              <div style="min-width:0">
+                <div style="font-size:13.5px; font-weight:600">¿Tiene sede física que visite el técnico?</div>
+                <div style="font-size:12px; color:#64748b; margin-top:3px; line-height:1.5; max-width:520px">{{ sedeHint }}</div>
+              </div>
+              <div style="display:flex; gap:8px">
+                <div onClick="{{ setTieneSedeSi }}" style="padding:11px 26px; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; border:1px solid {{ siBd }}; background:{{ siBg }}; color:{{ siFg }}">Sí</div>
+                <div onClick="{{ setTieneSedeNo }}" style="padding:11px 26px; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; border:1px solid {{ noBd }}; background:{{ noBg }}; color:{{ noFg }}">No</div>
+              </div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; align-items:center">
+              <div onClick="{{ guardarCliente }}" style="padding:12px 18px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">Guardar cliente</div>
               <div onClick="{{ closeClienteForm }}" style="padding:12px 8px; font-size:13.5px; color:#64748b; cursor:pointer">Cancelar</div>
             </div>
           </div>
@@ -250,12 +258,12 @@
                 <div style="font-size:13px">{{ c.contacto }}</div>
                 <div style="font-size:11.5px; color:#64748b">{{ c.tel }} · {{ c.mail }}</div>
               </div>
-              <div style="font-family:'IBM Plex Mono',monospace; font-size:13px">{{ c.sedes }}</div>
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:{{ c.sedesColor }}">{{ c.sedesLabel }}</div>
               <div style="font-family:'IBM Plex Mono',monospace; font-size:13px">{{ c.equipos }}</div>
               <div onClick="{{ c.open }}" style="font-size:12.5px; color:#1b4f9c; font-weight:500; cursor:pointer">Ver ficha</div>
             </div>
           </sc-for>
-          <div style="padding:12px 16px; font-size:12.5px; color:#64748b">6 clientes activos · 17 sedes · 68 equipos bajo servicio</div>
+          <div style="padding:12px 16px; font-size:12.5px; color:#64748b">6 clientes activos · 14 sedes · 68 equipos bajo servicio · 1 cliente atendido en local propio</div>
         </div>
       </div>
     </sc-if>
@@ -268,12 +276,7 @@
           <div style="font-size:13.5px; color:#64748b">{{ cli.meta }}</div>
           <div style="display:inline-block; margin-top:9px; padding:4px 11px; border-radius:20px; background:#e8edf5; color:#123566; font-size:11.5px; font-weight:600">{{ cli.modalidad }}</div>
         </div>
-        <div style="display:flex; gap:7px; flex-wrap:wrap; padding:11px 13px; background:#fff; border:1px solid #e2e6ec; border-radius:9px; align-items:center">
-          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; color:#94a3b8; margin-right:4px">EJEMPLO DE FICHA</span>
-          <sc-for list="{{ clienteTabs }}" as="t" hint-placeholder-count="2">
-            <div onClick="{{ t.select }}" style="padding:7px 12px; border-radius:7px; font-size:12.5px; font-weight:600; cursor:pointer; border:1px solid {{ t.bd }}; background:{{ t.bg }}; color:{{ t.fg }}">{{ t.label }}</div>
-          </sc-for>
-        </div>
+
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px">
           <sc-for list="{{ clienteKpis }}" as="k" hint-placeholder-count="4">
             <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:14px 16px">
@@ -283,26 +286,68 @@
           </sc-for>
         </div>
 
+        <sc-if value="{{ equipoFormOpen }}">
+          <div style="background:#fff; border:1px solid #1b4f9c; border-radius:10px; padding:20px">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:16px">
+              <div>
+                <div style="font-size:15px; font-weight:600">Nuevo equipo de {{ cli.nombre }}</div>
+                <div style="font-size:12px; color:#64748b; margin-top:2px">{{ equipoFormNota }}</div>
+              </div>
+              <div onClick="{{ closeEquipoForm }}" style="font-size:20px; color:#94a3b8; cursor:pointer; line-height:1">×</div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px 16px">
+              <sc-if value="{{ cliConSedes }}">
+                <div>
+                  <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Sede *</label>
+                  <select style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; background:#fff">
+                    <sc-for list="{{ sedeOpts }}" as="o" hint-placeholder-count="3">
+                      <option>{{ o.label }}</option>
+                    </sc-for>
+                  </select>
+                  <div style="font-size:11px; color:#64748b; margin-top:5px">Dónde está instalado el equipo.</div>
+                </div>
+              </sc-if>
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Tipo de producto *</label>
+                <select style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; background:#fff">
+                  <sc-for list="{{ catalogo }}" as="c" hint-placeholder-count="5">
+                    <option>{{ c.label }}</option>
+                  </sc-for>
+                </select>
+                <div style="font-size:11px; color:#64748b; margin-top:5px">Del catálogo de la empresa. Determina el plan preventivo.</div>
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Marca y modelo *</label>
+                <input placeholder="{{ equipoPlaceModelo }}" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Número de serie / IMEI *</label>
+                <input placeholder="{{ equipoPlaceSerie }}" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; font-family:'IBM Plex Mono',monospace" />
+              </div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; align-items:center">
+              <div onClick="{{ closeEquipoForm }}" style="padding:12px 18px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">Guardar equipo</div>
+              <div onClick="{{ goNew }}" style="padding:12px 16px; border:1px solid #d5dae2; background:#fff; border-radius:7px; font-size:13.5px; font-weight:500; cursor:pointer">Guardar y crear OT</div>
+              <div onClick="{{ closeEquipoForm }}" style="padding:12px 8px; font-size:13.5px; color:#64748b; cursor:pointer">Cancelar</div>
+            </div>
+          </div>
+        </sc-if>
+
         <sc-if value="{{ sedeForm }}">
           <div style="background:#fff; border:1px solid #1b4f9c; border-radius:10px; padding:20px">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:16px">
               <div>
-                <div style="font-size:15px; font-weight:600">Alta de sede</div>
-                <div style="font-size:12px; color:#64748b; margin-top:2px">Paso 2 de 3 — después se cargan los equipos de esta sede.</div>
+                <div style="font-size:15px; font-weight:600">Nueva sede de {{ cli.nombre }}</div>
+                <div style="font-size:12px; color:#64748b; margin-top:2px">Una ubicación del cliente a la que va el técnico.</div>
               </div>
               <div onClick="{{ closeSedeForm }}" style="font-size:20px; color:#94a3b8; cursor:pointer; line-height:1">×</div>
             </div>
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px 16px">
               <div>
-                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Cliente</label>
-                <input value="Lavandería Nube Blanca S.A." readonly="readonly" style="width:100%; padding:10px 11px; border:1px solid #e2e6ec; border-radius:7px; font-size:13.5px; background:#f6f7f9; color:#475569" />
-                <div style="font-size:11px; color:#64748b; margin-top:5px">Preseleccionado: viene de la ficha del cliente.</div>
-              </div>
-              <div>
-                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Nombre / referencia de la sede *</label>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Nombre / referencia *</label>
                 <input placeholder="Sucursal Palermo" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
               </div>
-              <div style="grid-column:span 2; min-width:0">
+              <div>
                 <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Dirección *</label>
                 <input placeholder="Gorriti 4820, CABA" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
               </div>
@@ -313,64 +358,87 @@
               <div>
                 <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Teléfono en sitio <span style="color:#94a3b8; font-weight:400">(opcional)</span></label>
                 <input placeholder="+54 9 11 5512-8840" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
-                <div style="font-size:11px; color:#64748b; margin-top:5px">Es el contacto que ve el técnico al llegar al sitio.</div>
+                <div style="font-size:11px; color:#64748b; margin-top:5px">Es a quién busca el técnico cuando llega.</div>
               </div>
             </div>
             <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; align-items:center">
-              <div onClick="{{ goSedeDet }}" style="padding:12px 18px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">Guardar y agregar equipo</div>
-              <div onClick="{{ closeSedeForm }}" style="padding:12px 16px; border:1px solid #d5dae2; background:#fff; border-radius:7px; font-size:13.5px; font-weight:500; cursor:pointer">Guardar sede</div>
+              <div onClick="{{ closeSedeForm }}" style="padding:12px 18px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">Guardar sede</div>
+              <div onClick="{{ closeSedeForm }}" style="padding:12px 8px; font-size:13.5px; color:#64748b; cursor:pointer">Cancelar</div>
             </div>
           </div>
         </sc-if>
 
-        <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; overflow-x:auto">
-          <div style="min-width:760px; display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; align-items:center; padding:14px 16px; border-bottom:1px solid #e2e6ec">
-            <div style="min-width:0">
-              <div style="font-size:14.5px; font-weight:600">Sedes del cliente <span style="font-weight:400; color:#94a3b8; font-size:12.5px">· opcional</span></div>
-              <div style="font-size:12px; color:#64748b; margin-top:2px">Solo si el técnico va a una ubicación del cliente. Un equipo puede colgar directo del cliente.</div>
-            </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap">
-              <div onClick="{{ openEquipoCliente }}" style="padding:8px 13px; border:1px solid #d5dae2; background:#fff; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer" style-hover="border-color:#1b4f9c">+ Nuevo equipo sin sede</div>
-              <div onClick="{{ openSedeForm }}" style="padding:8px 13px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer" style-hover="background:#123566">+ Nueva sede</div>
-            </div>
-          </div>
-          <sc-if value="{{ cliConSedes }}" hint-placeholder-val="{{ true }}">
-          <div style="min-width:760px; display:grid; grid-template-columns:minmax(170px,1.3fr) minmax(170px,1.4fr) minmax(150px,1.3fr) 78px 88px; gap:12px; padding:10px 16px; background:#f6f7f9; border-bottom:1px solid #e2e6ec; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.08em; color:#64748b">
-            <div>SEDE</div><div>DIRECCIÓN</div><div>CONTACTO EN SITIO</div><div>EQUIPOS</div><div></div>
-          </div>
-          <sc-for list="{{ cliSedes }}" as="x" hint-placeholder-count="4">
-            <div style="min-width:760px; display:grid; grid-template-columns:minmax(170px,1.3fr) minmax(170px,1.4fr) minmax(150px,1.3fr) 78px 88px; gap:12px; padding:13px 16px; border-bottom:1px solid #eef0f4; align-items:center">
+        <sc-if value="{{ cliConSedes }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; overflow:hidden">
+            <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; align-items:center; padding:15px 18px; border-bottom:1px solid #e2e6ec">
               <div style="min-width:0">
-                <div style="font-size:13.5px; font-weight:500">{{ x.nombre }}</div>
-                <div style="font-size:11.5px; color:{{ x.color }}">{{ x.estado }}</div>
+                <div style="font-size:14.5px; font-weight:600">Sedes y equipos</div>
+                <div style="font-size:12px; color:#64748b; margin-top:2px">Abrí una sede para ver los equipos instalados ahí.</div>
               </div>
-              <div style="font-size:12.5px; color:#334155; min-width:0">{{ x.dir }}</div>
-              <div style="font-size:12px; color:#64748b; min-width:0">{{ x.contacto }}</div>
-              <div style="font-family:'IBM Plex Mono',monospace; font-size:13px">{{ x.equipos }}</div>
-              <div onClick="{{ x.open }}" style="font-size:12.5px; color:#1b4f9c; font-weight:500; cursor:pointer">Ver sede</div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap">
+                <div onClick="{{ openEquipoForm }}" style="padding:9px 13px; border:1px solid #d5dae2; background:#fff; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer" style-hover="border-color:#1b4f9c">+ Nuevo equipo</div>
+                <div onClick="{{ openSedeForm }}" style="padding:9px 13px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer" style-hover="background:#123566">+ Agregar sede</div>
+              </div>
             </div>
-          </sc-for>
-          </sc-if>
-          <sc-if value="{{ cliSinSedes }}">
-            <div style="padding:24px 16px; text-align:center">
-              <div style="font-size:14px; font-weight:600; margin-bottom:5px">Este cliente no tiene sedes cargadas</div>
-              <div style="font-size:12.5px; color:#64748b; line-height:1.55; max-width:440px; margin:0 auto 14px">Trae los equipos al local. Las OT se atienden en mostrador/taller y no necesitan dirección de intervención.</div>
-              <div onClick="{{ openEquipoCliente }}" style="display:inline-block; padding:10px 15px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer">+ Nuevo equipo sin sede</div>
-            </div>
-          </sc-if>
-        </div>
+            <sc-for list="{{ cliSedes }}" as="x" hint-placeholder-count="4">
+              <div style="border-bottom:1px solid #eef0f4; background:{{ x.rowBg }}">
+                <div onClick="{{ x.toggle }}" style="padding:14px 18px; display:grid; grid-template-columns:22px minmax(0,1.5fr) minmax(0,1.4fr) 96px; gap:14px; align-items:center; cursor:pointer" style-hover="background:#f8fafc">
+                  <div style="width:22px; height:22px; border-radius:6px; border:1px solid #d5dae2; background:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; color:#1b4f9c; font-weight:600; line-height:1">{{ x.caret }}</div>
+                  <div style="min-width:0">
+                    <div style="font-size:14px; font-weight:600">{{ x.nombre }}</div>
+                    <div style="font-size:12.5px; color:#475569">{{ x.dir }}</div>
+                  </div>
+                  <div style="min-width:0">
+                    <div style="font-size:12px; color:#64748b">{{ x.contacto }}</div>
+                    <div style="font-size:11.5px; color:{{ x.color }}; font-weight:600; margin-top:2px">{{ x.estado }}</div>
+                  </div>
+                  <div style="text-align:right; font-family:'IBM Plex Mono',monospace; font-size:12px; color:#334155">{{ x.equiposLabel }}</div>
+                </div>
+                <sc-if value="{{ x.open }}">
+                  <div style="padding:0 18px 16px">
+                    <div style="border:1px solid #e2e6ec; border-radius:9px; overflow-x:auto; background:#fff">
+                      <div style="min-width:700px; display:grid; grid-template-columns:minmax(180px,1.5fr) 138px 92px 96px 132px 84px; gap:12px; padding:9px 13px; background:#f6f7f9; border-bottom:1px solid #e2e6ec; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.08em; color:#64748b">
+                        <div>EQUIPO</div><div>N/S</div><div>ÚLT. INT.</div><div>PRÓX. PREV.</div><div>ESTADO</div><div></div>
+                      </div>
+                      <sc-for list="{{ x.equipos }}" as="e" hint-placeholder-count="2">
+                        <div style="min-width:700px; display:grid; grid-template-columns:minmax(180px,1.5fr) 138px 92px 96px 132px 84px; gap:12px; padding:11px 13px; border-bottom:1px solid #eef0f4; align-items:center">
+                          <div style="min-width:0">
+                            <div style="font-size:13px; font-weight:500">{{ e.producto }}</div>
+                            <div style="font-size:11.5px; color:#64748b">{{ e.modelo }}</div>
+                          </div>
+                          <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#334155">{{ e.serie }}</div>
+                          <div style="font-size:12.5px; color:#334155">{{ e.ultima }}</div>
+                          <div style="font-size:12.5px; color:#334155">{{ e.prox }}</div>
+                          <div><span style="display:inline-block; padding:3px 10px; border-radius:20px; font-size:11.5px; font-weight:600; background:{{ e.bg }}; color:{{ e.fg }}">{{ e.estado }}</span></div>
+                          <div onClick="{{ e.open }}" style="font-size:12.5px; color:#1b4f9c; font-weight:500; cursor:pointer">Ver ficha</div>
+                        </div>
+                      </sc-for>
+                      <sc-if value="{{ x.vacia }}">
+                        <div style="padding:13px; font-size:12.5px; color:#64748b">Sin equipos cargados en esta sede.</div>
+                      </sc-if>
+                      <div onClick="{{ openEquipoForm }}" style="padding:10px 13px; font-size:12.5px; font-weight:600; color:#1b4f9c; cursor:pointer" style-hover="background:#f2f6fc">+ Nuevo equipo en esta sede</div>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
 
-        <sc-if value="{{ cliTieneEquiposSinSede }}">
+        <sc-if value="{{ cliSinSedes }}">
           <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; overflow-x:auto">
-            <div style="min-width:820px; padding:14px 16px; border-bottom:1px solid #e2e6ec">
-              <div style="font-size:14.5px; font-weight:600">Equipos sin sede <span style="font-weight:400; color:#94a3b8; font-size:12.5px">· servicio en local propio</span></div>
-              <div style="font-size:12px; color:#64748b; margin-top:2px">Asociados directamente al cliente.</div>
+            <div style="min-width:820px; display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; align-items:center; padding:15px 18px; border-bottom:1px solid #e2e6ec">
+              <div style="min-width:0">
+                <div style="font-size:14.5px; font-weight:600">Equipos del cliente</div>
+                <div style="font-size:12px; color:#64748b; margin-top:2px">Se atienden en el local propio.</div>
+              </div>
+              <div onClick="{{ openEquipoForm }}" style="padding:9px 13px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer" style-hover="background:#123566">+ Nuevo equipo</div>
             </div>
-            <div style="min-width:820px; display:grid; grid-template-columns:minmax(190px,1.5fr) 148px 92px 96px 130px 88px; gap:12px; padding:10px 16px; background:#f6f7f9; border-bottom:1px solid #e2e6ec; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.08em; color:#64748b">
+            <div style="min-width:820px; display:grid; grid-template-columns:minmax(190px,1.5fr) 148px 92px 96px 130px 88px; gap:12px; padding:10px 18px; background:#f6f7f9; border-bottom:1px solid #e2e6ec; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.08em; color:#64748b">
               <div>EQUIPO</div><div>N/S · IMEI</div><div>ÚLT. INT.</div><div>PRÓX. PREV.</div><div>ESTADO</div><div></div>
             </div>
             <sc-for list="{{ cliEquipos }}" as="e" hint-placeholder-count="3">
-              <div style="min-width:820px; display:grid; grid-template-columns:minmax(190px,1.5fr) 148px 92px 96px 130px 88px; gap:12px; padding:13px 16px; border-bottom:1px solid #eef0f4; align-items:center">
+              <div style="min-width:820px; display:grid; grid-template-columns:minmax(190px,1.5fr) 148px 92px 96px 130px 88px; gap:12px; padding:13px 18px; border-bottom:1px solid #eef0f4; align-items:center">
                 <div style="min-width:0">
                   <div style="font-size:13.5px; font-weight:500">{{ e.producto }}</div>
                   <div style="font-size:11.5px; color:#64748b">{{ e.modelo }}</div>
@@ -382,145 +450,16 @@
                 <div onClick="{{ e.open }}" style="font-size:12.5px; color:#1b4f9c; font-weight:500; cursor:pointer">Ver ficha</div>
               </div>
             </sc-for>
-          </div>
-        </sc-if>
-
-        <sc-if value="{{ equipoClienteForm }}">
-          <div style="background:#fff; border:1px solid #1b4f9c; border-radius:10px; padding:20px">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:16px">
-              <div>
-                <div style="font-size:15px; font-weight:600">Alta de equipo</div>
-                <div style="font-size:12px; color:#64748b; margin-top:2px">El equipo pertenece al cliente. La sede es opcional.</div>
+            <sc-if value="{{ cliVacio }}">
+              <div style="min-width:820px; padding:22px 18px; text-align:center">
+                <div style="font-size:13.5px; font-weight:600; margin-bottom:4px">Todavía no hay equipos de este cliente</div>
+                <div style="font-size:12.5px; color:#64748b">Cargá el primero para poder abrir una orden de trabajo.</div>
               </div>
-              <div onClick="{{ closeEquipoCliente }}" style="font-size:20px; color:#94a3b8; cursor:pointer; line-height:1">×</div>
-            </div>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px 16px">
-              <div>
-                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Cliente *</label>
-                <input value="{{ cli.nombre }}" readonly="readonly" style="width:100%; padding:10px 11px; border:1px solid #e2e6ec; border-radius:7px; font-size:13.5px; background:#f6f7f9; color:#475569" />
-                <div style="font-size:11px; color:#64748b; margin-top:5px">Único dato obligatorio de pertenencia.</div>
-              </div>
-              <div>
-                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Sede <span style="color:#94a3b8; font-weight:400">(opcional)</span></label>
-                <select style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; background:#fff">
-                  <sc-for list="{{ sedeOpts }}" as="o" hint-placeholder-count="2">
-                    <option>{{ o.label }}</option>
-                  </sc-for>
-                </select>
-                <div style="font-size:11px; color:#64748b; margin-top:5px">Sin sede: la OT se atiende en el local propio, sin dirección de intervención.</div>
-              </div>
-              <div>
-                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Tipo de producto *</label>
-                <select style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; background:#fff">
-                  <sc-for list="{{ catalogo }}" as="c" hint-placeholder-count="5">
-                    <option>{{ c.label }}</option>
-                  </sc-for>
-                </select>
-                <div style="font-size:11px; color:#64748b; margin-top:5px">Del catálogo del SUPER_ADMIN. Determina el plan preventivo.</div>
-              </div>
-              <div>
-                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Marca y modelo *</label>
-                <input placeholder="Smartphone 6,1&quot; · placa con humedad" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
-              </div>
-              <div>
-                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Número de serie / IMEI *</label>
-                <input placeholder="IMEI 3548-8891" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; font-family:'IBM Plex Mono',monospace" />
-              </div>
-            </div>
-            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; align-items:center">
-              <div onClick="{{ closeEquipoCliente }}" style="padding:12px 18px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">Guardar equipo</div>
-              <div onClick="{{ goNew }}" style="padding:12px 16px; border:1px solid #d5dae2; background:#fff; border-radius:7px; font-size:13.5px; font-weight:500; cursor:pointer">Guardar y crear OT</div>
-              <div onClick="{{ closeEquipoCliente }}" style="padding:12px 8px; font-size:13.5px; color:#64748b; cursor:pointer">Cancelar</div>
-            </div>
+            </sc-if>
           </div>
         </sc-if>
       </div>
     </sc-if>
-
-    <sc-if value="{{ isSedeDet }}">
-      <div style="padding:26px 32px 40px; display:flex; flex-direction:column; gap:16px">
-        <div>
-          <div onClick="{{ goClienteDet }}" style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#1b4f9c; cursor:pointer">← LAVANDERÍA NUBE BLANCA S.A.</div>
-          <h1 style="margin:7px 0 4px; font-size:25px; font-weight:600; letter-spacing:-0.02em">Sucursal Palermo</h1>
-          <div style="font-size:13.5px; color:#64748b">Gorriti 4820, CABA · contacto en sitio: Mariela Duarte · +54 9 11 5512-8840</div>
-        </div>
-
-        <sc-if value="{{ equipoForm }}">
-          <div style="background:#fff; border:1px solid #1b4f9c; border-radius:10px; padding:20px">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:16px">
-              <div>
-                <div style="font-size:15px; font-weight:600">Alta de equipo</div>
-                <div style="font-size:12px; color:#64748b; margin-top:2px">Paso 3 de 3 — con el equipo cargado ya se puede crear una OT.</div>
-              </div>
-              <div onClick="{{ closeEquipoForm }}" style="font-size:20px; color:#94a3b8; cursor:pointer; line-height:1">×</div>
-            </div>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px 16px">
-              <div>
-                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Tipo de producto *</label>
-                <select style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; background:#fff">
-                  <sc-for list="{{ catalogo }}" as="c" hint-placeholder-count="5">
-                    <option>{{ c.label }}</option>
-                  </sc-for>
-                </select>
-                <div style="font-size:11px; color:#64748b; margin-top:5px">Solo del catálogo definido por SUPER_ADMIN. Determina el plan preventivo del equipo.</div>
-              </div>
-              <div>
-                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Sede <span style="color:#94a3b8; font-weight:400">(opcional)</span></label>
-                <select style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; background:#fff">
-                  <option>Sucursal Palermo — Gorriti 4820</option>
-                  <option>Sucursal Villa Urquiza — Roosevelt 5290</option>
-                  <option>Planta Avellaneda — Mitre 1140</option>
-                  <option>Sin sede (servicio en local propio)</option>
-                </select>
-                <div style="font-size:11px; color:#64748b; margin-top:5px">Preseleccionada desde la ficha de sede; se puede quitar.</div>
-              </div>
-              <div>
-                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Marca y modelo *</label>
-                <input placeholder="Fagor LI-6013 · 60 kg" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
-              </div>
-              <div>
-                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Número de serie *</label>
-                <input placeholder="LI6013-2291" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; font-family:'IBM Plex Mono',monospace" />
-                <div style="font-size:11px; color:#64748b; margin-top:5px">Identifica el equipo en todo su historial de intervenciones.</div>
-              </div>
-              <div>
-                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Fecha de puesta en servicio <span style="color:#94a3b8; font-weight:400">(opcional)</span></label>
-                <input placeholder="03/2022" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
-                <div style="font-size:11px; color:#64748b; margin-top:5px">Base de cálculo del primer preventivo si el equipo no tiene intervenciones.</div>
-              </div>
-            </div>
-            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; align-items:center">
-              <div onClick="{{ closeEquipoForm }}" style="padding:12px 18px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">Guardar equipo</div>
-              <div onClick="{{ goNew }}" style="padding:12px 16px; border:1px solid #d5dae2; background:#fff; border-radius:7px; font-size:13.5px; font-weight:500; cursor:pointer">Guardar y crear OT</div>
-            </div>
-          </div>
-        </sc-if>
-
-        <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; overflow-x:auto">
-          <div style="min-width:900px; display:flex; justify-content:space-between; align-items:center; padding:14px 16px; border-bottom:1px solid #e2e6ec">
-            <div style="font-size:14.5px; font-weight:600">Equipos en esta sede</div>
-            <div onClick="{{ openEquipoForm }}" style="padding:8px 13px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer" style-hover="background:#123566">+ Nuevo equipo</div>
-          </div>
-          <div style="min-width:900px; display:grid; grid-template-columns:minmax(190px,1.5fr) 132px 88px 96px 150px 90px; gap:12px; padding:10px 16px; background:#f6f7f9; border-bottom:1px solid #e2e6ec; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.08em; color:#64748b">
-            <div>EQUIPO</div><div>N/S</div><div>ÚLT. INT.</div><div>PRÓX. PREV.</div><div>ESTADO</div><div></div>
-          </div>
-          <sc-for list="{{ equipos }}" as="e" hint-placeholder-count="5">
-            <div style="min-width:900px; display:grid; grid-template-columns:minmax(190px,1.5fr) 132px 88px 96px 150px 90px; gap:12px; padding:13px 16px; border-bottom:1px solid #eef0f4; align-items:center">
-              <div style="min-width:0">
-                <div style="font-size:13.5px; font-weight:500">{{ e.producto }}</div>
-                <div style="font-size:11.5px; color:#64748b">{{ e.modelo }}</div>
-              </div>
-              <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#334155">{{ e.serie }}</div>
-              <div style="font-size:12.5px; color:#334155">{{ e.ultima }}</div>
-              <div style="font-size:12.5px; color:#334155">{{ e.prox }}</div>
-              <div><span style="display:inline-block; padding:3px 10px; border-radius:20px; font-size:11.5px; font-weight:600; background:{{ e.bg }}; color:{{ e.fg }}">{{ e.estado }}</span></div>
-              <div onClick="{{ e.open }}" style="font-size:12.5px; color:#1b4f9c; font-weight:500; cursor:pointer">Ver ficha</div>
-            </div>
-          </sc-for>
-        </div>
-      </div>
-    </sc-if>
-
     <sc-if value="{{ isList }}">
       <div style="padding:26px 32px 40px; display:flex; flex-direction:column; gap:16px">
         <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; justify-content:space-between">
@@ -1316,22 +1255,32 @@ const CLI = {
       { label: "Preventivos por vencer", value: "2", color: "#c2410c" }
     ],
     sedes: [
-      { nombre: "Sucursal Palermo", dir: "Gorriti 4820, CABA", contacto: "Mariela Duarte · +54 9 11 5512-8840", equipos: 5, estado: "1 OT en ejecución", color: "#1b4f9c" },
-      { nombre: "Sucursal Villa Urquiza", dir: "Roosevelt 5290, CABA", contacto: "Hernán Costa · +54 9 11 6014-7723", equipos: 3, estado: "Al día", color: "#166534" },
-      { nombre: "Planta Avellaneda", dir: "Mitre 1140, Avellaneda", contacto: "Guardia técnica · int. 214", equipos: 2, estado: "Preventivo por vencer", color: "#c2410c" },
-      { nombre: "Depósito Barracas", dir: "Iriarte 2280, CABA", contacto: "—", equipos: 1, estado: "Al día", color: "#166534" }
+      { id: "s1", nombre: "Sucursal Palermo", dir: "Gorriti 4820, CABA", contacto: "Mariela Duarte · +54 9 11 5512-8840", estado: "1 OT en ejecución", color: "#1b4f9c", equipos: [
+        { producto: "Lavarropas industrial", modelo: "Fagor LI-6013 · 60 kg", serie: "LI6013-2291", ultima: "10/09/2026", prox: "24/11/2026", estado: "En intervención", bg: "#e0edff", fg: "#123566" },
+        { producto: "Lavarropas industrial", modelo: "Fagor LI-6013 · 60 kg", serie: "LI6013-2287", ultima: "08/09/2026", prox: "12/12/2026", estado: "Operativo", bg: "#e4f4ea", fg: "#166534" },
+        { producto: "Secarropas", modelo: "Girbau SC-40 · 40 kg", serie: "SC40-1120", ultima: "09/09/2026", prox: "09/01/2027", estado: "Operativo", bg: "#e4f4ea", fg: "#166534" }
+      ] },
+      { id: "s2", nombre: "Sucursal Villa Urquiza", dir: "Roosevelt 5290, CABA", contacto: "Hernán Costa · +54 9 11 6014-7723", estado: "Al día", color: "#166534", equipos: [
+        { producto: "Lavarropas industrial", modelo: "Fagor LI-4008 · 40 kg", serie: "LI4008-1902", ultima: "22/07/2026", prox: "22/01/2027", estado: "Operativo", bg: "#e4f4ea", fg: "#166534" },
+        { producto: "Secarropas", modelo: "Girbau SC-25 · 25 kg", serie: "SC25-0771", ultima: "22/07/2026", prox: "22/11/2026", estado: "Operativo", bg: "#e4f4ea", fg: "#166534" }
+      ] },
+      { id: "s3", nombre: "Planta Avellaneda", dir: "Mitre 1140, Avellaneda", contacto: "Guardia técnica · int. 214", estado: "Preventivo por vencer", color: "#c2410c", equipos: [
+        { producto: "Aire acondicionado VRF", modelo: "VRF 12 TR · 4 evaporadoras", serie: "VRF12-0087", ultima: "22/05/2026", prox: "22/09/2026", estado: "Preventivo por vencer", bg: "#fdece3", fg: "#9a3412" },
+        { producto: "Cámara frigorífica", modelo: "CF-8 · 8 m³", serie: "CF8-0455", ultima: "14/06/2026", prox: "14/09/2026", estado: "Preventivo por vencer", bg: "#fdece3", fg: "#9a3412" }
+      ] },
+      { id: "s4", nombre: "Depósito Barracas", dir: "Iriarte 2280, CABA", contacto: "—", estado: "Al día", color: "#166534", equipos: [] }
     ],
     sinSede: []
   },
   mostrador: {
     nombre: "Jorge Aguirre",
     meta: "DNI 28.114.882 · +54 9 11 3390-5512 · jaguirre.rednorte@gmail.com",
-    modalidad: "Servicio en local propio · sin sedes",
+    modalidad: "Servicio en local propio",
     kpis: [
-      { label: "Sedes cargadas", value: "0", color: "#64748b" },
+      { label: "Equipos en taller", value: "1", color: "#1b4f9c" },
       { label: "Equipos bajo servicio", value: "3", color: "#0f1b2d" },
       { label: "OT históricas", value: "6", color: "#0f1b2d" },
-      { label: "Preventivos por vencer", value: "0", color: "#166534" }
+      { label: "OT abiertas", value: "1", color: "#1b4f9c" }
     ],
     sedes: [],
     sinSede: [
@@ -1346,8 +1295,6 @@ const SCREENS = [
   { id: "login", label: "Login y rol", group: "ACCESO" },
   { id: "dash", label: "Dashboard", group: "ADMIN · ESCRITORIO" },
   { id: "clientes", label: "Clientes", group: "ADMIN · ESCRITORIO" },
-  { id: "clienteDet", label: "Ficha de cliente · sedes", group: "ADMIN · ESCRITORIO" },
-  { id: "sedeDet", label: "Ficha de sede · equipos", group: "ADMIN · ESCRITORIO" },
   { id: "list", label: "Órdenes de trabajo", group: "ADMIN · ESCRITORIO" },
   { id: "new", label: "Crear OT", group: "ADMIN · ESCRITORIO" },
   { id: "assign", label: "Asignar técnico", group: "ADMIN · ESCRITORIO" },
@@ -1383,7 +1330,8 @@ class Component extends DCLogic {
       sedeForm: false,
       equipoForm: false,
       clienteSel: "corp",
-      equipoClienteForm: false,
+      sedeExp: "s1",
+      tieneSede: true,
       otTab: "resumen",
       techStep: "asignada",
       prods: [
@@ -1438,13 +1386,15 @@ class Component extends DCLogic {
     const s = this.state;
     const P = this.props;
     const showAlerts = P.showAlerts !== false;
+    const cli = CLI[s.clienteSel] || CLI.corp;
+    const conSedes = cli.sedes.length > 0;
     const firmaObligatoria = (P.politicaFirma || "Firma obligatoria") === "Firma obligatoria";
 
     const navGroups = [];
     SCREENS.forEach((sc, i) => {
       let g = navGroups.find((x) => x.label === sc.group);
       if (!g) { g = { label: sc.group, items: [] }; navGroups.push(g); }
-      const on = s.screen === sc.id;
+      const on = s.screen === sc.id || (sc.id === "clientes" && s.screen === "clienteDet");
       g.items.push({
         label: sc.label, num: String(i + 1).padStart(2, "0"),
         bg: on ? "#1b4f9c" : "transparent", fg: on ? "#ffffff" : "#c3cfe1",
@@ -1563,56 +1513,55 @@ class Component extends DCLogic {
       clienteForm: s.clienteForm,
       openClienteForm: () => this.setState({ clienteForm: true }),
       closeClienteForm: () => this.setState({ clienteForm: false }),
-      saveCliente: () => this.setState({ clienteForm: false }),
       clientes: [
         { nombre: "Lavandería Nube Blanca S.A.", cuit: "30-71042288-4", contacto: "Mariela Duarte", tel: "+54 9 11 5512-8840", mail: "mduarte@nubeblanca.com.ar", sedes: 4, equipos: 11 },
         { nombre: "Clínica San Ramón", cuit: "30-68855120-9", contacto: "Ing. Pablo Tessi", tel: "+54 9 11 4477-1290", mail: "mantenimiento@sanramon.org", sedes: 2, equipos: 18 },
         { nombre: "Supermercado Del Plata", cuit: "33-70998812-7", contacto: "Carla Benítez", tel: "+54 9 11 6620-3311", mail: "cbenitez@delplata.com", sedes: 6, equipos: 24 },
         { nombre: "Hotel Bristol", cuit: "30-71223390-2", contacto: "Recepción técnica", tel: "+54 11 4321-7788", mail: "servicios@hotelbristol.com.ar", sedes: 1, equipos: 7 },
         { nombre: "Consorcio Torre Pellegrini", cuit: "30-70551208-5", contacto: "Adm. Rossi y Asoc.", tel: "+54 11 4812-6600", mail: "admin@rossiyasoc.com.ar", sedes: 1, equipos: 3 },
-        { nombre: "Kiosco Red Norte", cuit: "20-28114882-6", contacto: "Jorge Aguirre", tel: "+54 9 11 3390-5512", mail: "jaguirre.rednorte@gmail.com", sedes: 3, equipos: 5 }
-      ].map((c) => ({ ...c, open: () => this.go("clienteDet") })),
-
-      clienteTabs: [
-        { id: "corp", label: "Lavandería Nube Blanca · con sedes" },
-        { id: "mostrador", label: "Jorge Aguirre · mostrador" }
-      ].map((t) => ({
-        ...t, bg: s.clienteSel === t.id ? "#0f1b2d" : "#ffffff", fg: s.clienteSel === t.id ? "#ffffff" : "#334155",
-        bd: s.clienteSel === t.id ? "#0f1b2d" : "#d5dae2",
-        select: () => this.setState({ clienteSel: t.id, sedeForm: false, equipoForm: false })
+        { nombre: "Jorge Aguirre", cuit: "28.114.882", contacto: "Jorge Aguirre", tel: "+54 9 11 3390-5512", mail: "jaguirre.rednorte@gmail.com", sedes: 0, equipos: 3, key: "mostrador" }
+      ].map((c) => ({
+        ...c, sedesLabel: c.sedes === 0 ? "en local" : String(c.sedes),
+        sedesColor: c.sedes === 0 ? "#94a3b8" : "#0f1b2d",
+        open: () => this.setState({ screen: "clienteDet", clienteSel: c.key || "corp", sedeForm: false, equipoForm: false })
       })),
-      cli: CLI[s.clienteSel],
-      cliSinSedes: CLI[s.clienteSel].sedes.length === 0,
-      cliConSedes: CLI[s.clienteSel].sedes.length > 0,
-      cliSedes: CLI[s.clienteSel].sedes.map((x) => ({ ...x, open: () => this.go("sedeDet") })),
-      cliEquipos: CLI[s.clienteSel].sinSede.map((x) => ({ ...x, open: () => this.go("history") })),
-      cliTieneEquiposSinSede: CLI[s.clienteSel].sinSede.length > 0,
-      clienteKpis: CLI[s.clienteSel].kpis,
-      sedeOpts: [{ label: "Sin sede (servicio en local propio)" }].concat(CLI[s.clienteSel].sedes.map((x) => ({ label: x.nombre + " — " + x.dir }))),
-      isClienteDet: s.screen === "clienteDet", isSedeDet: s.screen === "sedeDet",
-      goClienteDet: () => this.go("clienteDet"), goSedeDet: () => this.go("sedeDet"), goHistory: () => this.go("history"),
-      sedeForm: s.sedeForm, equipoForm: s.equipoForm,
-      openSedeForm: () => this.setState({ sedeForm: true }),
+
+      cli, cliSinSedes: !conSedes, cliConSedes: conSedes,
+      cliSedes: cli.sedes.map((x) => {
+        const open = s.sedeExp === x.id;
+        return {
+          ...x, open, caret: open ? "−" : "+", rowBg: open ? "#f8fafc" : "#ffffff",
+          vacia: x.equipos.length === 0,
+          equiposLabel: x.equipos.length === 1 ? "1 equipo" : x.equipos.length + " equipos",
+          equipos: x.equipos.map((e) => ({ ...e, open: () => this.go("history") })),
+          toggle: () => this.setState({ sedeExp: open ? null : x.id })
+        };
+      }),
+      cliEquipos: cli.sinSede.map((x) => ({ ...x, open: () => this.go("history") })),
+      cliVacio: !conSedes && cli.sinSede.length === 0,
+      clienteKpis: cli.kpis,
+      sedeOpts: cli.sedes.map((x) => ({ label: x.nombre + " — " + x.dir })),
+      equipoFormOpen: s.equipoForm,
+      equipoFormNota: conSedes ? "Elegí la sede donde está instalado." : "Se atiende en el local propio.",
+      equipoPlaceModelo: conSedes ? "Fagor LI-6013 · 60 kg" : "Smartphone 6,1\" · placa con humedad",
+      equipoPlaceSerie: conSedes ? "LI6013-2291" : "IMEI 3548-8891",
+      isClienteDet: s.screen === "clienteDet",
+      goClienteDet: () => this.go("clienteDet"), goHistory: () => this.go("history"),
+      sedeForm: s.sedeForm,
+      openSedeForm: () => this.setState({ sedeForm: true, equipoForm: false }),
       closeSedeForm: () => this.setState({ sedeForm: false }),
-      openEquipoForm: () => this.setState({ equipoForm: true }),
+      openEquipoForm: () => this.setState({ equipoForm: true, sedeForm: false }),
       closeEquipoForm: () => this.setState({ equipoForm: false }),
-      equipoClienteForm: s.equipoClienteForm,
-      openEquipoCliente: () => this.setState({ equipoClienteForm: true, sedeForm: false }),
-      closeEquipoCliente: () => this.setState({ equipoClienteForm: false }),
       catalogo: s.prods.map((p) => ({ label: p.label })),
-      sedes: [
-        { nombre: "Sucursal Palermo", dir: "Gorriti 4820, CABA", contacto: "Mariela Duarte · +54 9 11 5512-8840", equipos: 5, abiertas: 2, estado: "1 OT en ejecución", color: "#1b4f9c" },
-        { nombre: "Sucursal Villa Urquiza", dir: "Roosevelt 5290, CABA", contacto: "Hernán Costa · +54 9 11 6014-7723", equipos: 3, abiertas: 0, estado: "Al día", color: "#166534" },
-        { nombre: "Planta Avellaneda", dir: "Mitre 1140, Avellaneda", contacto: "Guardia técnica · int. 214", equipos: 2, abiertas: 1, estado: "Preventivo por vencer", color: "#c2410c" },
-        { nombre: "Depósito Barracas", dir: "Iriarte 2280, CABA", contacto: "—", equipos: 1, abiertas: 0, estado: "Al día", color: "#166534" }
-      ].map((x) => ({ ...x, open: () => this.go("sedeDet") })),
-      equipos: [
-        { producto: "Lavarropas industrial", modelo: "Fagor LI-6013 · 60 kg", serie: "LI6013-2291", alta: "03/2022", ultima: "10/09/2026", prox: "24/11/2026", estado: "En intervención", bg: "#e0edff", fg: "#123566" },
-        { producto: "Lavarropas industrial", modelo: "Fagor LI-6013 · 60 kg", serie: "LI6013-2287", alta: "03/2022", ultima: "08/09/2026", prox: "12/12/2026", estado: "Operativo", bg: "#e4f4ea", fg: "#166534" },
-        { producto: "Secarropas", modelo: "Girbau SC-40 · 40 kg", serie: "SC40-1120", alta: "07/2023", ultima: "09/09/2026", prox: "09/01/2027", estado: "Operativo", bg: "#e4f4ea", fg: "#166534" },
-        { producto: "Aire acondicionado VRF", modelo: "VRF 12 TR · 4 evaporadoras", serie: "VRF12-0087", alta: "11/2021", ultima: "22/05/2026", prox: "22/09/2026", estado: "Preventivo por vencer", bg: "#fdece3", fg: "#9a3412" },
-        { producto: "Terminal POS", modelo: "POS táctil T-70", serie: "POS-7781", alta: "01/2025", ultima: "—", prox: "sin plan", estado: "Operativo", bg: "#e4f4ea", fg: "#166534" }
-      ].map((x) => ({ ...x, open: () => this.go("history") })),
+      tieneSede: s.tieneSede,
+      setTieneSedeSi: () => this.setState({ tieneSede: true }),
+      setTieneSedeNo: () => this.setState({ tieneSede: false }),
+      siBg: s.tieneSede ? "#1b4f9c" : "#ffffff", siFg: s.tieneSede ? "#ffffff" : "#334155", siBd: s.tieneSede ? "#1b4f9c" : "#d5dae2",
+      noBg: s.tieneSede ? "#ffffff" : "#1b4f9c", noFg: s.tieneSede ? "#334155" : "#ffffff", noBd: s.tieneSede ? "#d5dae2" : "#1b4f9c",
+      sedeHint: s.tieneSede
+        ? "Al guardar, en su ficha vas a poder agregar una o varias sedes cuando quieras."
+        : "No se pide ninguna sede: sus equipos se atienden en el local propio.",
+      guardarCliente: () => this.setState({ screen: "clienteDet", clienteSel: s.tieneSede ? "corp" : "mostrador", clienteForm: false, sedeForm: false, equipoForm: false }),
 
       otTabs: [
         { id: "resumen", label: "Resumen de la orden" },
