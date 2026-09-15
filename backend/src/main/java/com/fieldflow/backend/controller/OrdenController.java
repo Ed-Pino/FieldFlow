@@ -1,9 +1,10 @@
 package com.fieldflow.backend.controller;
 
 import com.fieldflow.backend.dto.ConformidadRequest;
+import com.fieldflow.backend.dto.EstadoRequest;
+import com.fieldflow.backend.dto.EvidenciaRequest;
 import com.fieldflow.backend.dto.OrdenRequest;
 import com.fieldflow.backend.dto.OrdenResponse;
-import com.fieldflow.backend.entity.OrdenTrabajo;
 import com.fieldflow.backend.service.OrdenService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -50,8 +51,13 @@ public class OrdenController {
     }
 
     @PutMapping("/{id}/estado")
-    public OrdenResponse updateEstado(@PathVariable Long id, @RequestBody OrdenTrabajo.EstadoOT estado) {
-        return ordenService.updateEstado(id, estado);
+    public OrdenResponse updateEstado(@PathVariable Long id, @RequestBody EstadoRequest request) {
+        return ordenService.updateEstado(id, request.estado());
+    }
+
+    @PutMapping("/{id}/evidencia")
+    public OrdenResponse registrarEvidencia(@PathVariable Long id, @RequestBody EvidenciaRequest request) {
+        return ordenService.registrarEvidencia(id, request);
     }
 
     @PostMapping("/{id}/conformidad")

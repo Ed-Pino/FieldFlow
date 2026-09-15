@@ -227,7 +227,8 @@ Authorization: Bearer <token>
 | GET | `/api/ordenes/{id}/trazabilidad` | ADMIN, TECNICO | Historial del equipo — REQ-8 |
 | GET | `/api/ordenes/agenda/{tecnicoId}` | ADMIN, TECNICO | Agenda del técnico por fecha — REQ-5 |
 | POST | `/api/ordenes` | ADMIN | Crea OT — REQ-3 |
-| PUT | `/api/ordenes/{id}/estado` | ADMIN, TECNICO | Cambia estado — REQ-4 |
+| PUT | `/api/ordenes/{id}/estado` | ADMIN, TECNICO | Cambia estado (body `{estado}`) — REQ-4 |
+| PUT | `/api/ordenes/{id}/evidencia` | ADMIN, TECNICO | Registra notas, checklist y fotos de evidencia — REQ-6 |
 | POST | `/api/ordenes/{id}/conformidad` | ADMIN, TECNICO | Guarda notas + firma — REQ-7 |
 
 ---
@@ -267,6 +268,20 @@ POST /api/ordenes/{id}/conformidad + JWT
   → OrdenResponse
 ```
 
+## Flujo detallado — Registrar evidencia (REQ-6)
+
+```
+PUT /api/ordenes/{id}/evidencia + JWT TECNICO|ADMIN
+  → OrdenService.registrarEvidencia
+      → getOrThrow(id) → 404 si no existe
+      → if notas != null      → ot.setNotas            ← REQ-6.1
+      → if checklist != null  → ot.setChecklist        ← REQ-6.2
+      → if fotos != null      → ot.setFotos            ← REQ-6.3
+      → historial.add("Evidencia registrada") + timestamp  ← REQ-4.5 / REQ-6.4
+      → save
+  → OrdenResponse
+```
+
 ---
 
 ## DTOs clave
@@ -292,6 +307,22 @@ POST /api/ordenes/{id}/conformidad + JWT
 {
   "notas": "Trabajo realizado correctamente",
   "firmaBase64": "data:image/png;base64,..."
+}
+```
+
+**EvidenciaRequest** (REQ-6) — campos opcionales, solo se actualizan los enviados
+```json
+{
+  "notas": "Reemplazo de válvula y ajuste de presión",
+  "checklist": [{ "texto": "Verificar presión", "hecho": true }],
+  "fotos": ["https://s3.example.com/foto-evidencia-1.jpg"]
+}
+```
+
+**EstadoRequest** (REQ-4)
+```json
+{
+  "estado": "enEjecucion"
 }
 ```
 

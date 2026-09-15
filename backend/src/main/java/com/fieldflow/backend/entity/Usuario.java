@@ -28,11 +28,11 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Rol rol;
+    private Rol role;
 
-    public Usuario(String username, String password, Rol rol) {
+    public Usuario(String username, String password, Rol role) {
         this.username = username;
         this.password = password;
-        this.rol = rol;
+        this.role = role;
     }
 }

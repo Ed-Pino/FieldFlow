@@ -31,27 +31,27 @@ public class AuthService {
             throw new BadCredentialsException("Credenciales invalidas");
         }
 
-        String token = tokenService.generateToken(usuario.getUsername(), usuario.getRol().name());
-        return new AuthResponse(token, usuario.getUsername(), usuario.getRol().name());
+        String token = tokenService.generateToken(usuario.getUsername(), usuario.getRole().name());
+        return new AuthResponse(token, usuario.getUsername(), usuario.getRole().name());
     }
 
     public AuthResponse register(RegisterRequest request) {
         if (usuarioRepository.existsByUsername(request.username())) {
             throw new IllegalArgumentException("El usuario ya existe");
         }
-        Usuario.Rol rol;
+        Usuario.Rol role;
         try {
-            rol = Usuario.Rol.valueOf(request.rol().toUpperCase());
+            role = Usuario.Rol.valueOf(request.role().toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Rol invalido: debe ser TECNICO o ADMIN");
         }
         Usuario usuario = new Usuario(
                 request.username(),
                 passwordEncoder.encode(request.password()),
-                rol);
+                role);
         usuarioRepository.save(usuario);
 
-        String token = tokenService.generateToken(usuario.getUsername(), usuario.getRol().name());
-        return new AuthResponse(token, usuario.getUsername(), usuario.getRol().name());
+        String token = tokenService.generateToken(usuario.getUsername(), usuario.getRole().name());
+        return new AuthResponse(token, usuario.getUsername(), usuario.getRole().name());
     }
 }

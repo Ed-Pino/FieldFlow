@@ -20,14 +20,14 @@ public class TokenService {
         this.jwtEncoder = jwtEncoder;
     }
 
-    public String generateToken(String username, String rol) {
+    public String generateToken(String username, String role) {
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("fieldflow")
                 .issuedAt(now)
                 .expiresAt(now.plus(java.time.Duration.ofMillis(expirationMs)))
                 .subject(username)
-                .claim("role", rol)
+                .claim("role", role)
                 .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(
                 JwsHeader.with(MacAlgorithm.HS256).build(), claims)).getTokenValue();

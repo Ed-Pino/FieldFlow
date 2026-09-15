@@ -22,7 +22,7 @@
 - [x] Implementar `CatalogoController` — GET `/api/clientes`, `/sedes`, `/equipos`, `/tecnicos`
 - [x] Implementar `CatalogoService` con filtros opcionales por `clienteId` / `sedeId`
 - [x] Implementar repositorios JPA: `ClienteRepository`, `SedeRepository`, `EquipoRepository`, `TecnicoRepository`
-- [ ] Implementar GET `/api/tecnicos/disponibles` — filtra por `disponible=true` (REQ-2.5)
+- [x] Implementar GET `/api/tecnicos/disponibles` — filtra por `disponible=true` (REQ-2.5)
 
 ### Entidades y modelo de dominio (REQ-2, REQ-3)
 - [x] Crear entidad `Cliente` (nombre, nit único, sedes)
@@ -32,15 +32,15 @@
 - [x] Crear entidad `OrdenTrabajo` con enum `EstadoOT` (7 estados), relaciones y colecciones embebidas
 - [x] Crear embeddable `CheckItem` (texto, hecho)
 - [x] Crear entidad `Usuario` (username único, password BCrypt, role)
-- [ ] Agregar campo `prioridad: Prioridad` (enum `baja|media|alta|urgente`, default `media`) a `OrdenTrabajo` (REQ-3.6)
-- [ ] Agregar campo `duracionEstimadaMin: Integer` (nullable) a `OrdenTrabajo` (REQ-3.7)
-- [ ] Exponer `prioridad` y `duracionEstimadaMin` en `OrdenRequest` y `OrdenResponse`
+- [x] Agregar campo `prioridad: Prioridad` (enum `baja|media|alta|urgente`, default `media`) a `OrdenTrabajo` (REQ-3.6)
+- [x] Agregar campo `duracionEstimadaMin: Integer` (nullable) a `OrdenTrabajo` (REQ-3.7)
+- [x] Exponer `prioridad` y `duracionEstimadaMin` en `OrdenRequest` y `OrdenResponse`
 
 ### REQ-3 · Creación de Órdenes de Trabajo
 - [x] Implementar `OrdenController.create` — POST `/api/ordenes` con `@PreAuthorize ADMIN` (REQ-3.1)
 - [x] Implementar `OrdenService.create` — generación de código `OT-100x` (REQ-3.4), estado inicial `pendiente` (REQ-3.5), checklist del request (REQ-3.8), historial inicializado con `"OT creada"` (REQ-3.9), materialización lazy
 - [x] Validar existencia de cliente, sede, equipo y técnico → 404 si no existen (REQ-3.10)
-- [ ] Aplicar `prioridad` por defecto `media` si no se envía en el request (REQ-3.6)
+- [x] Aplicar `prioridad` por defecto `media` si no se envía en el request (REQ-3.6)
 
 ### REQ-4 · Seguimiento de estados
 - [x] Implementar `OrdenService.updateEstado` — cambio de estado con registro en historial (REQ-4.5)
@@ -48,13 +48,14 @@
 - [ ] Validar que una OT `reprogramada` puede volver a `pendiente` (REQ-4.4)
 
 ### REQ-5 · Agenda del técnico
-- [ ] Implementar GET `/api/ordenes/agenda/{tecnicoId}` — OTs ordenadas por `fechaProgramada` ASC (REQ-5.1, REQ-5.2)
-- [ ] Agregar `findByTecnicoIdOrderByFechaProgramadaAsc` en `OrdenTrabajoRepository`
+- [x] Implementar GET `/api/ordenes/agenda/{tecnicoId}` — OTs ordenadas por `fechaProgramada` ASC (REQ-5.1, REQ-5.2)
+- [x] Agregar `findByTecnicoIdOrderByFechaProgramadaAsc` en `OrdenTrabajoRepository`
 
 ### REQ-6 · Registro de evidencia
 - [x] Campo `notas` en `OrdenTrabajo` para observaciones del técnico (REQ-6.1)
 - [x] `CheckItem` embeddable con campo `hecho` para marcar ítems completados (REQ-6.2)
 - [x] Campo `fotos` (List de URLs) en `OrdenTrabajo` para evidencia fotográfica (REQ-6.3)
+- [x] Implementar PUT `/api/ordenes/{id}/evidencia` — registra notas, checklist y fotos en OT existente (REQ-6.1, REQ-6.2, REQ-6.3)
 
 ### REQ-7 · Conformidad del cliente
 - [x] Implementar `OrdenService.guardarConformidad` — guarda `notas` + `firmaBase64` (REQ-7.1), cambia estado a `finalizada` (REQ-7.2), registra `"Finalizada con conformidad"` en historial (REQ-7.3)
@@ -93,6 +94,7 @@
 - [ ] Test: agenda del técnico devuelve OTs ordenadas por `fechaProgramada` ASC (REQ-5.2)
 - [ ] Test: conformidad rechazada si estado ≠ `pendienteConformidad` (REQ-7.4)
 - [ ] Test: conformidad cambia estado a `finalizada` y registra `"Finalizada con conformidad"` (REQ-7.2, REQ-7.3)
+- [ ] Test: evidencia (notas, checklist, fotos) se registra en OT existente y queda en historial (REQ-6)
 - [ ] Test: trazabilidad devuelve OTs del mismo equipo ordenadas por fecha DESC (REQ-8.1, REQ-8.2)
 
 ---

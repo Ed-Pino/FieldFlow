@@ -1,6 +1,7 @@
 package com.fieldflow.backend.service;
 
 import com.fieldflow.backend.dto.ConformidadRequest;
+import com.fieldflow.backend.dto.EvidenciaRequest;
 import com.fieldflow.backend.dto.OrdenRequest;
 import com.fieldflow.backend.dto.OrdenResponse;
 import com.fieldflow.backend.entity.*;
@@ -87,6 +88,23 @@ public class OrdenService {
         OrdenTrabajo ot = getOrThrow(id);
         ot.setEstado(nuevoEstado);
         ot.getHistorial().add(nuevoEstado.name() + " "
+                + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        return OrdenResponse.from(ordenRepository.save(ot));
+    }
+
+    @Transactional
+    public OrdenResponse registrarEvidencia(Long id, EvidenciaRequest request) {
+        OrdenTrabajo ot = getOrThrow(id);
+        if (request.notas() != null) {
+            ot.setNotas(request.notas());
+        }
+        if (request.checklist() != null) {
+            ot.setChecklist(request.checklist());
+        }
+        if (request.fotos() != null) {
+            ot.setFotos(request.fotos());
+        }
+        ot.getHistorial().add("Evidencia registrada "
                 + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         return OrdenResponse.from(ordenRepository.save(ot));
     }
