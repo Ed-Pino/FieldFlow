@@ -152,6 +152,7 @@ pendiente → asignada → enCamino → enEjecucion → pendienteConformidad →
 - `reprogramada` válido desde: `asignada`, `enCamino`, `enEjecucion`, `pendienteConformidad` (REQ-4.3)
 - `reprogramada → pendiente` (REQ-4.4)
 - Cada transición registra evento en historial con timestamp (REQ-4.5)
+- Transición no permitida → `IllegalArgumentException` → 400 (validación en `OrdenService.updateEstado` vía mapa `TRANSICIONES_VALIDAS`; `finalizada` es terminal)
 
 ---
 

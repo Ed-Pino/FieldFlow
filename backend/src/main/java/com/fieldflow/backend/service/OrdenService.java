@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -20,6 +22,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class OrdenService {
 
     private static final AtomicInteger SEQUENCE = new AtomicInteger(1002);
+
+    private static final Map<OrdenTrabajo.EstadoOT, Set<OrdenTrabajo.EstadoOT>> TRANSICIONES_VALIDAS = Map.of(
+            OrdenTrabajo.EstadoOT.pendiente, Set.of(OrdenTrabajo.EstadoOT.asignada),
+            OrdenTrabajo.EstadoOT.asignada, Set.of(OrdenTrabajo.EstadoOT.enCamino, OrdenTrabajo.EstadoOT.reprogramada),
+            OrdenTrabajo.EstadoOT.enCamino, Set.of(OrdenTrabajo.EstadoOT.enEjecucion, OrdenTrabajo.EstadoOT.reprogramada),
+            OrdenTrabajo.EstadoOT.enEjecucion, Set.of(OrdenTrabajo.EstadoOT.pendienteConformidad, OrdenTrabajo.EstadoOT.reprogramada),
+            OrdenTrabajo.EstadoOT.pendienteConformidad, Set.of(OrdenTrabajo.EstadoOT.finalizada, OrdenTrabajo.EstadoOT.reprogramada),
+            OrdenTrabajo.EstadoOT.finalizada, Set.of(),
+            OrdenTrabajo.EstadoOT.reprogramada, Set.of(OrdenTrabajo.EstadoOT.pendiente));
 
     private final OrdenTrabajoRepository ordenRepository;
     private final ClienteRepository clienteRepository;
@@ -86,6 +97,10 @@ public class OrdenService {
     @Transactional
     public OrdenResponse updateEstado(Long id, OrdenTrabajo.EstadoOT nuevoEstado) {
         OrdenTrabajo ot = getOrThrow(id);
+        OrdenTrabajo.EstadoOT actual = ot.getEstado();
+        if (!TRANSICIONES_VALIDAS.getOrDefault(actual, Set.of()).contains(nuevoEstado)) {
+            throw new IllegalArgumentException("Transicion no permitida de " + actual + " a " + nuevoEstado);
+        }
         ot.setEstado(nuevoEstado);
         ot.getHistorial().add(nuevoEstado.name() + " "
                 + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
@@ -112,6 +127,10 @@ public class OrdenService {
     @Transactional
     public OrdenResponse guardarConformidad(Long id, ConformidadRequest request) {
         OrdenTrabajo ot = getOrThrow(id);
+        if (ot.getEstado() != OrdenTrabajo.EstadoOT.pendienteConformidad) {
+            throw new IllegalArgumentException(
+                    "Conformidad solo permitida en estado pendienteConformidad (actual: " + ot.getEstado() + ")");
+        }
         ot.setNotas(request.notas());
         ot.setFirmaBase64(request.firma());
         ot.setEstado(OrdenTrabajo.EstadoOT.finalizada);

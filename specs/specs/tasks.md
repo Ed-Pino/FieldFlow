@@ -44,8 +44,9 @@
 
 ### REQ-4 · Seguimiento de estados
 - [x] Implementar `OrdenService.updateEstado` — cambio de estado con registro en historial (REQ-4.5)
-- [ ] Validar que `reprogramada` solo se permite desde: `asignada`, `enCamino`, `enEjecucion`, `pendienteConformidad` (REQ-4.3)
-- [ ] Validar que una OT `reprogramada` puede volver a `pendiente` (REQ-4.4)
+- [x] Validar que `reprogramada` solo se permite desde: `asignada`, `enCamino`, `enEjecucion`, `pendienteConformidad` (REQ-4.3)
+- [x] Validar que una OT `reprogramada` puede volver a `pendiente` (REQ-4.4)
+- [x] Validar transiciones inválidas → 400 (REQ-4.2, REQ-4.3, REQ-4.4)
 
 ### REQ-5 · Agenda del técnico
 - [x] Implementar GET `/api/ordenes/agenda/{tecnicoId}` — OTs ordenadas por `fechaProgramada` ASC (REQ-5.1, REQ-5.2)
@@ -59,7 +60,7 @@
 
 ### REQ-7 · Conformidad del cliente
 - [x] Implementar `OrdenService.guardarConformidad` — guarda `notas` + `firmaBase64` (REQ-7.1), cambia estado a `finalizada` (REQ-7.2), registra `"Finalizada con conformidad"` en historial (REQ-7.3)
-- [ ] Validar que conformidad solo se registra cuando estado es `pendienteConformidad` (REQ-7.4)
+- [x] Validar que conformidad solo se registra cuando estado es `pendienteConformidad` (REQ-7.4)
 
 ### REQ-8 · Trazabilidad del equipo
 - [x] Implementar `OrdenService.getTrazabilidadDeEquipo` — OTs del mismo equipo ordenadas por fecha DESC (REQ-8.1, REQ-8.2)
@@ -75,27 +76,27 @@
 - [x] Crear DTOs: `OrdenRequest`, `OrdenResponse`, `ConformidadRequest`, `EstadoRequest`, `AuthResponse`, `LoginRequest`, `RegisterRequest`, `ClienteResponse`, `SedeResponse`, `EquipoResponse`, `TecnicoResponse`
 
 ### Tests Backend
-- [ ] Test: solo ADMIN puede crear una OT — rol TECNICO → 403 (REQ-1.5, REQ-3.1)
-- [ ] Test: credenciales incorrectas → 401 (REQ-1.2)
-- [ ] Test: JWT inválido o expirado → 401 (REQ-1.4)
-- [ ] Test: TECNICO no puede acceder a catálogo → 403 (REQ-1.5)
-- [ ] Test: catálogo filtrado por `clienteId` devuelve solo sedes de ese cliente (REQ-2.2)
-- [ ] Test: catálogo filtrado por `sedeId` devuelve solo equipos de esa sede (REQ-2.3)
-- [ ] Test: `/api/tecnicos/disponibles` solo devuelve técnicos con `disponible=true` (REQ-2.5)
-- [ ] Test: creación de OT falla con 404 si cliente/sede/equipo no existen (REQ-3.10)
-- [ ] Test: código de OT generado automáticamente con formato `OT-100x` (REQ-3.4)
-- [ ] Test: OT creada con estado `pendiente` (REQ-3.5)
-- [ ] Test: `prioridad` por defecto es `media` si no se envía (REQ-3.6)
-- [ ] Test: historial contiene `"OT creada"` al crear (REQ-3.9)
-- [ ] Test: transición válida — `pendiente → asignada → enCamino → enEjecucion → pendienteConformidad → finalizada` (REQ-4.2)
-- [ ] Test: `reprogramada` válida desde `asignada`, `enCamino`, `enEjecucion`, `pendienteConformidad` (REQ-4.3)
-- [ ] Test: OT `reprogramada` puede volver a `pendiente` (REQ-4.4)
-- [ ] Test: cambio de estado registra evento con timestamp en historial (REQ-4.5)
-- [ ] Test: agenda del técnico devuelve OTs ordenadas por `fechaProgramada` ASC (REQ-5.2)
-- [ ] Test: conformidad rechazada si estado ≠ `pendienteConformidad` (REQ-7.4)
-- [ ] Test: conformidad cambia estado a `finalizada` y registra `"Finalizada con conformidad"` (REQ-7.2, REQ-7.3)
-- [ ] Test: evidencia (notas, checklist, fotos) se registra en OT existente y queda en historial (REQ-6)
-- [ ] Test: trazabilidad devuelve OTs del mismo equipo ordenadas por fecha DESC (REQ-8.1, REQ-8.2)
+- [x] Test: solo ADMIN puede crear una OT — rol TECNICO → 403 (REQ-1.5, REQ-3.1)
+- [x] Test: credenciales incorrectas → 401 (REQ-1.2)
+- [x] Test: JWT inválido o expirado → 401 (REQ-1.4)
+- [x] Test: TECNICO no puede acceder a catálogo → 403 (REQ-1.5)
+- [x] Test: catálogo filtrado por `clienteId` devuelve solo sedes de ese cliente (REQ-2.2)
+- [x] Test: catálogo filtrado por `sedeId` devuelve solo equipos de esa sede (REQ-2.3)
+- [x] Test: `/api/tecnicos/disponibles` solo devuelve técnicos con `disponible=true` (REQ-2.5)
+- [x] Test: creación de OT falla con 404 si cliente/sede/equipo no existen (REQ-3.10)
+- [x] Test: código de OT generado automáticamente con formato `OT-100x` (REQ-3.4)
+- [x] Test: OT creada con estado `pendiente` (REQ-3.5)
+- [x] Test: `prioridad` por defecto es `media` si no se envía (REQ-3.6)
+- [x] Test: historial contiene `"OT creada"` al crear (REQ-3.9)
+- [x] Test: transición válida — `pendiente → asignada → enCamino → enEjecucion → pendienteConformidad → finalizada` (REQ-4.2)
+- [x] Test: `reprogramada` válida desde `asignada`, `enCamino`, `enEjecucion`, `pendienteConformidad` (REQ-4.3)
+- [x] Test: OT `reprogramada` puede volver a `pendiente` (REQ-4.4)
+- [x] Test: cambio de estado registra evento con timestamp en historial (REQ-4.5)
+- [x] Test: agenda del técnico devuelve OTs ordenadas por `fechaProgramada` ASC (REQ-5.2)
+- [x] Test: conformidad rechazada si estado ≠ `pendienteConformidad` (REQ-7.4)
+- [x] Test: conformidad cambia estado a `finalizada` y registra `"Finalizada con conformidad"` (REQ-7.2, REQ-7.3)
+- [x] Test: evidencia (notas, checklist, fotos) se registra en OT existente y queda en historial (REQ-6)
+- [x] Test: trazabilidad devuelve OTs del mismo equipo ordenadas por fecha DESC (REQ-8.1, REQ-8.2)
 
 ---
 
