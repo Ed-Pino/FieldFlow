@@ -29,6 +29,7 @@ public class DataSeeder {
             }
 
             usuarioRepository.save(new Usuario("admin", passwordEncoder.encode("admin123"), Usuario.Rol.ADMIN));
+            usuarioRepository.save(new Usuario("superadmin", passwordEncoder.encode("super123"), Usuario.Rol.SUPER_ADMIN));
             usuarioRepository.save(new Usuario("tecnico1", passwordEncoder.encode("tecnico123"), Usuario.Rol.TECNICO));
             usuarioRepository.save(new Usuario("tecnico2", passwordEncoder.encode("tecnico123"), Usuario.Rol.TECNICO));
 

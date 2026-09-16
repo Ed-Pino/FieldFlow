@@ -51,4 +51,24 @@ public class CatalogoService {
     public List<TecnicoResponse> getTecnicosDisponibles() {
         return tecnicoRepository.findByDisponibleTrue().stream().map(TecnicoResponse::from).toList();
     }
+
+    @Transactional
+    public void deleteCliente(Long id) {
+        clienteRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteSede(Long id) {
+        sedeRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteEquipo(Long id) {
+        equipoRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteTecnico(Long id) {
+        tecnicoRepository.deleteById(id);
+    }
 }
