@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #eef0f4; }
+  * { box-sizing: border-box; }
+  a { color: #1b4f9c; text-decoration: none; }
+  a:hover { color: #123566; text-decoration: underline; }
+  input, select, textarea, button { font-family: inherit; }
+  ::placeholder { color: #94a3b8; }
+</style>
+</helmet>
+<div style="display:flex; align-items:stretch; min-height:100vh; font-family:'IBM Plex Sans',Helvetica,sans-serif; color:#0f1b2d; background:#eef0f4">
+
+  <aside style="width:246px; flex:0 0 246px; background:#0f1b2d; color:#dbe3ef; display:flex; flex-direction:column; gap:18px; padding:20px 14px; position:sticky; top:0; align-self:flex-start; height:100vh; overflow:auto">
+    <div style="display:flex; align-items:center; gap:10px; padding:0 6px 14px; border-bottom:1px solid rgba(219,227,239,0.14)">
+      <div style="width:30px; height:30px; border-radius:8px; background:#1b4f9c; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; color:#fff">F</div>
+      <div>
+        <div style="font-size:15px; font-weight:600; letter-spacing:-0.01em; color:#fff">FieldFlow</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:#7f93b3; letter-spacing:0.08em">PWA · v0.9 PROTOTIPO</div>
+      </div>
+    </div>
+    <sc-for list="{{ navGroups }}" as="g" hint-placeholder-count="3">
+      <div style="display:flex; flex-direction:column; gap:3px; margin-bottom:6px">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.12em; color:#7f93b3; padding:6px 8px">{{ g.label }}</div>
+        <sc-for list="{{ g.items }}" as="s" hint-placeholder-count="4">
+          <div onClick="{{ s.select }}" style="display:flex; align-items:center; gap:9px; padding:8px 9px; border-radius:7px; cursor:pointer; font-size:13.5px; background:{{ s.bg }}; color:{{ s.fg }}; font-weight:{{ s.weight }}" style-hover="background:rgba(255,255,255,0.07)">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; opacity:0.55; width:16px">{{ s.num }}</span>
+            <span>{{ s.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-for>
+    <div style="margin-top:auto; padding:12px 8px 0; border-top:1px solid rgba(219,227,239,0.14); font-size:11.5px; color:#7f93b3; line-height:1.5">Mockup navegable. Datos de ejemplo.</div>
+  </aside>
+
+  <main style="flex:1; min-width:0; display:flex; flex-direction:column">
+
+    <sc-if value="{{ isLogin }}">
+      <div style="flex:1; display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr); min-height:100vh">
+        <div style="background:#0f1b2d; padding:56px 52px; display:flex; flex-direction:column; justify-content:space-between; color:#dbe3ef">
+          <div style="display:flex; align-items:center; gap:11px">
+            <div style="width:34px; height:34px; border-radius:9px; background:#1b4f9c; display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff">F</div>
+            <span style="color:#fff; font-size:18px; font-weight:600">FieldFlow</span>
+          </div>
+          <div style="max-width:420px">
+            <h1 style="font-size:38px; line-height:1.15; margin:0 0 16px; font-weight:600; letter-spacing:-0.02em; color:#fff; text-wrap:pretty">Todo el ciclo de servicio técnico, en un solo lugar.</h1>
+            <p style="font-size:15px; line-height:1.65; color:#a9bad3; margin:0">Cliente → Sede → Equipo → Orden de Trabajo → Técnico → Intervención → Evidencia → Conformidad → Historial.</p>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#7f93b3; letter-spacing:0.06em">SERVICIO TÉCNICO EN CAMPO Y TALLER</div>
+        </div>
+        <div style="background:#f6f7f9; padding:56px 52px; display:flex; align-items:center">
+          <div style="width:100%; max-width:400px; margin:0 auto">
+            <h2 style="margin:0 0 6px; font-size:22px; font-weight:600; letter-spacing:-0.01em">Ingresar</h2>
+            <p style="margin:0 0 26px; font-size:13.5px; color:#64748b">Detectamos tu rol según las credenciales.</p>
+            <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Correo corporativo</label>
+            <input value="rocio.ferraro@electroservice.com.ar" readonly="readonly" style="width:100%; padding:11px 12px; border:1px solid #d5dae2; border-radius:8px; font-size:14px; background:#fff; margin-bottom:16px; color:#0f1b2d" />
+            <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Contraseña</label>
+            <input type="password" value="0123456789" readonly="readonly" style="width:100%; padding:11px 12px; border:1px solid #d5dae2; border-radius:8px; font-size:14px; background:#fff; margin-bottom:22px" />
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.12em; color:#94a3b8; margin-bottom:10px">ROL DETECTADO — ELEGIR PARA CONTINUAR</div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:22px">
+              <sc-for list="{{ roleCards }}" as="r" hint-placeholder-count="3">
+                <div onClick="{{ r.select }}" style="display:flex; align-items:center; gap:12px; padding:12px; border:1px solid {{ r.bd }}; background:{{ r.bg }}; border-radius:9px; cursor:pointer" style-hover="border-color:#1b4f9c">
+                  <div style="width:32px; height:32px; border-radius:8px; background:{{ r.dot }}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; font-family:'IBM Plex Mono',monospace">{{ r.ini }}</div>
+                  <div style="min-width:0">
+                    <div style="font-size:13.5px; font-weight:600">{{ r.name }}</div>
+                    <div style="font-size:11.5px; color:#64748b">{{ r.desc }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div onClick="{{ goDashboard }}" style="width:100%; padding:13px; background:#1b4f9c; color:#fff; border-radius:8px; text-align:center; font-size:14px; font-weight:600; cursor:pointer" style-hover="background:#123566">Continuar</div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isDash }}" hint-placeholder-val="{{ true }}">
+      <div style="padding:26px 32px 40px; display:flex; flex-direction:column; gap:20px">
+        <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end; justify-content:space-between">
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#64748b">ADMIN · ELECTROSERVICE SRL</div>
+            <h1 style="margin:5px 0 0; font-size:25px; font-weight:600; letter-spacing:-0.02em">Panel de operación</h1>
+          </div>
+          <div style="display:flex; gap:8px">
+            <div onClick="{{ goNew }}" style="padding:10px 15px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">+ Nueva OT</div>
+            <div onClick="{{ goAgenda }}" style="padding:10px 15px; background:#fff; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; font-weight:500; cursor:pointer" style-hover="border-color:#1b4f9c">Ver agenda</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px">
+          <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+            <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:15px 16px">
+              <div style="font-size:11.5px; color:#64748b; font-weight:500; margin-bottom:9px">{{ k.label }}</div>
+              <div style="display:flex; align-items:baseline; gap:8px">
+                <div style="font-size:29px; font-weight:600; letter-spacing:-0.02em; color:{{ k.color }}">{{ k.value }}</div>
+                <div style="font-size:11.5px; color:#64748b">{{ k.hint }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ showAlerts }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fff; border:1px solid #e2e6ec; border-left:none; border-radius:10px; overflow:hidden; display:flex">
+            <div style="width:4px; background:#c2410c; flex:0 0 4px"></div>
+            <div style="flex:1; min-width:0; padding:16px 18px">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px">
+                <div style="display:flex; align-items:center; gap:9px">
+                  <div style="font-size:14.5px; font-weight:600">Alertas de mantenimiento preventivo</div>
+                  <div style="background:#fdece3; color:#9a3412; border-radius:20px; padding:2px 9px; font-size:11px; font-weight:600">4 por vencer</div>
+                </div>
+                <div style="font-size:12.5px; color:#1b4f9c; font-weight:500; cursor:pointer">Notificar a clientes</div>
+              </div>
+              <div style="display:flex; flex-direction:column">
+                <sc-for list="{{ alerts }}" as="a" hint-placeholder-count="3">
+                  <div style="display:grid; grid-template-columns:minmax(0,2.2fr) minmax(0,1.6fr) minmax(0,1fr) auto; gap:12px; align-items:center; padding:10px 0; border-top:1px solid #eef0f4">
+                    <div style="min-width:0">
+                      <div style="font-size:13.5px; font-weight:500">{{ a.equipo }}</div>
+                      <div style="font-size:11.5px; color:#64748b">{{ a.serie }}</div>
+                    </div>
+                    <div style="font-size:12.5px; color:#334155; min-width:0">{{ a.cliente }}</div>
+                    <div style="font-size:12.5px; color:{{ a.color }}; font-weight:600">{{ a.vence }}</div>
+                    <div onClick="{{ goNew }}" style="padding:6px 11px; border:1px solid #d5dae2; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; white-space:nowrap" style-hover="border-color:#1b4f9c">Generar OT</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px">
+          <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:16px 18px">
+            <div style="font-size:14.5px; font-weight:600; margin-bottom:4px">Flujo de OT por estado</div>
+            <div style="font-size:12px; color:#64748b; margin-bottom:14px">Semana en curso · 38 órdenes</div>
+            <div style="display:flex; flex-direction:column; gap:10px">
+              <sc-for list="{{ flow }}" as="f" hint-placeholder-count="5">
+                <div style="display:grid; grid-template-columns:150px minmax(0,1fr) 32px; gap:10px; align-items:center">
+                  <div style="font-size:12.5px; color:#334155">{{ f.label }}</div>
+                  <div style="height:8px; background:#eef0f4; border-radius:20px; overflow:hidden">
+                    <div style="height:8px; border-radius:20px; width:{{ f.pct }}; background:{{ f.color }}"></div>
+                  </div>
+                  <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; text-align:right; color:#0f1b2d">{{ f.n }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:16px 18px">
+            <div style="font-size:14.5px; font-weight:600; margin-bottom:4px">Técnicos en campo · ahora</div>
+            <div style="font-size:12px; color:#64748b; margin-bottom:14px">Estado reportado desde la app móvil</div>
+            <div style="display:flex; flex-direction:column">
+              <sc-for list="{{ techNow }}" as="t" hint-placeholder-count="4">
+                <div style="display:flex; align-items:center; gap:11px; padding:9px 0; border-top:1px solid #eef0f4">
+                  <div style="width:30px; height:30px; border-radius:50%; background:#e8edf5; color:#1b4f9c; display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:600">{{ t.ini }}</div>
+                  <div style="flex:1; min-width:0">
+                    <div style="font-size:13px; font-weight:500">{{ t.nombre }}</div>
+                    <div style="font-size:11.5px; color:#64748b">{{ t.donde }}</div>
+                  </div>
+                  <div style="font-size:11px; font-weight:600; padding:3px 9px; border-radius:20px; background:{{ t.bg }}; color:{{ t.fg }}">{{ t.estado }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isClientes }}">
+      <div style="padding:26px 32px 40px; display:flex; flex-direction:column; gap:16px">
+        <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; justify-content:space-between">
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#64748b">ADMIN · CARTERA DE CLIENTES</div>
+            <h1 style="margin:5px 0 0; font-size:25px; font-weight:600; letter-spacing:-0.02em">Clientes</h1>
+          </div>
+          <div onClick="{{ openClienteForm }}" style="padding:10px 15px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">+ Nuevo cliente</div>
+        </div>
+
+        <sc-if value="{{ clienteForm }}">
+          <div style="background:#fff; border:1px solid #1b4f9c; border-radius:10px; padding:20px">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:16px">
+              <div>
+                <div style="font-size:15px; font-weight:600">Nuevo cliente</div>
+                <div style="font-size:12px; color:#64748b; margin-top:2px">Los equipos se cargan después, desde la ficha del cliente.</div>
+              </div>
+              <div onClick="{{ closeClienteForm }}" style="font-size:20px; color:#94a3b8; cursor:pointer; line-height:1">×</div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px 16px">
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Tipo de identificación</label>
+                <select style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; background:#fff">
+                  <option>CUIT</option>
+                  <option>CUIL</option>
+                  <option>DNI</option>
+                </select>
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Número de identificación *</label>
+                <input placeholder="30-71042288-4" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; font-family:'IBM Plex Mono',monospace" />
+                <div style="font-size:11px; color:#64748b; margin-top:5px">Se valida que no exista otro cliente con el mismo número.</div>
+              </div>
+              <div style="grid-column:span 2; min-width:0">
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Nombre / Razón social *</label>
+                <input placeholder="Lavandería Nube Blanca S.A." style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Persona de contacto</label>
+                <input placeholder="Mariela Duarte" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Teléfono de contacto *</label>
+                <input placeholder="+54 9 11 5512-8840" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Email *</label>
+                <input placeholder="contacto@empresa.com.ar" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
+                <div style="font-size:11px; color:#64748b; margin-top:5px">A esta dirección se envían avisos de mantenimiento y comprobantes de conformidad.</div>
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Dirección de facturación <span style="color:#94a3b8; font-weight:400">(opcional)</span></label>
+                <input placeholder="Gorriti 4820, CABA" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
+              </div>
+            </div>
+            <div style="margin-top:18px; padding:15px 16px; border-radius:9px; background:#f6f7f9; border:1px solid #e2e6ec; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between">
+              <div style="min-width:0">
+                <div style="font-size:13.5px; font-weight:600">¿Tiene sede física que visite el técnico?</div>
+                <div style="font-size:12px; color:#64748b; margin-top:3px; line-height:1.5; max-width:520px">{{ sedeHint }}</div>
+              </div>
+              <div style="display:flex; gap:8px">
+                <div onClick="{{ setTieneSedeSi }}" style="padding:11px 26px; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; border:1px solid {{ siBd }}; background:{{ siBg }}; color:{{ siFg }}">Sí</div>
+                <div onClick="{{ setTieneSedeNo }}" style="padding:11px 26px; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; border:1px solid {{ noBd }}; background:{{ noBg }}; color:{{ noFg }}">No</div>
+              </div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; align-items:center">
+              <div onClick="{{ guardarCliente }}" style="padding:12px 18px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">Guardar cliente</div>
+              <div onClick="{{ closeClienteForm }}" style="padding:12px 8px; font-size:13.5px; color:#64748b; cursor:pointer">Cancelar</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; overflow-x:auto">
+          <div style="min-width:880px; display:grid; grid-template-columns:minmax(190px,1.6fr) 148px minmax(160px,1.3fr) 76px 76px 92px; gap:12px; padding:11px 16px; background:#f6f7f9; border-bottom:1px solid #e2e6ec; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.08em; color:#64748b">
+            <div>CLIENTE</div><div>CUIT / DNI</div><div>CONTACTO</div><div>SEDES</div><div>EQUIPOS</div><div></div>
+          </div>
+          <sc-for list="{{ clientes }}" as="c" hint-placeholder-count="6">
+            <div style="min-width:880px; display:grid; grid-template-columns:minmax(190px,1.6fr) 148px minmax(160px,1.3fr) 76px 76px 92px; gap:12px; padding:13px 16px; border-bottom:1px solid #eef0f4; align-items:center">
+              <div style="font-size:13.5px; font-weight:500; min-width:0">{{ c.nombre }}</div>
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:#334155">{{ c.cuit }}</div>
+              <div style="min-width:0">
+                <div style="font-size:13px">{{ c.contacto }}</div>
+                <div style="font-size:11.5px; color:#64748b">{{ c.tel }} · {{ c.mail }}</div>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:{{ c.sedesColor }}">{{ c.sedesLabel }}</div>
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:13px">{{ c.equipos }}</div>
+              <div onClick="{{ c.open }}" style="font-size:12.5px; color:#1b4f9c; font-weight:500; cursor:pointer">Ver ficha</div>
+            </div>
+          </sc-for>
+          <div style="padding:12px 16px; font-size:12.5px; color:#64748b">6 clientes activos · 14 sedes · 68 equipos bajo servicio · 1 cliente atendido en local propio</div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isClienteDet }}">
+      <div style="padding:26px 32px 40px; display:flex; flex-direction:column; gap:16px">
+        <div>
+          <div onClick="{{ goClientes }}" style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#1b4f9c; cursor:pointer">← CLIENTES</div>
+          <h1 style="margin:7px 0 4px; font-size:25px; font-weight:600; letter-spacing:-0.02em">{{ cli.nombre }}</h1>
+          <div style="font-size:13.5px; color:#64748b">{{ cli.meta }}</div>
+          <div style="display:inline-block; margin-top:9px; padding:4px 11px; border-radius:20px; background:#e8edf5; color:#123566; font-size:11.5px; font-weight:600">{{ cli.modalidad }}</div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px">
+          <sc-for list="{{ clienteKpis }}" as="k" hint-placeholder-count="4">
+            <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:14px 16px">
+              <div style="font-size:11.5px; color:#64748b; margin-bottom:6px">{{ k.label }}</div>
+              <div style="font-size:22px; font-weight:600; letter-spacing:-0.02em; color:{{ k.color }}">{{ k.value }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ equipoFormOpen }}">
+          <div style="background:#fff; border:1px solid #1b4f9c; border-radius:10px; padding:20px">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:16px">
+              <div>
+                <div style="font-size:15px; font-weight:600">Nuevo equipo de {{ cli.nombre }}</div>
+                <div style="font-size:12px; color:#64748b; margin-top:2px">{{ equipoFormNota }}</div>
+              </div>
+              <div onClick="{{ closeEquipoForm }}" style="font-size:20px; color:#94a3b8; cursor:pointer; line-height:1">×</div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px 16px">
+              <sc-if value="{{ cliConSedes }}">
+                <div>
+                  <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Sede *</label>
+                  <select style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; background:#fff">
+                    <sc-for list="{{ sedeOpts }}" as="o" hint-placeholder-count="3">
+                      <option>{{ o.label }}</option>
+                    </sc-for>
+                  </select>
+                  <div style="font-size:11px; color:#64748b; margin-top:5px">Dónde está instalado el equipo.</div>
+                </div>
+              </sc-if>
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Tipo de producto *</label>
+                <select style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; background:#fff">
+                  <sc-for list="{{ catalogo }}" as="c" hint-placeholder-count="5">
+                    <option>{{ c.label }}</option>
+                  </sc-for>
+                </select>
+                <div style="font-size:11px; color:#64748b; margin-top:5px">Del catálogo de la empresa. Determina el plan preventivo.</div>
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Marca y modelo *</label>
+                <input placeholder="{{ equipoPlaceModelo }}" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Número de serie / IMEI *</label>
+                <input placeholder="{{ equipoPlaceSerie }}" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; font-family:'IBM Plex Mono',monospace" />
+              </div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; align-items:center">
+              <div onClick="{{ closeEquipoForm }}" style="padding:12px 18px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">Guardar equipo</div>
+              <div onClick="{{ goNew }}" style="padding:12px 16px; border:1px solid #d5dae2; background:#fff; border-radius:7px; font-size:13.5px; font-weight:500; cursor:pointer">Guardar y crear OT</div>
+              <div onClick="{{ closeEquipoForm }}" style="padding:12px 8px; font-size:13.5px; color:#64748b; cursor:pointer">Cancelar</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ sedeForm }}">
+          <div style="background:#fff; border:1px solid #1b4f9c; border-radius:10px; padding:20px">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:16px">
+              <div>
+                <div style="font-size:15px; font-weight:600">Nueva sede de {{ cli.nombre }}</div>
+                <div style="font-size:12px; color:#64748b; margin-top:2px">Una ubicación del cliente a la que va el técnico.</div>
+              </div>
+              <div onClick="{{ closeSedeForm }}" style="font-size:20px; color:#94a3b8; cursor:pointer; line-height:1">×</div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px 16px">
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Nombre / referencia *</label>
+                <input placeholder="Sucursal Palermo" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Dirección *</label>
+                <input placeholder="Gorriti 4820, CABA" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Contacto en sitio <span style="color:#94a3b8; font-weight:400">(opcional)</span></label>
+                <input placeholder="Mariela Duarte" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Teléfono en sitio <span style="color:#94a3b8; font-weight:400">(opcional)</span></label>
+                <input placeholder="+54 9 11 5512-8840" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
+                <div style="font-size:11px; color:#64748b; margin-top:5px">Es a quién busca el técnico cuando llega.</div>
+              </div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; align-items:center">
+              <div onClick="{{ closeSedeForm }}" style="padding:12px 18px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">Guardar sede</div>
+              <div onClick="{{ closeSedeForm }}" style="padding:12px 8px; font-size:13.5px; color:#64748b; cursor:pointer">Cancelar</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ cliConSedes }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; overflow:hidden">
+            <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; align-items:center; padding:15px 18px; border-bottom:1px solid #e2e6ec">
+              <div style="min-width:0">
+                <div style="font-size:14.5px; font-weight:600">Sedes y equipos</div>
+                <div style="font-size:12px; color:#64748b; margin-top:2px">Abrí una sede para ver los equipos instalados ahí.</div>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap">
+                <div onClick="{{ openEquipoForm }}" style="padding:9px 13px; border:1px solid #d5dae2; background:#fff; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer" style-hover="border-color:#1b4f9c">+ Nuevo equipo</div>
+                <div onClick="{{ openSedeForm }}" style="padding:9px 13px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer" style-hover="background:#123566">+ Agregar sede</div>
+              </div>
+            </div>
+            <sc-for list="{{ cliSedes }}" as="x" hint-placeholder-count="4">
+              <div style="border-bottom:1px solid #eef0f4; background:{{ x.rowBg }}">
+                <div onClick="{{ x.toggle }}" style="padding:14px 18px; display:grid; grid-template-columns:22px minmax(0,1.5fr) minmax(0,1.4fr) 96px; gap:14px; align-items:center; cursor:pointer" style-hover="background:#f8fafc">
+                  <div style="width:22px; height:22px; border-radius:6px; border:1px solid #d5dae2; background:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; color:#1b4f9c; font-weight:600; line-height:1">{{ x.caret }}</div>
+                  <div style="min-width:0">
+                    <div style="font-size:14px; font-weight:600">{{ x.nombre }}</div>
+                    <div style="font-size:12.5px; color:#475569">{{ x.dir }}</div>
+                  </div>
+                  <div style="min-width:0">
+                    <div style="font-size:12px; color:#64748b">{{ x.contacto }}</div>
+                    <div style="font-size:11.5px; color:{{ x.color }}; font-weight:600; margin-top:2px">{{ x.estado }}</div>
+                  </div>
+                  <div style="text-align:right; font-family:'IBM Plex Mono',monospace; font-size:12px; color:#334155">{{ x.equiposLabel }}</div>
+                </div>
+                <sc-if value="{{ x.open }}">
+                  <div style="padding:0 18px 16px">
+                    <div style="border:1px solid #e2e6ec; border-radius:9px; overflow-x:auto; background:#fff">
+                      <div style="min-width:700px; display:grid; grid-template-columns:minmax(180px,1.5fr) 138px 92px 96px 132px 84px; gap:12px; padding:9px 13px; background:#f6f7f9; border-bottom:1px solid #e2e6ec; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.08em; color:#64748b">
+                        <div>EQUIPO</div><div>N/S</div><div>ÚLT. INT.</div><div>PRÓX. PREV.</div><div>ESTADO</div><div></div>
+                      </div>
+                      <sc-for list="{{ x.equipos }}" as="e" hint-placeholder-count="2">
+                        <div style="min-width:700px; display:grid; grid-template-columns:minmax(180px,1.5fr) 138px 92px 96px 132px 84px; gap:12px; padding:11px 13px; border-bottom:1px solid #eef0f4; align-items:center">
+                          <div style="min-width:0">
+                            <div style="font-size:13px; font-weight:500">{{ e.producto }}</div>
+                            <div style="font-size:11.5px; color:#64748b">{{ e.modelo }}</div>
+                          </div>
+                          <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#334155">{{ e.serie }}</div>
+                          <div style="font-size:12.5px; color:#334155">{{ e.ultima }}</div>
+                          <div style="font-size:12.5px; color:#334155">{{ e.prox }}</div>
+                          <div><span style="display:inline-block; padding:3px 10px; border-radius:20px; font-size:11.5px; font-weight:600; background:{{ e.bg }}; color:{{ e.fg }}">{{ e.estado }}</span></div>
+                          <div onClick="{{ e.open }}" style="font-size:12.5px; color:#1b4f9c; font-weight:500; cursor:pointer">Ver ficha</div>
+                        </div>
+                      </sc-for>
+                      <sc-if value="{{ x.vacia }}">
+                        <div style="padding:13px; font-size:12.5px; color:#64748b">Sin equipos cargados en esta sede.</div>
+                      </sc-if>
+                      <div onClick="{{ openEquipoForm }}" style="padding:10px 13px; font-size:12.5px; font-weight:600; color:#1b4f9c; cursor:pointer" style-hover="background:#f2f6fc">+ Nuevo equipo en esta sede</div>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ cliSinSedes }}">
+          <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; overflow-x:auto">
+            <div style="min-width:820px; display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; align-items:center; padding:15px 18px; border-bottom:1px solid #e2e6ec">
+              <div style="min-width:0">
+                <div style="font-size:14.5px; font-weight:600">Equipos del cliente</div>
+                <div style="font-size:12px; color:#64748b; margin-top:2px">Se atienden en el local propio.</div>
+              </div>
+              <div onClick="{{ openEquipoForm }}" style="padding:9px 13px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer" style-hover="background:#123566">+ Nuevo equipo</div>
+            </div>
+            <div style="min-width:820px; display:grid; grid-template-columns:minmax(190px,1.5fr) 148px 92px 96px 130px 88px; gap:12px; padding:10px 18px; background:#f6f7f9; border-bottom:1px solid #e2e6ec; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.08em; color:#64748b">
+              <div>EQUIPO</div><div>N/S · IMEI</div><div>ÚLT. INT.</div><div>PRÓX. PREV.</div><div>ESTADO</div><div></div>
+            </div>
+            <sc-for list="{{ cliEquipos }}" as="e" hint-placeholder-count="3">
+              <div style="min-width:820px; display:grid; grid-template-columns:minmax(190px,1.5fr) 148px 92px 96px 130px 88px; gap:12px; padding:13px 18px; border-bottom:1px solid #eef0f4; align-items:center">
+                <div style="min-width:0">
+                  <div style="font-size:13.5px; font-weight:500">{{ e.producto }}</div>
+                  <div style="font-size:11.5px; color:#64748b">{{ e.modelo }}</div>
+                </div>
+                <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#334155">{{ e.serie }}</div>
+                <div style="font-size:12.5px; color:#334155">{{ e.ultima }}</div>
+                <div style="font-size:12.5px; color:#64748b">{{ e.prox }}</div>
+                <div><span style="display:inline-block; padding:3px 10px; border-radius:20px; font-size:11.5px; font-weight:600; background:{{ e.bg }}; color:{{ e.fg }}">{{ e.estado }}</span></div>
+                <div onClick="{{ e.open }}" style="font-size:12.5px; color:#1b4f9c; font-weight:500; cursor:pointer">Ver ficha</div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ cliVacio }}">
+              <div style="min-width:820px; padding:22px 18px; text-align:center">
+                <div style="font-size:13.5px; font-weight:600; margin-bottom:4px">Todavía no hay equipos de este cliente</div>
+                <div style="font-size:12.5px; color:#64748b">Cargá el primero para poder abrir una orden de trabajo.</div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isList }}">
+      <div style="padding:26px 32px 40px; display:flex; flex-direction:column; gap:16px">
+        <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; justify-content:space-between">
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#64748b">ADMIN</div>
+            <h1 style="margin:5px 0 0; font-size:25px; font-weight:600; letter-spacing:-0.02em">Órdenes de trabajo</h1>
+          </div>
+          <div onClick="{{ goNew }}" style="padding:10px 15px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">+ Nueva OT</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:7px; align-items:center">
+          <sc-for list="{{ filters }}" as="f" hint-placeholder-count="8">
+            <div onClick="{{ f.select }}" style="padding:6px 12px; border-radius:20px; font-size:12.5px; font-weight:500; cursor:pointer; border:1px solid {{ f.bd }}; background:{{ f.bg }}; color:{{ f.fg }}">{{ f.label }}<span style="opacity:0.6; margin-left:6px; font-family:'IBM Plex Mono',monospace; font-size:11px">{{ f.n }}</span></div>
+          </sc-for>
+        </div>
+        <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; overflow-x:auto">
+          <div style="display:grid; min-width:940px; grid-template-columns:88px minmax(170px,1.6fr) minmax(150px,1.4fr) minmax(115px,1fr) 138px 104px; gap:12px; padding:11px 16px; background:#f6f7f9; border-bottom:1px solid #e2e6ec; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.08em; color:#64748b">
+            <div>OT</div><div>CLIENTE / SEDE</div><div>EQUIPO</div><div>TÉCNICO</div><div>ESTADO</div><div>PROGRAMADA</div>
+          </div>
+          <sc-for list="{{ visibleOts }}" as="o" hint-placeholder-count="7">
+            <div onClick="{{ o.open }}" style="display:grid; min-width:940px; grid-template-columns:88px minmax(170px,1.6fr) minmax(150px,1.4fr) minmax(115px,1fr) 138px 104px; gap:12px; padding:13px 16px; border-bottom:1px solid #eef0f4; cursor:pointer; align-items:center" style-hover="background:#f8fafc">
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; font-weight:500; color:#1b4f9c">{{ o.code }}</div>
+              <div style="min-width:0">
+                <div style="font-size:13.5px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ o.cliente }}</div>
+                <div style="font-size:11.5px; color:#64748b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ o.sede }}</div>
+              </div>
+              <div style="min-width:0">
+                <div style="font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ o.equipo }}</div>
+                <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#64748b">{{ o.serie }}</div>
+              </div>
+              <div style="font-size:12.5px; color:#334155; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ o.tecnico }}</div>
+              <div><span style="display:inline-block; padding:3px 10px; border-radius:20px; font-size:11.5px; font-weight:600; background:{{ o.bg }}; color:{{ o.fg }}">{{ o.estado }}</span></div>
+              <div style="font-size:12.5px; color:#334155">{{ o.fecha }}<div style="font-size:11.5px; color:#64748b">{{ o.hora }}</div></div>
+            </div>
+          </sc-for>
+          <div style="padding:12px 16px; display:flex; justify-content:space-between; align-items:center; font-size:12.5px; color:#64748b">
+            <span>{{ listCount }}</span>
+            <span style="display:flex; gap:6px"><span style="padding:4px 9px; border:1px solid #d5dae2; border-radius:6px; background:#fff">1</span><span style="padding:4px 9px; border:1px solid #e2e6ec; border-radius:6px">2</span><span style="padding:4px 9px; border:1px solid #e2e6ec; border-radius:6px">3</span></span>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isNew }}">
+      <div style="padding:26px 32px 40px; max-width:1100px">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#64748b">ADMIN · NUEVA ORDEN DE TRABAJO</div>
+        <h1 style="margin:5px 0 20px; font-size:25px; font-weight:600; letter-spacing:-0.02em">Crear OT</h1>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; align-items:start">
+          <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:20px">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#64748b; margin-bottom:14px">1 · CLIENTE Y EQUIPO</div>
+            <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Cliente</label>
+            <select style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; background:#fff; margin-bottom:14px">
+              <option>Lavandería Nube Blanca S.A.</option>
+              <option>Clínica San Ramón</option>
+              <option>Hotel Bristol</option>
+            </select>
+            <div onClick="{{ goClientes }}" style="font-size:12px; color:#1b4f9c; cursor:pointer; margin:-8px 0 14px; font-weight:500">+ Dar de alta un cliente nuevo</div>
+            <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Sede</label>
+            <select style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; background:#fff; margin-bottom:14px">
+              <option>Sucursal Palermo — Gorriti 4820</option>
+              <option>Planta Avellaneda — Mitre 1140</option>
+              <option>Sin sede (servicio en local propio)</option>
+            </select>
+            <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Equipo</label>
+            <div style="border:1px solid #d5dae2; border-radius:7px; padding:11px; display:flex; gap:11px; align-items:center; background:#f8fafc">
+              <div style="width:38px; height:38px; border-radius:7px; background:repeating-linear-gradient(135deg,#dde3ec 0 5px,#eef2f7 5px 10px)"></div>
+              <div style="min-width:0">
+                <div style="font-size:13px; font-weight:500">Lavarropas industrial LI-6013</div>
+                <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#64748b">N/S LI6013-2291 · placa control v3</div>
+              </div>
+            </div>
+            <div style="margin-top:9px; font-size:12px; color:#1b4f9c; cursor:pointer">Cambiar equipo · Ver historial</div>
+          </div>
+          <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:20px">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#64748b; margin-bottom:14px">2 · SERVICIO</div>
+            <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Tipo de servicio</label>
+            <div style="display:flex; gap:7px; flex-wrap:wrap; margin-bottom:16px">
+              <sc-for list="{{ tipos }}" as="t" hint-placeholder-count="4">
+                <div onClick="{{ t.select }}" style="padding:8px 13px; border-radius:7px; font-size:12.5px; font-weight:500; cursor:pointer; border:1px solid {{ t.bd }}; background:{{ t.bg }}; color:{{ t.fg }}">{{ t.label }}</div>
+              </sc-for>
+            </div>
+            <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Prioridad</label>
+            <div style="display:flex; gap:7px; margin-bottom:16px">
+              <sc-for list="{{ prioridades }}" as="p" hint-placeholder-count="3">
+                <div onClick="{{ p.select }}" style="flex:1; text-align:center; padding:9px; border-radius:7px; font-size:12.5px; font-weight:600; cursor:pointer; border:1px solid {{ p.bd }}; background:{{ p.bg }}; color:{{ p.fg }}">{{ p.label }}</div>
+              </sc-for>
+            </div>
+            <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Horas estimadas</label>
+            <input value="2,5" style="width:110px; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px" />
+          </div>
+          <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:20px">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#64748b; margin-bottom:14px">3 · FALLA REPORTADA</div>
+            <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Falla recurrente del catálogo</label>
+            <select style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; background:#fff; margin-bottom:14px">
+              <option>No centrifuga — sospecha de placa de control</option>
+              <option>Fuga de agua en electroválvula</option>
+              <option>Error E-24 en display</option>
+            </select>
+            <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Descripción del problema</label>
+            <textarea style="width:100%; min-height:112px; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; resize:vertical; line-height:1.55">El equipo lava pero no centrifuga. El cliente reporta olor a quemado al iniciar el ciclo y traba intermitente del tambor.</textarea>
+            <div style="display:flex; gap:8px; margin-top:16px">
+              <div onClick="{{ goAssign }}" style="flex:1; text-align:center; padding:12px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">Crear y asignar técnico</div>
+              <div style="padding:12px 14px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; cursor:pointer; background:#fff">Guardar</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isAssign }}">
+      <div style="padding:26px 32px 40px; max-width:1100px">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#64748b">ADMIN · OT-2481 CREADA</div>
+        <h1 style="margin:5px 0 6px; font-size:25px; font-weight:600; letter-spacing:-0.02em">Asignar técnico</h1>
+        <p style="margin:0 0 20px; font-size:13.5px; color:#64748b">Lavandería Nube Blanca · Palermo · Lavarropas LI-6013 · prioridad alta · 2,5 h estimadas</p>
+        <div style="display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:16px; align-items:start">
+          <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; overflow-x:auto">
+            <div style="padding:14px 18px; border-bottom:1px solid #e2e6ec; display:flex; justify-content:space-between; align-items:center; min-width:480px">
+              <div style="font-size:14.5px; font-weight:600">Técnicos con especialidad compatible</div>
+              <div style="font-size:12px; color:#64748b">Jueves 10/09</div>
+            </div>
+            <sc-for list="{{ techs }}" as="t" hint-placeholder-count="5">
+              <div onClick="{{ t.select }}" style="padding:14px 18px; border-bottom:1px solid #eef0f4; min-width:480px; display:grid; grid-template-columns:38px minmax(120px,1fr) 160px 92px; gap:14px; align-items:center; cursor:pointer; background:{{ t.rowBg }}" style-hover="background:#f8fafc">
+                <div style="width:38px; height:38px; border-radius:50%; background:#e8edf5; color:#1b4f9c; display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:600">{{ t.ini }}</div>
+                <div style="min-width:0">
+                  <div style="font-size:14px; font-weight:600">{{ t.nombre }}</div>
+                  <div style="font-size:12px; color:#64748b">{{ t.espec }}</div>
+                </div>
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:11px; color:#64748b; margin-bottom:5px"><span>Carga del día</span><span style="font-family:'IBM Plex Mono',monospace">{{ t.carga }}</span></div>
+                  <div style="height:7px; background:#eef0f4; border-radius:20px; overflow:hidden"><div style="height:7px; width:{{ t.pct }}; background:{{ t.barra }}; border-radius:20px"></div></div>
+                  <div style="font-size:11px; color:#64748b; margin-top:5px">{{ t.zona }}</div>
+                </div>
+                <div style="text-align:right; font-size:12px; font-weight:600; color:{{ t.dispColor }}">{{ t.disp }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:20px">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#64748b; margin-bottom:14px">PROGRAMAR INTERVENCIÓN</div>
+            <div style="padding:12px; border-radius:8px; background:#f6f7f9; border:1px solid #e2e6ec; margin-bottom:16px">
+              <div style="font-size:11.5px; color:#64748b; margin-bottom:3px">Técnico seleccionado</div>
+              <div style="font-size:14.5px; font-weight:600">{{ selectedTech }}</div>
+              <div style="font-size:12px; color:#64748b; margin-top:2px">{{ selectedTechInfo }}</div>
+            </div>
+            <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Fecha</label>
+            <input value="10/09/2026" style="width:100%; padding:10px 11px; border:1px solid #d5dae2; border-radius:7px; font-size:13.5px; margin-bottom:14px" />
+            <label style="display:block; font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">Franja horaria</label>
+            <div style="display:flex; gap:7px; flex-wrap:wrap; margin-bottom:18px">
+              <sc-for list="{{ franjas }}" as="f" hint-placeholder-count="4">
+                <div onClick="{{ f.select }}" style="padding:8px 12px; border-radius:7px; font-size:12.5px; font-weight:500; cursor:pointer; border:1px solid {{ f.bd }}; background:{{ f.bg }}; color:{{ f.fg }}">{{ f.label }}</div>
+              </sc-for>
+            </div>
+            <div onClick="{{ goAgenda }}" style="text-align:center; padding:12px; background:#1b4f9c; color:#fff; border-radius:7px; font-size:13.5px; font-weight:600; cursor:pointer" style-hover="background:#123566">Asignar y notificar</div>
+            <div style="margin-top:10px; font-size:11.5px; color:#64748b; line-height:1.5">Se envía push a la app del técnico y correo de aviso al cliente con la franja confirmada.</div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isAgenda }}">
+      <div style="padding:26px 32px 40px">
+        <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:flex-end; margin-bottom:18px">
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#64748b">ADMIN</div>
+            <h1 style="margin:5px 0 0; font-size:25px; font-weight:600; letter-spacing:-0.02em">Agenda · semana 7–11 sep</h1>
+          </div>
+          <div style="display:flex; gap:7px; align-items:center">
+            <div style="padding:8px 12px; border:1px solid #d5dae2; border-radius:7px; background:#fff; font-size:13px; cursor:pointer">←</div>
+            <div style="padding:8px 12px; border:1px solid #d5dae2; border-radius:7px; background:#fff; font-size:13px; cursor:pointer">→</div>
+            <div style="padding:8px 12px; border:1px solid #1b4f9c; color:#1b4f9c; border-radius:7px; background:#fff; font-size:13px; font-weight:600">Semana</div>
+            <div style="padding:8px 12px; border:1px solid #d5dae2; border-radius:7px; background:#fff; font-size:13px; color:#64748b">Día</div>
+          </div>
+        </div>
+        <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; overflow-x:auto">
+          <div style="display:grid; min-width:820px; grid-template-columns:66px repeat(5,minmax(140px,1fr))">
+            <div style="border-bottom:1px solid #e2e6ec; background:#f6f7f9"></div>
+            <sc-for list="{{ dias }}" as="d" hint-placeholder-count="5">
+              <div style="border-bottom:1px solid #e2e6ec; border-left:1px solid #eef0f4; background:#f6f7f9; padding:11px 12px">
+                <div style="font-size:12.5px; font-weight:600">{{ d.dia }}</div>
+                <div style="font-size:11.5px; color:#64748b">{{ d.n }} intervenciones</div>
+              </div>
+            </sc-for>
+            <sc-for list="{{ horas }}" as="h" hint-placeholder-count="6">
+              <div style="border-bottom:1px solid #eef0f4; padding:9px 10px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:#64748b; text-align:right">{{ h.label }}</div>
+              <sc-for list="{{ h.cells }}" as="c" hint-placeholder-count="5">
+                <div style="border-bottom:1px solid #eef0f4; border-left:1px solid #eef0f4; padding:5px; min-height:64px">
+                  <sc-if value="{{ c.has }}">
+                    <div onClick="{{ c.open }}" style="border-radius:7px; padding:7px 8px; height:100%; cursor:pointer; background:{{ c.bg }}; border-left:3px solid {{ c.accent }}">
+                      <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#334155">{{ c.code }}</div>
+                      <div style="font-size:12px; font-weight:600; line-height:1.3; margin:2px 0">{{ c.cliente }}</div>
+                      <div style="font-size:11px; color:#475569">{{ c.tecnico }}</div>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:14px; font-size:12px; color:#64748b">
+          <sc-for list="{{ leyenda }}" as="l" hint-placeholder-count="4">
+            <div style="display:flex; align-items:center; gap:7px"><span style="width:11px; height:11px; border-radius:3px; background:{{ l.color }}"></span>{{ l.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isDetail }}">
+      <div style="padding:26px 32px 40px">
+        <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:flex-start; margin-bottom:20px">
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#64748b">ADMIN · DETALLE DE ORDEN</div>
+            <div style="display:flex; align-items:center; gap:11px; margin-top:5px">
+              <h1 style="margin:0; font-size:25px; font-weight:600; letter-spacing:-0.02em">OT-2481</h1>
+              <span style="padding:4px 11px; border-radius:20px; background:#e0edff; color:#123566; font-size:12px; font-weight:600">En ejecución</span>
+              <span style="padding:4px 11px; border-radius:20px; background:#fdece3; color:#9a3412; font-size:12px; font-weight:600">Prioridad alta</span>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px">
+            <div onClick="{{ goExec }}" style="padding:10px 14px; border:1px solid #d5dae2; background:#fff; border-radius:7px; font-size:13px; font-weight:500; cursor:pointer" style-hover="border-color:#1b4f9c">Ver vista del técnico</div>
+            <div style="padding:10px 14px; border:1px solid #d5dae2; background:#fff; border-radius:7px; font-size:13px; font-weight:500; cursor:pointer">Reprogramar</div>
+          </div>
+        </div>
+        <div style="background:#fff; border:1px solid #f3c9b1; border-radius:10px; padding:14px 16px; display:flex; gap:13px; align-items:flex-start; margin-bottom:16px">
+          <div style="width:26px; height:26px; border-radius:7px; background:#c2410c; color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; flex:0 0 26px; line-height:1">!</div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px; font-weight:600; color:#9a3412">{{ recurrente.titulo }}</div>
+            <div style="font-size:12.5px; color:#475569; line-height:1.55; margin-top:3px">{{ recurrente.detalle }}</div>
+            <div onClick="{{ verHistorialTab }}" style="font-size:12.5px; color:#1b4f9c; font-weight:600; cursor:pointer; margin-top:7px">Ver historial del equipo →</div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:7px; flex-wrap:wrap; margin-bottom:16px">
+          <sc-for list="{{ otTabs }}" as="t" hint-placeholder-count="2">
+            <div onClick="{{ t.select }}" style="padding:8px 14px; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer; border:1px solid {{ t.bd }}; background:{{ t.bg }}; color:{{ t.fg }}">{{ t.label }}</div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ otTabResumen }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; align-items:start">
+          <div style="display:flex; flex-direction:column; gap:16px">
+            <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:18px">
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#64748b; margin-bottom:14px">CLIENTE · SEDE · EQUIPO · TÉCNICO · ESTADO</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px 18px">
+                <sc-for list="{{ detalle }}" as="d" hint-placeholder-count="8">
+                  <div>
+                    <div style="font-size:11.5px; color:#64748b; margin-bottom:3px">{{ d.k }}</div>
+                    <div style="font-size:13.5px; font-weight:500">{{ d.v }}</div>
+                    <div style="font-size:11.5px; color:#64748b">{{ d.sub }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:18px">
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#64748b; margin-bottom:14px">QUÉ SE HIZO Y CUÁNDO</div>
+              <div style="display:flex; flex-direction:column; gap:12px">
+                <sc-for list="{{ trabajo }}" as="w" hint-placeholder-count="4">
+                  <div>
+                    <div style="font-size:11.5px; color:#64748b; margin-bottom:3px">{{ w.k }}</div>
+                    <div style="font-size:13px; line-height:1.55; color:#0f1b2d; max-width:620px">{{ w.v }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:18px">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px">
+                <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#64748b">ESTADO ACTUAL DEL EQUIPO</div>
+                <div onClick="{{ goHistory }}" style="font-size:12px; color:#1b4f9c; font-weight:600; cursor:pointer">Ficha completa</div>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px 18px">
+                <sc-for list="{{ estadoEquipo }}" as="q" hint-placeholder-count="4">
+                  <div>
+                    <div style="font-size:11.5px; color:#64748b; margin-bottom:3px">{{ q.k }}</div>
+                    <div style="font-size:13.5px; font-weight:600; color:{{ q.color }}; line-height:1.45">{{ q.v }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:18px">
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#64748b; margin-bottom:12px">EVIDENCIA CARGADA POR EL TÉCNICO</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px">
+                <sc-for list="{{ evidencias }}" as="e" hint-placeholder-count="4">
+                  <div>
+                    <div style="aspect-ratio:4/3; border-radius:7px; border:1px solid #e2e6ec; background:repeating-linear-gradient(135deg,#dde3ec 0 6px,#eef2f7 6px 12px); display:flex; align-items:flex-end; padding:7px">
+                      <span style="font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:#475569; background:rgba(255,255,255,0.85); padding:2px 5px; border-radius:3px">{{ e.tag }}</span>
+                    </div>
+                    <div style="font-size:11.5px; color:#64748b; margin-top:5px">{{ e.hora }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:18px">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#64748b; margin-bottom:14px">HISTORIAL DE CAMBIOS</div>
+            <sc-for list="{{ cambios }}" as="c" hint-placeholder-count="6">
+              <div style="display:grid; grid-template-columns:14px minmax(0,1fr); gap:12px">
+                <div style="display:flex; flex-direction:column; align-items:center">
+                  <div style="width:9px; height:9px; border-radius:50%; background:{{ c.dot }}; margin-top:5px"></div>
+                  <div style="flex:1; width:1px; background:#e2e6ec"></div>
+                </div>
+                <div style="padding-bottom:16px">
+                  <div style="font-size:13px; font-weight:600">{{ c.titulo }}</div>
+                  <div style="font-size:12px; color:#475569; line-height:1.5">{{ c.detalle }}</div>
+                  <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#94a3b8; margin-top:3px">{{ c.cuando }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ otTabEquipo }}">
+          <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:20px">
+            <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:flex-start; margin-bottom:16px">
+              <div>
+                <div style="font-size:14.5px; font-weight:600">Historial del equipo · Lavarropas LI-6013</div>
+                <div style="font-size:12px; color:#64748b; margin-top:2px">N/S LI6013-2291 · 9 intervenciones · misma información que ve el técnico en campo</div>
+              </div>
+              <div onClick="{{ goHistory }}" style="padding:8px 13px; border:1px solid #d5dae2; border-radius:7px; font-size:12.5px; font-weight:500; cursor:pointer">Abrir ficha de equipo</div>
+            </div>
+            <sc-for list="{{ timeline }}" as="t" hint-placeholder-count="5">
+              <div style="display:grid; grid-template-columns:92px 16px minmax(0,1fr); gap:14px">
+                <div style="text-align:right; padding-top:2px">
+                  <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500">{{ t.fecha }}</div>
+                  <div style="font-size:11px; color:#94a3b8">{{ t.code }}</div>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:center">
+                  <div style="width:11px; height:11px; border-radius:50%; border:2px solid {{ t.dot }}; background:#fff; margin-top:4px"></div>
+                  <div style="flex:1; width:1px; background:#e2e6ec"></div>
+                </div>
+                <div style="padding-bottom:18px">
+                  <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center">
+                    <div style="font-size:13.5px; font-weight:600">{{ t.falla }}</div>
+                    <span style="padding:2px 9px; border-radius:20px; font-size:11px; font-weight:600; background:{{ t.bg }}; color:{{ t.fg }}">{{ t.tipo }}</span>
+                  </div>
+                  <div style="font-size:12.5px; color:#475569; line-height:1.55; margin:4px 0 6px; max-width:620px">{{ t.resumen }}</div>
+                  <div style="display:flex; flex-wrap:wrap; gap:14px; font-size:11.5px; color:#64748b">
+                    <span>Técnico: {{ t.tecnico }}</span><span>{{ t.duracion }}</span><span>{{ t.fotos }} fotos</span>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isHistory }}">
+      <div style="padding:26px 32px 40px; max-width:1040px">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#64748b">TRAZABILIDAD DE EQUIPO</div>
+        <h1 style="margin:5px 0 4px; font-size:25px; font-weight:600; letter-spacing:-0.02em">Lavarropas industrial LI-6013</h1>
+        <p style="margin:0 0 20px; font-size:13.5px; color:#64748b">N/S LI6013-2291 · Lavandería Nube Blanca · Sucursal Palermo · en servicio desde 03/2022</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:20px">
+          <sc-for list="{{ histKpis }}" as="k" hint-placeholder-count="4">
+            <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:14px 16px">
+              <div style="font-size:11.5px; color:#64748b; margin-bottom:6px">{{ k.label }}</div>
+              <div style="font-size:22px; font-weight:600; letter-spacing:-0.02em; color:{{ k.color }}">{{ k.value }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:20px">
+          <div style="font-size:14.5px; font-weight:600; margin-bottom:16px">Línea de tiempo de intervenciones</div>
+          <sc-for list="{{ timeline }}" as="t" hint-placeholder-count="5">
+            <div style="display:grid; grid-template-columns:96px 16px minmax(0,1fr); gap:14px">
+              <div style="text-align:right; padding-top:2px">
+                <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500">{{ t.fecha }}</div>
+                <div style="font-size:11px; color:#94a3b8">{{ t.code }}</div>
+              </div>
+              <div style="display:flex; flex-direction:column; align-items:center">
+                <div style="width:11px; height:11px; border-radius:50%; border:2px solid {{ t.dot }}; background:#fff; margin-top:4px"></div>
+                <div style="flex:1; width:1px; background:#e2e6ec"></div>
+              </div>
+              <div style="padding-bottom:22px">
+                <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center">
+                  <div style="font-size:14px; font-weight:600">{{ t.falla }}</div>
+                  <span style="padding:2px 9px; border-radius:20px; font-size:11px; font-weight:600; background:{{ t.bg }}; color:{{ t.fg }}">{{ t.tipo }}</span>
+                </div>
+                <div style="font-size:12.5px; color:#475569; line-height:1.55; margin:5px 0 8px; max-width:640px">{{ t.resumen }}</div>
+                <div style="display:flex; flex-wrap:wrap; gap:14px; font-size:11.5px; color:#64748b; align-items:center">
+                  <span>Técnico: {{ t.tecnico }}</span>
+                  <span>Duración: {{ t.duracion }}</span>
+                  <span>{{ t.fotos }} fotos</span>
+                  <span style="color:#1b4f9c; cursor:pointer">Ver evidencia</span>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isConfig }}">
+      <div style="padding:26px 32px 40px; max-width:1120px">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#64748b">SUPER_ADMIN · PARÁMETROS DE LA EMPRESA</div>
+        <h1 style="margin:5px 0 20px; font-size:25px; font-weight:600; letter-spacing:-0.02em">Configuración</h1>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px; align-items:start">
+          <div style="display:flex; flex-direction:column; gap:16px">
+            <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; overflow:hidden">
+              <div style="padding:18px 18px 14px">
+                <div style="font-size:14.5px; font-weight:600; margin-bottom:3px">Productos que la empresa repara y su plan preventivo</div>
+                <div style="font-size:12px; color:#64748b; line-height:1.5">Cada producto tiene sus propias tareas preventivas, con frecuencia y anticipación de alerta independientes. La alerta se dispara según producto + tarea + última intervención de cada equipo.</div>
+              </div>
+              <sc-for list="{{ productos }}" as="p" hint-placeholder-count="5">
+                <div style="border-top:1px solid #e2e6ec; background:{{ p.rowBg }}">
+                  <div onClick="{{ p.toggle }}" style="padding:13px 18px; display:grid; grid-template-columns:22px minmax(0,1fr) auto; gap:12px; align-items:center; cursor:pointer" style-hover="background:#f2f6fc">
+                    <div style="width:22px; height:22px; border-radius:6px; border:1px solid #d5dae2; background:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; color:#1b4f9c; font-weight:600; line-height:1">{{ p.caret }}</div>
+                    <div style="min-width:0">
+                      <div style="font-size:13.5px; font-weight:600">{{ p.label }}</div>
+                      <div style="font-size:11.5px; color:{{ p.countColor }}">{{ p.countLabel }}</div>
+                    </div>
+                    <div style="font-size:11.5px; color:#94a3b8">editar</div>
+                  </div>
+                  <sc-if value="{{ p.open }}">
+                    <div style="padding:0 18px 16px">
+                      <div style="border:1px solid #e2e6ec; border-radius:9px; overflow-x:auto; background:#fff">
+                        <div style="min-width:520px; display:grid; grid-template-columns:minmax(180px,1fr) 92px 104px 96px 30px; gap:10px; padding:9px 12px; background:#f6f7f9; border-bottom:1px solid #e2e6ec; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.08em; color:#64748b">
+                          <div>TAREA PREVENTIVA</div><div>CADA</div><div>UNIDAD</div><div>AVISAR</div><div></div>
+                        </div>
+                        <sc-for list="{{ p.tasks }}" as="t" hint-placeholder-count="2">
+                          <div style="min-width:520px; display:grid; grid-template-columns:minmax(180px,1fr) 92px 104px 96px 30px; gap:10px; padding:9px 12px; border-bottom:1px solid #eef0f4; align-items:center">
+                            <input value="{{ t.tarea }}" onChange="{{ t.onTarea }}" style="width:100%; padding:8px 9px; border:1px solid #d5dae2; border-radius:6px; font-size:13px" />
+                            <input value="{{ t.cada }}" onChange="{{ t.onCada }}" inputMode="numeric" style="width:100%; padding:8px 9px; border:1px solid #d5dae2; border-radius:6px; font-size:13px; font-family:'IBM Plex Mono',monospace; text-align:center" />
+                            <select value="{{ t.unidad }}" onChange="{{ t.onUnidad }}" style="width:100%; padding:8px 7px; border:1px solid #d5dae2; border-radius:6px; font-size:12.5px; background:#fff">
+                              <option value="meses">meses</option>
+                              <option value="años">años</option>
+                            </select>
+                            <div style="display:flex; align-items:center; gap:5px">
+                              <input value="{{ t.dias }}" onChange="{{ t.onDias }}" inputMode="numeric" style="width:48px; padding:8px 6px; border:1px solid #d5dae2; border-radius:6px; font-size:13px; font-family:'IBM Plex Mono',monospace; text-align:center" />
+                              <span style="font-size:11px; color:#64748b">días antes</span>
+                            </div>
+                            <div onClick="{{ t.remove }}" style="text-align:center; color:#94a3b8; font-size:16px; cursor:pointer" style-hover="color:#c2410c">×</div>
+                          </div>
+                        </sc-for>
+                        <sc-if value="{{ p.empty }}">
+                          <div style="padding:14px 12px; font-size:12.5px; color:#c2410c; background:#fff9f5">Sin tareas preventivas: este producto no genera alertas de mantenimiento.</div>
+                        </sc-if>
+                        <div onClick="{{ p.addTask }}" style="padding:10px 12px; font-size:12.5px; font-weight:600; color:#1b4f9c; cursor:pointer; background:#fff" style-hover="background:#f2f6fc">+ Agregar tarea preventiva</div>
+                      </div>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+              <div style="padding:13px 18px; border-top:1px solid #e2e6ec">
+                <span style="padding:7px 12px; border-radius:20px; border:1px dashed #1b4f9c; color:#1b4f9c; font-size:12.5px; cursor:pointer; font-weight:500">+ Agregar producto</span>
+              </div>
+            </div>
+            <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; overflow:hidden">
+              <div style="padding:18px 18px 12px">
+                <div style="font-size:14.5px; font-weight:600; margin-bottom:3px">Fallas recurrentes típicas</div>
+                <div style="font-size:12px; color:#64748b">Catálogo que el ADMIN elige al crear una OT y el técnico al cerrar.</div>
+              </div>
+              <div style="display:grid; grid-template-columns:minmax(0,1.7fr) minmax(0,1fr) 88px; gap:12px; padding:9px 18px; background:#f6f7f9; border-top:1px solid #e2e6ec; border-bottom:1px solid #e2e6ec; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.08em; color:#64748b">
+                <div>FALLA</div><div>PRODUCTO</div><div>FRECUENCIA</div>
+              </div>
+              <sc-for list="{{ fallas }}" as="f" hint-placeholder-count="5">
+                <div style="display:grid; grid-template-columns:minmax(0,1.7fr) minmax(0,1fr) 88px; gap:12px; padding:11px 18px; border-bottom:1px solid #eef0f4; align-items:center">
+                  <div style="font-size:13px">{{ f.falla }}</div>
+                  <div style="font-size:12px; color:#64748b">{{ f.producto }}</div>
+                  <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:{{ f.color }}">{{ f.freq }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="background:#fff; border:1px solid #e2e6ec; border-radius:10px; padding:18px">
+            <div style="font-size:14.5px; font-weight:600; margin-bottom:3px">Reglas de alerta y notificación</div>
+            <div style="font-size:12px; color:#64748b; margin-bottom:16px">El sistema avisa al ADMIN; el ADMIN comunica al cliente.</div>
+            <sc-for list="{{ reglas }}" as="r" hint-placeholder-count="5">
+              <div style="padding:13px 0; border-top:1px solid #eef0f4; display:grid; grid-template-columns:minmax(0,1fr) 44px; gap:12px; align-items:start">
+                <div style="min-width:0">
+                  <div style="font-size:13.5px; font-weight:500">{{ r.titulo }}</div>
+                  <div style="font-size:12px; color:#64748b; line-height:1.5; margin-top:2px">{{ r.detalle }}</div>
+                  <sc-if value="{{ r.link }}">
+                    <div style="margin-top:9px; padding:9px 11px; border-radius:7px; background:#f2f6fc; border:1px solid #dbe4f2; font-size:12px; color:#334155; line-height:1.5">La frecuencia y la anticipación se configuran por tarea en <strong>Productos y plan preventivo</strong> (columna izquierda).</div>
+                  </sc-if>
+                </div>
+                <div onClick="{{ r.toggle }}" style="width:44px; height:25px; border-radius:20px; background:{{ r.trackBg }}; cursor:pointer; padding:3px; display:flex; justify-content:{{ r.justify }}">
+                  <div style="width:19px; height:19px; border-radius:50%; background:#fff"></div>
+                </div>
+              </div>
+            </sc-for>
+            <div style="margin-top:16px; padding:12px; border-radius:8px; background:#f6f7f9; border:1px solid #e2e6ec; font-size:12px; color:#475569; line-height:1.55">Los cambios impactan a toda la empresa. Solo SUPER_ADMIN puede editar catálogos maestros y eliminar registros.</div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isExec }}">
+      <div style="flex:1; display:flex; flex-wrap:wrap; gap:34px; padding:32px; align-items:flex-start; justify-content:center">
+
+        <sc-if value="{{ stepAsignada }}">
+          <div style="width:392px; flex:0 0 392px; height:806px; border-radius:42px; border:11px solid #10151d; background:#f6f7f9; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 26px 60px rgba(15,27,45,0.22)">
+            <div style="background:#0f1b2d; color:#fff; padding:11px 20px 13px; display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:11.5px">
+              <span>8:32</span><span>OT-2481 · 4G</span>
+            </div>
+            <div style="background:#0f1b2d; color:#fff; padding:0 18px 18px">
+              <div style="display:inline-block; padding:4px 11px; border-radius:20px; background:#1b4f9c; font-size:11.5px; font-weight:700; letter-spacing:0.04em">ASIGNADA A VOS</div>
+              <div style="font-size:21px; font-weight:600; margin-top:9px; letter-spacing:-0.01em">Lavarropas LI-6013</div>
+              <div style="font-size:13.5px; color:#a9bad3; margin-top:2px">Hoy 09:00 – 11:30 · prioridad alta</div>
+            </div>
+            <div style="flex:1; overflow:auto; padding:16px">
+              <div style="background:#fff; border:1px solid #e2e6ec; border-radius:12px; padding:15px; margin-bottom:12px">
+                <div style="font-size:12px; color:#64748b">Cliente</div>
+                <div style="font-size:16px; font-weight:600; margin:2px 0 11px">Lavandería Nube Blanca</div>
+                <div style="font-size:12px; color:#64748b">Sede</div>
+                <div style="font-size:15px; font-weight:500; margin:2px 0 4px">Sucursal Palermo</div>
+                <div style="font-size:14px; color:#334155">Gorriti 4820, CABA</div>
+                <div style="display:flex; gap:9px; margin-top:13px">
+                  <div style="flex:1; text-align:center; padding:13px; border-radius:10px; border:2px solid #1b4f9c; color:#1b4f9c; font-size:14.5px; font-weight:700; cursor:pointer; background:#fff">Cómo llegar</div>
+                  <div style="flex:1; text-align:center; padding:13px; border-radius:10px; border:2px solid #1b4f9c; color:#1b4f9c; font-size:14.5px; font-weight:700; cursor:pointer; background:#fff">Llamar</div>
+                </div>
+                <div style="font-size:12.5px; color:#64748b; margin-top:9px">Contacto en sitio: Mariela Duarte</div>
+              </div>
+              <div style="background:#fff; border:1px solid #e2e6ec; border-radius:12px; padding:15px; margin-bottom:12px">
+                <div style="font-size:15px; font-weight:600; margin-bottom:11px">Instrucciones</div>
+                <div style="display:flex; flex-direction:column; gap:11px">
+                  <sc-for list="{{ instrucciones }}" as="i" hint-placeholder-count="4">
+                    <div>
+                      <div style="font-size:12.5px; color:#64748b">{{ i.t }}</div>
+                      <div style="font-size:14px; line-height:1.5; margin-top:2px">{{ i.d }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="background:#fff; border:1px solid #e2e6ec; border-radius:12px; padding:15px">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
+                  <div style="font-size:15px; font-weight:600">Historial del equipo</div>
+                  <div style="font-size:12.5px; color:#1b4f9c; font-weight:600">9 intervenciones</div>
+                </div>
+                <div style="padding:10px 12px; border-radius:9px; background:#fdece3; color:#9a3412; font-size:13px; font-weight:600; line-height:1.45; margin-bottom:11px">Falla recurrente: 3ª vez en 90 días por la misma causa.</div>
+                <div style="display:flex; flex-direction:column; gap:9px">
+                  <sc-for list="{{ histCompact }}" as="h" hint-placeholder-count="3">
+                    <div style="display:flex; gap:10px; align-items:flex-start; padding-top:9px; border-top:1px solid #eef0f4">
+                      <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#64748b; width:74px; flex:0 0 74px">{{ h.fecha }}</div>
+                      <div style="min-width:0">
+                        <div style="font-size:13.5px; font-weight:500; line-height:1.35">{{ h.falla }}</div>
+                        <div style="font-size:11.5px; color:#64748b; margin-top:2px">{{ h.tecnico }} · {{ h.fotos }} fotos</div>
+                      </div>
+                      <span style="margin-left:auto; padding:2px 8px; border-radius:20px; font-size:10.5px; font-weight:600; background:{{ h.bg }}; color:{{ h.fg }}; white-space:nowrap">{{ h.tipo }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+            <div style="padding:12px 16px 18px; background:#fff; border-top:1px solid #e2e6ec">
+              <div onClick="{{ goCamino }}" style="padding:18px; border-radius:12px; background:#1b4f9c; color:#fff; text-align:center; font-size:17px; font-weight:700; cursor:pointer" style-hover="background:#123566">Salgo hacia el sitio</div>
+              <div style="text-align:center; font-size:12.5px; color:#64748b; margin-top:9px">La OT pasa a En camino y el ADMIN lo ve en el panel.</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ stepCamino }}">
+          <div style="width:392px; flex:0 0 392px; height:806px; border-radius:42px; border:11px solid #10151d; background:#f6f7f9; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 26px 60px rgba(15,27,45,0.22)">
+            <div style="background:#0f1b2d; color:#fff; padding:11px 20px 13px; display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:11.5px">
+              <span>8:47</span><span>OT-2481 · 4G</span>
+            </div>
+            <div style="background:#0f1b2d; color:#fff; padding:0 18px 18px">
+              <div style="display:inline-block; padding:4px 11px; border-radius:20px; background:#b45309; font-size:11.5px; font-weight:700; letter-spacing:0.04em">EN CAMINO · 8:47</div>
+              <div style="font-size:21px; font-weight:600; margin-top:9px; letter-spacing:-0.01em">Lavarropas LI-6013</div>
+              <div style="font-size:13.5px; color:#a9bad3; margin-top:2px">Ventana confirmada 09:00 – 11:30</div>
+            </div>
+            <div style="flex:1; overflow:auto; padding:16px">
+              <div style="border-radius:12px; border:1px solid #e2e6ec; height:186px; background:repeating-linear-gradient(135deg,#dde3ec 0 8px,#eef2f7 8px 16px); display:flex; align-items:flex-end; padding:10px; margin-bottom:12px">
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#475569; background:rgba(255,255,255,0.88); padding:3px 7px; border-radius:4px">mapa de ruta al sitio</span>
+              </div>
+              <div style="background:#fff; border:1px solid #e2e6ec; border-radius:12px; padding:15px; margin-bottom:12px">
+                <div style="display:flex; justify-content:space-between; gap:12px; align-items:baseline">
+                  <div>
+                    <div style="font-size:12px; color:#64748b">Destino</div>
+                    <div style="font-size:16px; font-weight:600; margin-top:2px">Sucursal Palermo</div>
+                    <div style="font-size:14px; color:#334155">Gorriti 4820, CABA</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div style="font-size:12px; color:#64748b">Llegada est.</div>
+                    <div style="font-size:20px; font-weight:700; font-family:'IBM Plex Mono',monospace; color:#1b4f9c">09:04</div>
+                  </div>
+                </div>
+                <div style="display:flex; gap:9px; margin-top:13px">
+                  <div style="flex:1; text-align:center; padding:13px; border-radius:10px; border:2px solid #1b4f9c; color:#1b4f9c; font-size:14.5px; font-weight:700; cursor:pointer; background:#fff">Navegar</div>
+                  <div style="flex:1; text-align:center; padding:13px; border-radius:10px; border:2px solid #1b4f9c; color:#1b4f9c; font-size:14.5px; font-weight:700; cursor:pointer; background:#fff">Avisar demora</div>
+                </div>
+              </div>
+              <div style="background:#fff; border:1px solid #e2e6ec; border-radius:12px; padding:15px">
+                <div style="font-size:15px; font-weight:600; margin-bottom:10px">Antes de entrar</div>
+                <div style="display:flex; flex-direction:column; gap:11px">
+                  <sc-for list="{{ instrucciones }}" as="i" hint-placeholder-count="4">
+                    <div>
+                      <div style="font-size:12.5px; color:#64748b">{{ i.t }}</div>
+                      <div style="font-size:14px; line-height:1.5; margin-top:2px">{{ i.d }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+            <div style="padding:12px 16px 18px; background:#fff; border-top:1px solid #e2e6ec">
+              <div onClick="{{ goEjecucion }}" style="padding:18px; border-radius:12px; background:#15803d; color:#fff; text-align:center; font-size:17px; font-weight:700; cursor:pointer" style-hover="background:#116632">Llegué — iniciar intervención</div>
+              <div style="text-align:center; font-size:12.5px; color:#64748b; margin-top:9px">Registra check-in con hora y geoposición.</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ stepEjec }}" hint-placeholder-val="{{ true }}">
+        <div style="width:392px; flex:0 0 392px; height:806px; border-radius:42px; border:11px solid #10151d; background:#f6f7f9; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 26px 60px rgba(15,27,45,0.22)">
+          <div style="background:#0f1b2d; color:#fff; padding:11px 20px 13px; display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:11.5px">
+            <span>9:41</span><span>OT-2481 · 4G</span>
+          </div>
+          <div style="background:#0f1b2d; color:#fff; padding:0 18px 16px">
+            <div style="font-size:11px; font-family:'IBM Plex Mono',monospace; color:#8fa6c6; letter-spacing:0.1em">EN EJECUCIÓN · 00:42 EN SITIO</div>
+            <div style="font-size:20px; font-weight:600; margin-top:5px; letter-spacing:-0.01em">Lavarropas LI-6013</div>
+            <div style="font-size:13px; color:#a9bad3">Nube Blanca · Gorriti 4820, Palermo</div>
+          </div>
+          <div style="flex:1; overflow:auto; padding:16px 16px 20px">
+            <div style="background:#fff; border:1px solid #f3c9b1; border-radius:12px; padding:14px; margin-bottom:14px">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:9px">
+                <div style="font-size:14.5px; font-weight:600; color:#9a3412">Falla recurrente — 3ª vez</div>
+                <div onClick="{{ toggleHist }}" style="font-size:12.5px; font-weight:600; color:#1b4f9c; cursor:pointer; white-space:nowrap">{{ histToggleLabel }}</div>
+              </div>
+              <div style="font-size:13px; color:#475569; line-height:1.5">Mismo equipo, misma falla en los últimos 90 días. Revisar arnés y alimentación, no solo la placa.</div>
+              <sc-if value="{{ histOpen }}">
+                <div style="display:flex; flex-direction:column; gap:9px; margin-top:11px">
+                  <sc-for list="{{ histCompact }}" as="h" hint-placeholder-count="3">
+                    <div style="display:flex; gap:10px; align-items:flex-start; padding-top:9px; border-top:1px solid #eef0f4">
+                      <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#64748b; width:74px; flex:0 0 74px">{{ h.fecha }}</div>
+                      <div style="min-width:0">
+                        <div style="font-size:13.5px; font-weight:500; line-height:1.35">{{ h.falla }}</div>
+                        <div style="font-size:11.5px; color:#64748b; margin-top:2px">{{ h.tecnico }} · {{ h.fotos }} fotos</div>
+                      </div>
+                      <span style="margin-left:auto; padding:2px 8px; border-radius:20px; font-size:10.5px; font-weight:600; background:{{ h.bg }}; color:{{ h.fg }}; white-space:nowrap">{{ h.tipo }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:11px">
+              <div style="font-size:15px; font-weight:600">Checklist de intervención</div>
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#1b4f9c; font-weight:600">{{ checkProgress }}</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:11px">
+              <sc-for list="{{ checklist }}" as="c" hint-placeholder-count="5">
+                <div style="background:#fff; border:1px solid #e2e6ec; border-radius:12px; padding:14px">
+                  <div style="font-size:15px; font-weight:600; line-height:1.35; margin-bottom:3px">{{ c.label }}</div>
+                  <div style="font-size:12.5px; color:#64748b; margin-bottom:11px">{{ c.hint }}</div>
+                  <sc-if value="{{ c.isBool }}">
+                    <div style="display:flex; gap:10px">
+                      <div onClick="{{ c.setSi }}" style="flex:1; text-align:center; padding:15px; border-radius:10px; font-size:16px; font-weight:700; cursor:pointer; border:2px solid {{ c.siBd }}; background:{{ c.siBg }}; color:{{ c.siFg }}">SÍ</div>
+                      <div onClick="{{ c.setNo }}" style="flex:1; text-align:center; padding:15px; border-radius:10px; font-size:16px; font-weight:700; cursor:pointer; border:2px solid {{ c.noBd }}; background:{{ c.noBg }}; color:{{ c.noFg }}">NO</div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.isNum }}">
+                    <div style="display:flex; gap:10px; align-items:center">
+                      <input value="{{ c.value }}" onChange="{{ c.onChange }}" inputMode="decimal" placeholder="—" style="flex:1; min-width:0; padding:15px; border-radius:10px; border:2px solid #d5dae2; font-size:20px; font-weight:600; font-family:'IBM Plex Mono',monospace; text-align:center; color:#0f1b2d" />
+                      <div style="width:74px; text-align:center; font-size:15px; font-weight:600; color:#334155">{{ c.unit }}</div>
+                    </div>
+                    <div style="margin-top:9px; font-size:12.5px; font-weight:600; color:{{ c.rangeColor }}">{{ c.rangeMsg }}</div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="margin:18px 0 11px; font-size:15px; font-weight:600">Evidencia fotográfica</div>
+            <div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px">
+              <sc-for list="{{ fotos }}" as="f" hint-placeholder-count="2">
+                <div style="aspect-ratio:1; border-radius:10px; border:1px solid #e2e6ec; background:repeating-linear-gradient(135deg,#dde3ec 0 6px,#eef2f7 6px 12px); display:flex; align-items:flex-end; padding:6px">
+                  <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; color:#475569; background:rgba(255,255,255,0.85); padding:1px 4px; border-radius:3px">{{ f.tag }}</span>
+                </div>
+              </sc-for>
+              <div onClick="{{ addFoto }}" style="aspect-ratio:1; border-radius:10px; border:2px dashed #1b4f9c; color:#1b4f9c; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; cursor:pointer; background:#fff">
+                <div style="font-size:24px; line-height:1">+</div>
+                <div style="font-size:11px; font-weight:600">Foto</div>
+              </div>
+            </div>
+
+            <div style="margin:18px 0 9px; font-size:15px; font-weight:600">Notas técnicas</div>
+            <textarea placeholder="Qué se hizo, repuestos usados, pendientes…" style="width:100%; min-height:92px; padding:13px; border-radius:10px; border:1px solid #d5dae2; font-size:15px; line-height:1.5; resize:vertical">Se reemplazó placa de control (rev. v3) y capacitor de arranque. Tambor libre, sin ruido en centrifugado.</textarea>
+          </div>
+          <div style="padding:12px 16px 18px; background:#fff; border-top:1px solid #e2e6ec">
+            <div onClick="{{ goSign }}" style="padding:18px; border-radius:12px; background:#1b4f9c; color:#fff; text-align:center; font-size:17px; font-weight:700; cursor:pointer" style-hover="background:#123566">{{ execCta }}</div>
+            <div style="text-align:center; font-size:12.5px; color:#64748b; margin-top:9px">{{ execNote }}</div>
+          </div>
+        </div>
+        </sc-if>
+
+        <div style="max-width:330px; padding-top:14px">
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#64748b">TÉCNICO · MOBILE-FIRST</div>
+          <h2 style="margin:6px 0 12px; font-size:20px; font-weight:600; letter-spacing:-0.01em">Mi OT, paso por paso</h2>
+          <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:16px">
+            <sc-for list="{{ techSteps }}" as="t" hint-placeholder-count="3">
+              <div onClick="{{ t.select }}" style="padding:9px 13px; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer; border:1px solid {{ t.bd }}; background:{{ t.bg }}; color:{{ t.fg }}">{{ t.label }}</div>
+            </sc-for>
+            <div onClick="{{ goSign }}" style="padding:9px 13px; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer; border:1px solid #d5dae2; background:#fff; color:#334155">4 · Firma de conformidad</div>
+          </div>
+          <p style="font-size:13.5px; color:#475569; line-height:1.6; margin:0 0 16px">Pensada para una mano, con guantes y a plena luz: objetivos táctiles de 56 px, tipografía de 15 px mínimo, contraste alto y una sola acción primaria por pantalla.</p>
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <sc-for list="{{ execNotes }}" as="n" hint-placeholder-count="4">
+              <div style="background:#fff; border:1px solid #e2e6ec; border-radius:9px; padding:12px 14px">
+                <div style="font-size:13px; font-weight:600; margin-bottom:2px">{{ n.t }}</div>
+                <div style="font-size:12.5px; color:#64748b; line-height:1.5">{{ n.d }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSign }}">
+      <div style="flex:1; display:flex; flex-wrap:wrap; gap:34px; padding:32px; align-items:flex-start; justify-content:center">
+        <div style="width:392px; flex:0 0 392px; height:806px; border-radius:42px; border:11px solid #10151d; background:#fff; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 26px 60px rgba(15,27,45,0.22)">
+          <div style="background:#0f1b2d; color:#fff; padding:11px 20px 13px; display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:11.5px">
+            <span>9:41</span><span>OT-2481 · 4G</span>
+          </div>
+          <div style="padding:20px 18px 0">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; color:#64748b">PASO FINAL · CONFORMIDAD</div>
+            <div style="font-size:22px; font-weight:600; margin-top:6px; letter-spacing:-0.01em; line-height:1.25">Firma del cliente</div>
+            <div style="font-size:14px; color:#475569; line-height:1.5; margin-top:7px">Pedile al cliente que firme con el dedo dentro del recuadro para cerrar la orden.</div>
+          </div>
+          <div style="padding:16px 18px 0">
+            <div style="background:#f6f7f9; border:1px solid #e2e6ec; border-radius:11px; padding:13px 14px; display:flex; flex-direction:column; gap:7px">
+              <sc-for list="{{ resumenFirma }}" as="r" hint-placeholder-count="4">
+                <div style="display:flex; justify-content:space-between; gap:12px; font-size:13px">
+                  <span style="color:#64748b">{{ r.k }}</span><span style="font-weight:600; text-align:right">{{ r.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="flex:1; padding:16px 18px; display:flex; flex-direction:column">
+            <div style="flex:1; border:2px dashed #b9c3d2; border-radius:14px; background:#fff; position:relative; overflow:hidden; touch-action:none">
+              <canvas ref="{{ sigRef }}" width="680" height="620" onPointerDown="{{ sigDown }}" onPointerMove="{{ sigMove }}" onPointerUp="{{ sigUp }}" onPointerLeave="{{ sigUp }}" style="width:100%; height:100%; display:block; touch-action:none; cursor:crosshair"></canvas>
+              <sc-if value="{{ sigEmpty }}">
+                <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; color:#94a3b8; font-size:15px">Firmar acá</div>
+              </sc-if>
+              <div style="position:absolute; left:16px; right:16px; bottom:14px; height:1px; background:#e2e6ec; pointer-events:none"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:11px">
+              <div style="font-size:12.5px; color:#64748b">Aclaración: Mariela Duarte · DNI 30.114.882</div>
+              <div onClick="{{ sigClear }}" style="font-size:13px; font-weight:600; color:#1b4f9c; cursor:pointer; padding:6px 4px">Borrar</div>
+            </div>
+          </div>
+          <div style="padding:12px 16px 18px; border-top:1px solid #e2e6ec">
+            <div onClick="{{ sigConfirm }}" style="padding:18px; border-radius:12px; text-align:center; font-size:17px; font-weight:700; cursor:pointer; background:{{ signCtaBg }}; color:{{ signCtaFg }}">{{ signCta }}</div>
+            <div style="text-align:center; font-size:12.5px; color:#64748b; margin-top:9px">{{ signNote }}</div>
+          </div>
+        </div>
+        <div style="max-width:330px; padding-top:14px">
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#64748b">TÉCNICO · MOBILE</div>
+          <h2 style="margin:6px 0 12px; font-size:20px; font-weight:600; letter-spacing:-0.01em">Conformidad y cierre</h2>
+          <p style="font-size:13.5px; color:#475569; line-height:1.6; margin:0 0 16px">La firma es lo único en pantalla: sin scroll, sin campos opcionales. Al confirmar, la OT pasa a <strong>Finalizada</strong>, se sella con fecha, hora y geoposición, y el cliente recibe el comprobante.</p>
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <sc-for list="{{ signNotes }}" as="n" hint-placeholder-count="3">
+              <div style="background:#fff; border:1px solid #e2e6ec; border-radius:9px; padding:12px 14px">
+                <div style="font-size:13px; font-weight:600; margin-bottom:2px">{{ n.t }}</div>
+                <div style="font-size:12.5px; color:#64748b; line-height:1.5">{{ n.d }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;startScreen&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Login&quot;, &quot;Dashboard ADMIN&quot;, &quot;Ejecución (técnico)&quot;], &quot;default&quot;: &quot;Dashboard ADMIN&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Prototipo&quot; },
+  &quot;showAlerts&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Prototipo&quot; },
+  &quot;politicaFirma&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Firma obligatoria&quot;, &quot;Firma opcional&quot;], &quot;default&quot;: &quot;Firma obligatoria&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Reglas de empresa&quot; }
+}">
+const EST = {
+  "Pendiente": ["#f1f5f9", "#334155"],
+  "Asignada": ["#e8edf5", "#123566"],
+  "En camino": ["#fff4e0", "#92400e"],
+  "En ejecución": ["#e0edff", "#123566"],
+  "Pendiente de conformidad": ["#fdece3", "#9a3412"],
+  "Finalizada": ["#e4f4ea", "#166534"],
+  "Reprogramada": ["#f3e9f7", "#6b21a8"]
+};
+
+const OTS = [
+  { code: "OT-2481", cliente: "Lavandería Nube Blanca", sede: "Palermo — Gorriti 4820", equipo: "Lavarropas industrial LI-6013", serie: "LI6013-2291", tecnico: "Rocío Ferraro", estado: "En ejecución", fecha: "10/09", hora: "09:00–11:30" },
+  { code: "OT-2480", cliente: "Clínica San Ramón", sede: "Piso 3 — Ala norte", equipo: "Aire acondicionado VRF 12 TR", serie: "VRF12-0087", tecnico: "Damián Sosa", estado: "En camino", fecha: "10/09", hora: "08:30–10:00" },
+  { code: "OT-2479", cliente: "Hotel Bristol", sede: "Subsuelo — Lavadero", equipo: "Secarropas SC-40", serie: "SC40-1120", tecnico: "Nicolás Ayala", estado: "Pendiente de conformidad", fecha: "09/09", hora: "15:00–17:00" },
+  { code: "OT-2478", cliente: "Supermercado Del Plata", sede: "Sucursal Lanús", equipo: "Cámara frigorífica CF-8", serie: "CF8-0455", tecnico: "Vanina Ruiz", estado: "Asignada", fecha: "11/09", hora: "10:00–12:00" },
+  { code: "OT-2477", cliente: "Consorcio Torre Pellegrini", sede: "Sala de máquinas", equipo: "Placa de control ascensor", serie: "PCA-3312", tecnico: "—", estado: "Pendiente", fecha: "—", hora: "sin agenda" },
+  { code: "OT-2476", cliente: "Kiosco Red Norte", sede: "Local 12 — Terminal", equipo: "Terminal POS táctil", serie: "POS-7781", tecnico: "Emiliano Prat", estado: "Reprogramada", fecha: "12/09", hora: "13:00–14:00" },
+  { code: "OT-2475", cliente: "Lavandería Nube Blanca", sede: "Villa Urquiza — Roosevelt 5290", equipo: "Lavarropas industrial LI-6013", serie: "LI6013-2287", tecnico: "Rocío Ferraro", estado: "Finalizada", fecha: "08/09", hora: "11:00–12:40" },
+  { code: "OT-2474", cliente: "Clínica San Ramón", sede: "Guardia — PB", equipo: "Autoclave AC-22", serie: "AC22-0091", tecnico: "Damián Sosa", estado: "Finalizada", fecha: "05/09", hora: "09:30–11:00" }
+];
+
+const CLI = {
+  corp: {
+    nombre: "Lavandería Nube Blanca S.A.",
+    meta: "CUIT 30-71042288-4 · Mariela Duarte · +54 9 11 5512-8840 · mduarte@nubeblanca.com.ar",
+    modalidad: "Servicio a domicilio · 4 sedes",
+    kpis: [
+      { label: "Sedes cargadas", value: "4", color: "#0f1b2d" },
+      { label: "Equipos bajo servicio", value: "11", color: "#0f1b2d" },
+      { label: "OT históricas", value: "38", color: "#0f1b2d" },
+      { label: "Preventivos por vencer", value: "2", color: "#c2410c" }
+    ],
+    sedes: [
+      { id: "s1", nombre: "Sucursal Palermo", dir: "Gorriti 4820, CABA", contacto: "Mariela Duarte · +54 9 11 5512-8840", estado: "1 OT en ejecución", color: "#1b4f9c", equipos: [
+        { producto: "Lavarropas industrial", modelo: "Fagor LI-6013 · 60 kg", serie: "LI6013-2291", ultima: "10/09/2026", prox: "24/11/2026", estado: "En intervención", bg: "#e0edff", fg: "#123566" },
+        { producto: "Lavarropas industrial", modelo: "Fagor LI-6013 · 60 kg", serie: "LI6013-2287", ultima: "08/09/2026", prox: "12/12/2026", estado: "Operativo", bg: "#e4f4ea", fg: "#166534" },
+        { producto: "Secarropas", modelo: "Girbau SC-40 · 40 kg", serie: "SC40-1120", ultima: "09/09/2026", prox: "09/01/2027", estado: "Operativo", bg: "#e4f4ea", fg: "#166534" }
+      ] },
+      { id: "s2", nombre: "Sucursal Villa Urquiza", dir: "Roosevelt 5290, CABA", contacto: "Hernán Costa · +54 9 11 6014-7723", estado: "Al día", color: "#166534", equipos: [
+        { producto: "Lavarropas industrial", modelo: "Fagor LI-4008 · 40 kg", serie: "LI4008-1902", ultima: "22/07/2026", prox: "22/01/2027", estado: "Operativo", bg: "#e4f4ea", fg: "#166534" },
+        { producto: "Secarropas", modelo: "Girbau SC-25 · 25 kg", serie: "SC25-0771", ultima: "22/07/2026", prox: "22/11/2026", estado: "Operativo", bg: "#e4f4ea", fg: "#166534" }
+      ] },
+      { id: "s3", nombre: "Planta Avellaneda", dir: "Mitre 1140, Avellaneda", contacto: "Guardia técnica · int. 214", estado: "Preventivo por vencer", color: "#c2410c", equipos: [
+        { producto: "Aire acondicionado VRF", modelo: "VRF 12 TR · 4 evaporadoras", serie: "VRF12-0087", ultima: "22/05/2026", prox: "22/09/2026", estado: "Preventivo por vencer", bg: "#fdece3", fg: "#9a3412" },
+        { producto: "Cámara frigorífica", modelo: "CF-8 · 8 m³", serie: "CF8-0455", ultima: "14/06/2026", prox: "14/09/2026", estado: "Preventivo por vencer", bg: "#fdece3", fg: "#9a3412" }
+      ] },
+      { id: "s4", nombre: "Depósito Barracas", dir: "Iriarte 2280, CABA", contacto: "—", estado: "Al día", color: "#166534", equipos: [] }
+    ],
+    sinSede: []
+  },
+  mostrador: {
+    nombre: "Jorge Aguirre",
+    meta: "DNI 28.114.882 · +54 9 11 3390-5512 · jaguirre.rednorte@gmail.com",
+    modalidad: "Servicio en local propio",
+    kpis: [
+      { label: "Equipos en taller", value: "1", color: "#1b4f9c" },
+      { label: "Equipos bajo servicio", value: "3", color: "#0f1b2d" },
+      { label: "OT históricas", value: "6", color: "#0f1b2d" },
+      { label: "OT abiertas", value: "1", color: "#1b4f9c" }
+    ],
+    sedes: [],
+    sinSede: [
+      { producto: "Terminal POS", modelo: "POS táctil T-70", serie: "POS-7781", ultima: "12/09/2026", prox: "sin plan", estado: "En taller", bg: "#e0edff", fg: "#123566" },
+      { producto: "Celulares y tablets", modelo: "Smartphone 6,1\" · placa con humedad", serie: "IMEI 3548-8891", ultima: "04/08/2026", prox: "sin plan", estado: "Entregado", bg: "#e4f4ea", fg: "#166534" },
+      { producto: "Celulares y tablets", modelo: "Tablet 10\" · no carga", serie: "IMEI 3548-9920", ultima: "—", prox: "sin plan", estado: "Ingresado", bg: "#fff4e0", fg: "#92400e" }
+    ]
+  }
+};
+
+const SCREENS = [
+  { id: "login", label: "Login y rol", group: "ACCESO" },
+  { id: "dash", label: "Dashboard", group: "ADMIN · ESCRITORIO" },
+  { id: "clientes", label: "Clientes", group: "ADMIN · ESCRITORIO" },
+  { id: "list", label: "Órdenes de trabajo", group: "ADMIN · ESCRITORIO" },
+  { id: "new", label: "Crear OT", group: "ADMIN · ESCRITORIO" },
+  { id: "assign", label: "Asignar técnico", group: "ADMIN · ESCRITORIO" },
+  { id: "agenda", label: "Agenda", group: "ADMIN · ESCRITORIO" },
+  { id: "detail", label: "Detalle de OT", group: "ADMIN · ESCRITORIO" },
+  { id: "exec", label: "Mi OT: asignada → ejecución", group: "TÉCNICO · MOBILE" },
+  { id: "sign", label: "Firma de conformidad", group: "TÉCNICO · MOBILE" },
+  { id: "history", label: "Ficha de equipo · historial", group: "TRAZABILIDAD" },
+  { id: "config", label: "Configuración", group: "SUPER_ADMIN" }
+];
+
+const START_MAP = { "Login": "login", "Dashboard ADMIN": "dash", "Ejecución (técnico)": "exec" };
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.sigRef = React.createRef();
+    this.drawing = false;
+    this.state = {
+      screen: START_MAP[props.startScreen] || "dash",
+      filter: "Todas",
+      tipo: "Correctivo",
+      prioridad: "Alta",
+      franja: "09:00–11:30",
+      tech: "Rocío Ferraro",
+      sigEmpty: true,
+      signed: false,
+      fotos: [{ tag: "placa quemada" }, { tag: "n/s equipo" }],
+      checks: { c1: "si", c2: null, c3: "228", c4: "61", c5: "12,4", c6: "si" },
+      reglas: { r1: true, r2: true, r3: false, r4: true, r5: true },
+      prodExp: "p1",
+      clienteForm: false,
+      sedeForm: false,
+      equipoForm: false,
+      clienteSel: "corp",
+      sedeExp: "s1",
+      tieneSede: true,
+      otTab: "resumen",
+      techStep: "asignada",
+      prods: [
+        { id: "p1", label: "Aire acondicionado VRF", tasks: [
+          { id: "t1", tarea: "Limpieza de filtros", cada: "6", unidad: "meses", dias: "10" },
+          { id: "t2", tarea: "Carga de gas refrigerante", cada: "2", unidad: "años", dias: "30" },
+          { id: "t3", tarea: "Revisión de placa y sensores", cada: "12", unidad: "meses", dias: "15" }
+        ] },
+        { id: "p2", label: "Lavarropas industrial", tasks: [
+          { id: "t1", tarea: "Cambio de rodamientos", cada: "5", unidad: "años", dias: "45" },
+          { id: "t2", tarea: "Revisión de placa de control", cada: "15", unidad: "años", dias: "60" },
+          { id: "t3", tarea: "Ajuste de correas y amortiguadores", cada: "6", unidad: "meses", dias: "10" }
+        ] },
+        { id: "p3", label: "Cámara frigorífica", tasks: [
+          { id: "t1", tarea: "Limpieza de condensador", cada: "3", unidad: "meses", dias: "7" },
+          { id: "t2", tarea: "Control de estanqueidad", cada: "12", unidad: "meses", dias: "20" }
+        ] },
+        { id: "p4", label: "Autoclave", tasks: [
+          { id: "t1", tarea: "Validación de ciclo térmico", cada: "6", unidad: "meses", dias: "14" }
+        ] },
+        { id: "p5", label: "Terminal POS", tasks: [] },
+        { id: "p6", label: "Secarropas", tasks: [
+          { id: "t1", tarea: "Limpieza de ducto y filtro", cada: "4", unidad: "meses", dias: "10" }
+        ] },
+        { id: "p7", label: "Placa de control ascensor", tasks: [
+          { id: "t1", tarea: "Termografía de placa", cada: "12", unidad: "meses", dias: "21" }
+        ] }
+      ]
+    };
+  }
+
+  go = (id) => this.setState({ screen: id });
+
+  ctx() {
+    const c = this.sigRef.current;
+    if (!c) return null;
+    const ctx = c.getContext("2d");
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#0f1b2d";
+    return ctx;
+  }
+
+  pt(e) {
+    const c = this.sigRef.current;
+    const r = c.getBoundingClientRect();
+    return [(e.clientX - r.left) * (c.width / r.width), (e.clientY - r.top) * (c.height / r.height)];
+  }
+
+  renderVals() {
+    const s = this.state;
+    const P = this.props;
+    const showAlerts = P.showAlerts !== false;
+    const cli = CLI[s.clienteSel] || CLI.corp;
+    const conSedes = cli.sedes.length > 0;
+    const firmaObligatoria = (P.politicaFirma || "Firma obligatoria") === "Firma obligatoria";
+
+    const navGroups = [];
+    SCREENS.forEach((sc, i) => {
+      let g = navGroups.find((x) => x.label === sc.group);
+      if (!g) { g = { label: sc.group, items: [] }; navGroups.push(g); }
+      const on = s.screen === sc.id || (sc.id === "clientes" && s.screen === "clienteDet");
+      g.items.push({
+        label: sc.label, num: String(i + 1).padStart(2, "0"),
+        bg: on ? "#1b4f9c" : "transparent", fg: on ? "#ffffff" : "#c3cfe1",
+        weight: on ? 600 : 400, select: () => this.go(sc.id)
+      });
+    });
+
+    const counts = { "Todas": OTS.length };
+    Object.keys(EST).forEach((k) => { counts[k] = OTS.filter((o) => o.estado === k).length; });
+    const filters = ["Todas"].concat(Object.keys(EST)).map((k) => {
+      const on = s.filter === k;
+      return {
+        label: k, n: counts[k], select: () => this.setState({ filter: k }),
+        bg: on ? "#0f1b2d" : "#ffffff", fg: on ? "#ffffff" : "#334155", bd: on ? "#0f1b2d" : "#d5dae2"
+      };
+    });
+    const visibleOts = (s.filter === "Todas" ? OTS : OTS.filter((o) => o.estado === s.filter)).map((o) => ({
+      ...o, bg: EST[o.estado][0], fg: EST[o.estado][1], open: () => this.go("detail")
+    }));
+
+    const chip = (v, cur) => ({
+      label: v, bg: cur === v ? "#e8edf5" : "#ffffff", fg: cur === v ? "#123566" : "#334155",
+      bd: cur === v ? "#1b4f9c" : "#d5dae2"
+    });
+
+    const techData = [
+      { nombre: "Rocío Ferraro", espec: "Línea blanca · placas de control", carga: "3 / 6 OT", pct: "50%", zona: "Zona: CABA norte", disp: "Disponible", ok: true },
+      { nombre: "Damián Sosa", espec: "Climatización · VRF y splits", carga: "5 / 6 OT", pct: "83%", zona: "Zona: CABA centro", disp: "Casi completo", ok: false },
+      { nombre: "Nicolás Ayala", espec: "Electrónica de potencia", carga: "2 / 6 OT", pct: "33%", zona: "Zona: Zona sur", disp: "Disponible", ok: true },
+      { nombre: "Vanina Ruiz", espec: "Refrigeración comercial", carga: "6 / 6 OT", pct: "100%", zona: "Zona: GBA oeste", disp: "Sin cupo", ok: false },
+      { nombre: "Emiliano Prat", espec: "Equipos táctiles · POS", carga: "1 / 6 OT", pct: "17%", zona: "Zona: CABA sur", disp: "Disponible", ok: true }
+    ];
+    const techs = techData.map((t) => ({
+      ...t, ini: t.nombre.split(" ").map((w) => w[0]).join(""),
+      barra: t.pct === "100%" ? "#c2410c" : t.ok ? "#1b4f9c" : "#b45309",
+      dispColor: t.pct === "100%" ? "#c2410c" : t.ok ? "#166534" : "#b45309",
+      rowBg: s.tech === t.nombre ? "#f2f6fc" : "#ffffff",
+      select: () => this.setState({ tech: t.nombre })
+    }));
+    const sel = techData.find((t) => t.nombre === s.tech) || techData[0];
+
+    const CHECK_DEFS = [
+      { id: "c1", type: "bool", label: "Corte de energía verificado", hint: "Bloqueo y etiquetado antes de abrir el gabinete" },
+      { id: "c2", type: "bool", label: "Tambor gira libre sin obstrucción", hint: "Girar manualmente 2 vueltas completas" },
+      { id: "c3", type: "num", label: "Tensión de línea", hint: "Rango esperado 200–240 V", unit: "V", min: 200, max: 240 },
+      { id: "c4", type: "num", label: "Temperatura de placa de control", hint: "Máximo admitido 70 °C", unit: "°C", min: 0, max: 70 },
+      { id: "c5", type: "num", label: "Corriente del motor en centrifugado", hint: "Rango esperado 8–14 A", unit: "A", min: 8, max: 14 },
+      { id: "c6", type: "bool", label: "Sin fugas tras prueba de ciclo", hint: "Ciclo corto completo, revisar bandeja" }
+    ];
+    const checklist = CHECK_DEFS.map((d) => {
+      const v = s.checks[d.id];
+      const set = (val) => this.setState((st) => ({ checks: { ...st.checks, [d.id]: val } }));
+      if (d.type === "bool") {
+        const yes = v === "si", no = v === "no";
+        return {
+          ...d, isBool: true, isNum: false,
+          siBg: yes ? "#15803d" : "#ffffff", siFg: yes ? "#ffffff" : "#334155", siBd: yes ? "#15803d" : "#d5dae2",
+          noBg: no ? "#c2410c" : "#ffffff", noFg: no ? "#ffffff" : "#334155", noBd: no ? "#c2410c" : "#d5dae2",
+          setSi: () => set("si"), setNo: () => set("no")
+        };
+      }
+      const num = parseFloat(String(v || "").replace(",", "."));
+      const bad = !isNaN(num) && (num < d.min || num > d.max);
+      return {
+        ...d, isNum: true, isBool: false, value: v == null ? "" : v,
+        onChange: (e) => set(e.target.value),
+        rangeColor: isNaN(num) ? "#94a3b8" : bad ? "#c2410c" : "#166534",
+        rangeMsg: isNaN(num) ? "Sin medición" : bad ? "Fuera de rango — se marca en la OT" : "Dentro de rango",
+        min: undefined, max: undefined
+      };
+    });
+    const done = CHECK_DEFS.filter((d) => {
+      const v = s.checks[d.id];
+      return v != null && String(v).length > 0;
+    }).length;
+
+    const REGLA_DEFS = [
+      { id: "r1", titulo: "Mantenimiento preventivo próximo a vencer", detalle: "El disparador se calcula por producto + tarea + última intervención del equipo. La anticipación se define en cada tarea, no acá.", link: true },
+      { id: "r2", titulo: "OT sin técnico asignado", detalle: "Alerta si una OT queda en Pendiente más de 24 h." },
+      { id: "r3", titulo: "Medición fuera de rango", detalle: "Marca la OT y sugiere seguimiento del equipo." },
+      { id: "r4", titulo: "Falla recurrente en el mismo equipo", detalle: "3 intervenciones por la misma falla en 90 días." },
+      { id: "r5", titulo: "Conformidad pendiente de firma", detalle: "Recordatorio al técnico y aviso al ADMIN a las 12 h." }
+    ];
+    const reglas = REGLA_DEFS.map((r) => {
+      const on = s.reglas[r.id];
+      return {
+        ...r, link: !!r.link,
+        trackBg: on ? "#1b4f9c" : "#cbd5e1", justify: on ? "flex-end" : "flex-start",
+        toggle: () => this.setState((st) => ({ reglas: { ...st.reglas, [r.id]: !st.reglas[r.id] } }))
+      };
+    });
+
+    const cell = (code, cliente, tecnico, tone) => ({
+      has: true, code, cliente, tecnico,
+      bg: tone === "hot" ? "#fdece3" : tone === "done" ? "#e4f4ea" : "#e8edf5",
+      accent: tone === "hot" ? "#c2410c" : tone === "done" ? "#15803d" : "#1b4f9c",
+      open: () => this.go("detail")
+    });
+    const empty = { has: false };
+    const horas = [
+      { label: "08:00", cells: [empty, cell("OT-2474", "Clínica San Ramón", "D. Sosa", "done"), empty, cell("OT-2480", "Clínica San Ramón", "D. Sosa", "hot"), empty] },
+      { label: "09:00", cells: [cell("OT-2470", "Hotel Bristol", "N. Ayala", "done"), empty, empty, cell("OT-2481", "Nube Blanca", "R. Ferraro", "hot"), cell("OT-2483", "Del Plata", "V. Ruiz")] },
+      { label: "11:00", cells: [cell("OT-2475", "Nube Blanca", "R. Ferraro", "done"), cell("OT-2477", "Torre Pellegrini", "sin asignar"), empty, cell("OT-2478", "Del Plata", "V. Ruiz"), empty] },
+      { label: "13:00", cells: [empty, empty, cell("OT-2479", "Hotel Bristol", "N. Ayala", "done"), empty, cell("OT-2476", "Red Norte", "E. Prat")] },
+      { label: "15:00", cells: [cell("OT-2472", "Red Norte", "E. Prat", "done"), cell("OT-2479", "Hotel Bristol", "N. Ayala", "done"), empty, cell("OT-2484", "Nube Blanca", "R. Ferraro"), empty] },
+      { label: "17:00", cells: [empty, empty, cell("OT-2482", "Torre Pellegrini", "N. Ayala"), empty, empty] }
+    ];
+
+    return {
+      navGroups,
+      isLogin: s.screen === "login", isDash: s.screen === "dash", isList: s.screen === "list",
+      isNew: s.screen === "new", isAssign: s.screen === "assign", isAgenda: s.screen === "agenda",
+      isDetail: s.screen === "detail", isExec: s.screen === "exec", isSign: s.screen === "sign",
+      isHistory: s.screen === "history", isConfig: s.screen === "config", isClientes: s.screen === "clientes",
+      goClientes: () => this.go("clientes"), goConfig: () => this.go("config"),
+      clienteForm: s.clienteForm,
+      openClienteForm: () => this.setState({ clienteForm: true }),
+      closeClienteForm: () => this.setState({ clienteForm: false }),
+      clientes: [
+        { nombre: "Lavandería Nube Blanca S.A.", cuit: "30-71042288-4", contacto: "Mariela Duarte", tel: "+54 9 11 5512-8840", mail: "mduarte@nubeblanca.com.ar", sedes: 4, equipos: 11 },
+        { nombre: "Clínica San Ramón", cuit: "30-68855120-9", contacto: "Ing. Pablo Tessi", tel: "+54 9 11 4477-1290", mail: "mantenimiento@sanramon.org", sedes: 2, equipos: 18 },
+        { nombre: "Supermercado Del Plata", cuit: "33-70998812-7", contacto: "Carla Benítez", tel: "+54 9 11 6620-3311", mail: "cbenitez@delplata.com", sedes: 6, equipos: 24 },
+        { nombre: "Hotel Bristol", cuit: "30-71223390-2", contacto: "Recepción técnica", tel: "+54 11 4321-7788", mail: "servicios@hotelbristol.com.ar", sedes: 1, equipos: 7 },
+        { nombre: "Consorcio Torre Pellegrini", cuit: "30-70551208-5", contacto: "Adm. Rossi y Asoc.", tel: "+54 11 4812-6600", mail: "admin@rossiyasoc.com.ar", sedes: 1, equipos: 3 },
+        { nombre: "Jorge Aguirre", cuit: "28.114.882", contacto: "Jorge Aguirre", tel: "+54 9 11 3390-5512", mail: "jaguirre.rednorte@gmail.com", sedes: 0, equipos: 3, key: "mostrador" }
+      ].map((c) => ({
+        ...c, sedesLabel: c.sedes === 0 ? "en local" : String(c.sedes),
+        sedesColor: c.sedes === 0 ? "#94a3b8" : "#0f1b2d",
+        open: () => this.setState({ screen: "clienteDet", clienteSel: c.key || "corp", sedeForm: false, equipoForm: false })
+      })),
+
+      cli, cliSinSedes: !conSedes, cliConSedes: conSedes,
+      cliSedes: cli.sedes.map((x) => {
+        const open = s.sedeExp === x.id;
+        return {
+          ...x, open, caret: open ? "−" : "+", rowBg: open ? "#f8fafc" : "#ffffff",
+          vacia: x.equipos.length === 0,
+          equiposLabel: x.equipos.length === 1 ? "1 equipo" : x.equipos.length + " equipos",
+          equipos: x.equipos.map((e) => ({ ...e, open: () => this.go("history") })),
+          toggle: () => this.setState({ sedeExp: open ? null : x.id })
+        };
+      }),
+      cliEquipos: cli.sinSede.map((x) => ({ ...x, open: () => this.go("history") })),
+      cliVacio: !conSedes && cli.sinSede.length === 0,
+      clienteKpis: cli.kpis,
+      sedeOpts: cli.sedes.map((x) => ({ label: x.nombre + " — " + x.dir })),
+      equipoFormOpen: s.equipoForm,
+      equipoFormNota: conSedes ? "Elegí la sede donde está instalado." : "Se atiende en el local propio.",
+      equipoPlaceModelo: conSedes ? "Fagor LI-6013 · 60 kg" : "Smartphone 6,1\" · placa con humedad",
+      equipoPlaceSerie: conSedes ? "LI6013-2291" : "IMEI 3548-8891",
+      isClienteDet: s.screen === "clienteDet",
+      goClienteDet: () => this.go("clienteDet"), goHistory: () => this.go("history"),
+      sedeForm: s.sedeForm,
+      openSedeForm: () => this.setState({ sedeForm: true, equipoForm: false }),
+      closeSedeForm: () => this.setState({ sedeForm: false }),
+      openEquipoForm: () => this.setState({ equipoForm: true, sedeForm: false }),
+      closeEquipoForm: () => this.setState({ equipoForm: false }),
+      catalogo: s.prods.map((p) => ({ label: p.label })),
+      tieneSede: s.tieneSede,
+      setTieneSedeSi: () => this.setState({ tieneSede: true }),
+      setTieneSedeNo: () => this.setState({ tieneSede: false }),
+      siBg: s.tieneSede ? "#1b4f9c" : "#ffffff", siFg: s.tieneSede ? "#ffffff" : "#334155", siBd: s.tieneSede ? "#1b4f9c" : "#d5dae2",
+      noBg: s.tieneSede ? "#ffffff" : "#1b4f9c", noFg: s.tieneSede ? "#334155" : "#ffffff", noBd: s.tieneSede ? "#d5dae2" : "#1b4f9c",
+      sedeHint: s.tieneSede
+        ? "Al guardar, en su ficha vas a poder agregar una o varias sedes cuando quieras."
+        : "No se pide ninguna sede: sus equipos se atienden en el local propio.",
+      guardarCliente: () => this.setState({ screen: "clienteDet", clienteSel: s.tieneSede ? "corp" : "mostrador", clienteForm: false, sedeForm: false, equipoForm: false }),
+
+      otTabs: [
+        { id: "resumen", label: "Resumen de la orden" },
+        { id: "equipo", label: "Historial del equipo" }
+      ].map((t) => ({
+        ...t, on: s.otTab === t.id,
+        bg: s.otTab === t.id ? "#0f1b2d" : "#ffffff", fg: s.otTab === t.id ? "#ffffff" : "#334155",
+        bd: s.otTab === t.id ? "#0f1b2d" : "#d5dae2",
+        select: () => this.setState({ otTab: t.id })
+      })),
+      otTabResumen: s.otTab === "resumen", otTabEquipo: s.otTab === "equipo",
+      verHistorialTab: () => this.setState({ screen: "detail", otTab: "equipo" }),
+
+      recurrente: { titulo: "Falla recurrente — 3ª vez en este equipo en los últimos 90 días", detalle: "\"No centrifuga — placa de control\" ya se registró en OT-2318 (22/05) y OT-2104 (14/01). Regla activa: Falla recurrente en el mismo equipo." },
+
+      trabajo: [
+        { k: "Trabajo realizado", v: "Reemplazo de placa de control (rev. v3) y capacitor de arranque. Tambor liberado, sin ruido en centrifugado." },
+        { k: "Repuestos utilizados", v: "1 × placa control LI-6013 v3 · 1 × capacitor 25 µF" },
+        { k: "Mediciones registradas", v: "Tensión 228 V · Corriente motor 12,4 A · Temperatura de placa 61 °C (fuera de rango)" },
+        { k: "Ventana de trabajo", v: "10/09/2026 · check-in 09:16 — última carga 10:22 (1 h 40 m en sitio)" }
+      ],
+      estadoEquipo: [
+        { k: "Estado actual del equipo", v: "Operativo con observación", color: "#b45309" },
+        { k: "Observación abierta", v: "Temperatura de placa 61 °C — seguimiento en próxima visita", color: "#0f1b2d" },
+        { k: "Próximo preventivo", v: "24/11/2026 — Ajuste de correas y amortiguadores", color: "#0f1b2d" },
+        { k: "Intervenciones acumuladas", v: "9 (5 correctivas)", color: "#0f1b2d" }
+      ],
+
+      techSteps: [
+        { id: "asignada", label: "1 · Asignada" },
+        { id: "camino", label: "2 · En camino" },
+        { id: "ejecucion", label: "3 · En ejecución" }
+      ].map((t) => ({
+        ...t, bg: s.techStep === t.id ? "#0f1b2d" : "#ffffff", fg: s.techStep === t.id ? "#ffffff" : "#334155",
+        bd: s.techStep === t.id ? "#0f1b2d" : "#d5dae2", select: () => this.setState({ techStep: t.id })
+      })),
+      stepAsignada: s.techStep === "asignada", stepCamino: s.techStep === "camino", stepEjec: s.techStep === "ejecucion",
+      goCamino: () => this.setState({ techStep: "camino" }),
+      goEjecucion: () => this.setState({ techStep: "ejecucion" }),
+      histOpen: !!s.histOpen,
+      histToggleLabel: s.histOpen ? "Ocultar historial" : "Ver historial",
+      toggleHist: () => this.setState((st) => ({ histOpen: !st.histOpen })),
+      instrucciones: [
+        { t: "Acceso al sitio", d: "Entrada por Gorriti 4820, portón lateral. Preguntar por Mariela Duarte en mostrador." },
+        { t: "Falla reportada", d: "No centrifuga, olor a quemado al iniciar el ciclo y traba intermitente del tambor." },
+        { t: "Llevar del pañol", d: "Placa de control LI-6013 v3, capacitor 25 µF, pinza amperométrica." },
+        { t: "Antecedente", d: "Falla recurrente: 3ª vez en 90 días. Revisar arnés y alimentación además de la placa." }
+      ],
+      histCompact: [
+        { fecha: "22/05/2026", tipo: "Preventivo", falla: "Mantenimiento semestral", tecnico: "N. Ayala", fotos: 3, bg: "#e4f4ea", fg: "#166534" },
+        { fecha: "14/01/2026", tipo: "Correctivo", falla: "Fuga en electroválvula", tecnico: "R. Ferraro", fotos: 5, bg: "#fdece3", fg: "#9a3412" },
+        { fecha: "03/11/2025", tipo: "Diagnóstico", falla: "Error E-24 en display", tecnico: "D. Sosa", fotos: 2, bg: "#e8edf5", fg: "#123566" }
+      ],
+      goDashboard: () => this.go("dash"), goNew: () => this.go("new"), goAssign: () => this.go("assign"),
+      goAgenda: () => this.go("agenda"), goExec: () => this.go("exec"), goSign: () => this.go("sign"),
+
+      roleCards: [
+        { name: "SUPER_ADMIN", ini: "SA", desc: "Parámetros, catálogos y usuarios", screen: "config" },
+        { name: "ADMIN", ini: "AD", desc: "Operación diaria de órdenes", screen: "dash" },
+        { name: "TÉCNICO", ini: "TE", desc: "Mis OT asignadas en campo", screen: "exec" }
+      ].map((r, i) => ({
+        ...r, dot: ["#6b21a8", "#1b4f9c", "#0f766e"][i],
+        bg: i === 1 ? "#f2f6fc" : "#ffffff", bd: i === 1 ? "#1b4f9c" : "#d5dae2",
+        select: () => this.go(r.screen)
+      })),
+
+      showAlerts,
+      kpis: [
+        { label: "OT pendientes de asignar", value: "6", hint: "2 vencen hoy", color: "#c2410c" },
+        { label: "Asignadas / en camino", value: "11", hint: "hoy", color: "#0f1b2d" },
+        { label: "En ejecución ahora", value: "4", hint: "en sitio", color: "#1b4f9c" },
+        { label: "Pendientes de conformidad", value: "3", hint: "sin firma", color: "#b45309" }
+      ],
+      alerts: [
+        { equipo: "Aire acondicionado VRF 12 TR", serie: "N/S VRF12-0087", cliente: "Clínica San Ramón · Ala norte", vence: "vence en 4 días", color: "#c2410c" },
+        { equipo: "Cámara frigorífica CF-8", serie: "N/S CF8-0455", cliente: "Supermercado Del Plata · Lanús", vence: "vence en 9 días", color: "#b45309" },
+        { equipo: "Lavarropas industrial LI-6013", serie: "N/S LI6013-2287", cliente: "Nube Blanca · Villa Urquiza", vence: "vence en 12 días", color: "#b45309" },
+        { equipo: "Autoclave AC-22", serie: "N/S AC22-0091", cliente: "Clínica San Ramón · Guardia", vence: "vence en 15 días", color: "#64748b" }
+      ],
+      flow: [
+        { label: "Pendiente", n: 6, pct: "16%", color: "#94a3b8" },
+        { label: "Asignada", n: 8, pct: "21%", color: "#1b4f9c" },
+        { label: "En camino / ejecución", n: 12, pct: "32%", color: "#2563c9" },
+        { label: "Pendiente de conformidad", n: 3, pct: "8%", color: "#c2410c" },
+        { label: "Finalizada", n: 9, pct: "23%", color: "#15803d" }
+      ],
+      techNow: [
+        { nombre: "Rocío Ferraro", donde: "Gorriti 4820 · OT-2481", estado: "En sitio", bg: "#e0edff", fg: "#123566", ini: "RF" },
+        { nombre: "Damián Sosa", donde: "En tránsito · OT-2480", estado: "En camino", bg: "#fff4e0", fg: "#92400e", ini: "DS" },
+        { nombre: "Nicolás Ayala", donde: "Taller central", estado: "Disponible", bg: "#e4f4ea", fg: "#166534", ini: "NA" },
+        { nombre: "Vanina Ruiz", donde: "Lanús · OT-2478", estado: "En sitio", bg: "#e0edff", fg: "#123566", ini: "VR" }
+      ],
+
+      filters, visibleOts,
+      listCount: visibleOts.length + " de " + OTS.length + " órdenes visibles",
+
+      tipos: ["Correctivo", "Preventivo", "Instalación", "Diagnóstico"].map((t) => ({ ...chip(t, s.tipo), select: () => this.setState({ tipo: t }) })),
+      prioridades: ["Baja", "Media", "Alta"].map((p) => {
+        const on = s.prioridad === p;
+        const tone = p === "Alta" ? ["#fdece3", "#9a3412", "#c2410c"] : p === "Media" ? ["#fff4e0", "#92400e", "#b45309"] : ["#f1f5f9", "#334155", "#94a3b8"];
+        return { label: p, bg: on ? tone[0] : "#ffffff", fg: on ? tone[1] : "#334155", bd: on ? tone[2] : "#d5dae2", select: () => this.setState({ prioridad: p }) };
+      }),
+
+      techs, selectedTech: sel.nombre, selectedTechInfo: sel.espec + " · " + sel.carga + " · " + sel.zona,
+      franjas: ["08:00–09:30", "09:00–11:30", "13:00–15:00", "16:00–18:00"].map((f) => ({ ...chip(f, s.franja), select: () => this.setState({ franja: f }) })),
+
+      dias: [
+        { dia: "Lun 07", n: 7 }, { dia: "Mar 08", n: 6 }, { dia: "Mié 09", n: 5 }, { dia: "Jue 10", n: 9 }, { dia: "Vie 11", n: 4 }
+      ],
+      horas,
+      leyenda: [
+        { label: "Programada", color: "#1b4f9c" }, { label: "Urgente / prioridad alta", color: "#c2410c" },
+        { label: "Finalizada", color: "#15803d" }, { label: "Sin técnico asignado", color: "#94a3b8" }
+      ],
+
+      detalle: [
+        { k: "Cliente", v: "Lavandería Nube Blanca S.A.", sub: "CUIT 30-71042288-4" },
+        { k: "Sede", v: "Sucursal Palermo", sub: "Gorriti 4820 · CABA" },
+        { k: "Contacto en sitio", v: "Mariela Duarte", sub: "+54 9 11 5512-8840" },
+        { k: "Equipo", v: "Lavarropas industrial LI-6013", sub: "N/S LI6013-2291 · placa v3" },
+        { k: "Tipo de servicio", v: "Correctivo", sub: "Falla: no centrifuga" },
+        { k: "Técnico asignado", v: "Rocío Ferraro", sub: "Línea blanca · placas" },
+        { k: "Programada", v: "10/09/2026 · 09:00", sub: "2,5 h estimadas" },
+        { k: "Última actualización", v: "Hoy 09:58", sub: "desde app móvil" }
+      ],
+      evidencias: [
+        { tag: "placa quemada", hora: "09:41 · geoposicionada" },
+        { tag: "n/s equipo", hora: "09:12 · geoposicionada" },
+        { tag: "repuesto nuevo", hora: "10:05 · geoposicionada" },
+        { tag: "prueba de ciclo", hora: "10:22 · geoposicionada" }
+      ],
+      cambios: [
+        { titulo: "Medición fuera de rango", detalle: "Temperatura de placa 61 °C registrada por R. Ferraro.", cuando: "HOY 09:58", dot: "#b45309" },
+        { titulo: "Intervención iniciada", detalle: "Check-in en sitio con geoposición.", cuando: "HOY 09:16", dot: "#1b4f9c" },
+        { titulo: "Técnico en camino", detalle: "Salida desde taller central.", cuando: "HOY 08:40", dot: "#1b4f9c" },
+        { titulo: "Técnico asignado", detalle: "R. Ferraro asignada por J. Belmonte (ADMIN).", cuando: "AYER 17:22", dot: "#94a3b8" },
+        { titulo: "OT creada", detalle: "Origen: llamado del cliente. Prioridad alta.", cuando: "AYER 16:58", dot: "#94a3b8" }
+      ],
+
+      histKpis: [
+        { label: "Intervenciones totales", value: "9", color: "#0f1b2d" },
+        { label: "Correctivas", value: "5", color: "#c2410c" },
+        { label: "MTBF promedio", value: "142 d", color: "#0f1b2d" },
+        { label: "Próx. preventivo", value: "24/11", color: "#1b4f9c" }
+      ],
+      timeline: [
+        { fecha: "10/09/2026", code: "OT-2481", falla: "No centrifuga — placa de control", tipo: "Correctivo", resumen: "Reemplazo de placa de control rev. v3 y capacitor de arranque. Temperatura de placa registrada en 61 °C, fuera del rango sugerido.", tecnico: "R. Ferraro", duracion: "1 h 40 m", fotos: 4, dot: "#c2410c", bg: "#fdece3", fg: "#9a3412" },
+        { fecha: "22/05/2026", code: "OT-2318", falla: "Mantenimiento preventivo semestral", tipo: "Preventivo", resumen: "Limpieza de filtros, ajuste de correas, medición de consumo. Todo dentro de rango.", tecnico: "N. Ayala", duracion: "55 m", fotos: 3, dot: "#15803d", bg: "#e4f4ea", fg: "#166534" },
+        { fecha: "14/01/2026", code: "OT-2104", falla: "Fuga en electroválvula de carga", tipo: "Correctivo", resumen: "Cambio de electroválvula y junta de manguera. Prueba de ciclo sin pérdidas.", tecnico: "R. Ferraro", duracion: "1 h 10 m", fotos: 5, dot: "#c2410c", bg: "#fdece3", fg: "#9a3412" },
+        { fecha: "03/11/2025", code: "OT-1962", falla: "Error E-24 en display", tipo: "Diagnóstico", resumen: "Falso contacto en arnés del sensor de nivel. Reajuste de conector, sin repuestos.", tecnico: "D. Sosa", duracion: "40 m", fotos: 2, dot: "#1b4f9c", bg: "#e8edf5", fg: "#123566" },
+        { fecha: "18/06/2025", code: "OT-1740", falla: "Mantenimiento preventivo semestral", tipo: "Preventivo", resumen: "Rutina completa. Se recomendó recambio de amortiguadores en próxima visita.", tecnico: "N. Ayala", duracion: "1 h", fotos: 3, dot: "#15803d", bg: "#e4f4ea", fg: "#166534" }
+      ],
+
+      productos: s.prods.map((p) => {
+        const open = s.prodExp === p.id;
+        const setTask = (tid, key, val) => this.setState((st) => ({
+          prods: st.prods.map((pp) => pp.id !== p.id ? pp : { ...pp, tasks: pp.tasks.map((t) => t.id !== tid ? t : { ...t, [key]: val }) })
+        }));
+        return {
+          label: p.label, open, count: p.tasks.length,
+          countLabel: p.tasks.length === 0 ? "sin tareas definidas" : p.tasks.length === 1 ? "1 tarea preventiva" : p.tasks.length + " tareas preventivas",
+          countColor: p.tasks.length === 0 ? "#c2410c" : "#64748b",
+          caret: open ? "−" : "+",
+          rowBg: open ? "#f8fafc" : "#ffffff",
+          empty: p.tasks.length === 0,
+          toggle: () => this.setState({ prodExp: open ? null : p.id }),
+          addTask: () => this.setState((st) => ({
+            prodExp: p.id,
+            prods: st.prods.map((pp) => pp.id !== p.id ? pp : { ...pp, tasks: pp.tasks.concat([{ id: "t" + (pp.tasks.length + 1) + "-" + Date.now(), tarea: "Nueva tarea preventiva", cada: "6", unidad: "meses", dias: "10" }]) })
+          })),
+          tasks: p.tasks.map((t) => ({
+            ...t,
+            onTarea: (e) => setTask(t.id, "tarea", e.target.value),
+            onCada: (e) => setTask(t.id, "cada", e.target.value),
+            onUnidad: (e) => setTask(t.id, "unidad", e.target.value),
+            onDias: (e) => setTask(t.id, "dias", e.target.value),
+            remove: () => this.setState((st) => ({
+              prods: st.prods.map((pp) => pp.id !== p.id ? pp : { ...pp, tasks: pp.tasks.filter((x) => x.id !== t.id) })
+            }))
+          }))
+        };
+      }),
+      fallas: [
+        { falla: "No centrifuga — placa de control", producto: "Lavarropas", freq: "34 casos", color: "#c2410c" },
+        { falla: "Fuga en electroválvula de carga", producto: "Lavarropas", freq: "21 casos", color: "#b45309" },
+        { falla: "No enfría — carga de gas baja", producto: "AA split / VRF", freq: "19 casos", color: "#b45309" },
+        { falla: "Compresor con arranque forzado", producto: "Cámara frigorífica", freq: "12 casos", color: "#64748b" },
+        { falla: "Táctil sin respuesta parcial", producto: "Terminal POS", freq: "8 casos", color: "#64748b" }
+      ],
+      reglas,
+
+      checklist, checkProgress: done + "/" + CHECK_DEFS.length,
+      fotos: s.fotos,
+      addFoto: () => this.setState((st) => ({ fotos: st.fotos.concat([{ tag: "nueva foto" }]) })),
+      execCta: firmaObligatoria ? "Finalizar y pedir firma" : "Finalizar intervención",
+      execNote: firmaObligatoria ? "La OT pasa a Pendiente de conformidad hasta la firma." : "La firma del cliente es opcional en esta empresa.",
+      execNotes: [
+        { t: "Ítems mixtos", d: "Verificaciones sí/no y mediciones numéricas con rango validado en el momento." },
+        { t: "Fuera de rango visible", d: "El técnico ve el aviso al tipear y queda registrado en la OT." },
+        { t: "Funciona sin señal", d: "Checklist, fotos y notas se guardan local y sincronizan al recuperar conexión." },
+        { t: "Una sola acción primaria", d: "El botón inferior siempre es el próximo paso del flujo." }
+      ],
+
+      sigRef: this.sigRef, sigEmpty: s.sigEmpty,
+      sigDown: (e) => {
+        const ctx = this.ctx(); if (!ctx) return;
+        this.drawing = true;
+        const [x, y] = this.pt(e);
+        ctx.beginPath(); ctx.moveTo(x, y);
+        if (s.sigEmpty) this.setState({ sigEmpty: false });
+      },
+      sigMove: (e) => {
+        if (!this.drawing) return;
+        const ctx = this.ctx(); if (!ctx) return;
+        const [x, y] = this.pt(e);
+        ctx.lineTo(x, y); ctx.stroke();
+      },
+      sigUp: () => { this.drawing = false; },
+      sigClear: () => {
+        const c = this.sigRef.current;
+        if (c) c.getContext("2d").clearRect(0, 0, c.width, c.height);
+        this.setState({ sigEmpty: true, signed: false });
+      },
+      sigConfirm: () => { if (!s.sigEmpty || !firmaObligatoria) this.setState({ signed: true, screen: "detail" }); },
+      signCta: s.sigEmpty && firmaObligatoria ? "Esperando firma" : "Confirmar y cerrar OT",
+      signCtaBg: s.sigEmpty && firmaObligatoria ? "#cbd5e1" : "#15803d",
+      signCtaFg: s.sigEmpty && firmaObligatoria ? "#64748b" : "#ffffff",
+      signNote: s.sigEmpty && firmaObligatoria ? "La firma es obligatoria para finalizar la orden." : "Se registra fecha, hora y geoposición del cierre.",
+      resumenFirma: [
+        { k: "Orden", v: "OT-2481" },
+        { k: "Equipo", v: "Lavarropas LI-6013" },
+        { k: "Trabajo", v: "Cambio de placa de control" },
+        { k: "Duración en sitio", v: "1 h 40 m" }
+      ],
+      signNotes: [
+        { t: "Trazo con el dedo", d: "Canvas a pantalla completa, sin zoom accidental ni scroll." },
+        { t: "Comprobante automático", d: "PDF con checklist, mediciones, fotos y firma al correo del cliente." },
+        { t: "Sin firma no se cierra", d: "Configurable por empresa desde SUPER_ADMIN." }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
