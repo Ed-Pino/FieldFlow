@@ -45,6 +45,9 @@ public class AuthService {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Rol invalido: debe ser TECNICO o ADMIN");
         }
+        if (role == Usuario.Rol.SUPER_ADMIN) {
+            throw new IllegalArgumentException("Rol invalido: SUPER_ADMIN no puede crearse por registro");
+        }
         Usuario usuario = new Usuario(
                 request.username(),
                 passwordEncoder.encode(request.password()),

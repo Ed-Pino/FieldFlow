@@ -13,7 +13,7 @@ import lombok.Setter;
 public class Usuario {
 
     public enum Rol {
-        TECNICO, ADMIN
+        TECNICO, ADMIN, SUPER_ADMIN
     }
 
     @Id

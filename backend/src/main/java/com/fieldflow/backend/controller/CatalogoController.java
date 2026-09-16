@@ -43,4 +43,24 @@ public class CatalogoController {
     public List<TecnicoResponse> getTecnicosDisponibles() {
         return catalogoService.getTecnicosDisponibles();
     }
+
+    @DeleteMapping("/clientes/{id}")
+    public void deleteCliente(@PathVariable Long id) {
+        catalogoService.deleteCliente(id);
+    }
+
+    @DeleteMapping("/sedes/{id}")
+    public void deleteSede(@PathVariable Long id) {
+        catalogoService.deleteSede(id);
+    }
+
+    @DeleteMapping("/equipos/{id}")
+    public void deleteEquipo(@PathVariable Long id) {
+        catalogoService.deleteEquipo(id);
+    }
+
+    @DeleteMapping("/tecnicos/{id}")
+    public void deleteTecnico(@PathVariable Long id) {
+        catalogoService.deleteTecnico(id);
+    }
 }

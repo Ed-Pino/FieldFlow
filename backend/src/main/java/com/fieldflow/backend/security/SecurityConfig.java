@@ -5,6 +5,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,8 +40,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/ordenes/**").hasAnyRole("TECNICO", "ADMIN")
-                        .requestMatchers("/api/**").hasRole("ADMIN")
+                        .requestMatchers("/api/ordenes/**").hasAnyRole("TECNICO", "ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/usuarios/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/api/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .anyRequest().permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .build();
