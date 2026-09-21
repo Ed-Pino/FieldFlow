@@ -15,6 +15,7 @@ Requisitos cubiertos: REQ-1 · REQ-2 · REQ-3 · REQ-4 · REQ-5 · REQ-6 · REQ-
 | Capa | Tecnología |
 |---|---|
 | Backend | Java 17 · Spring Boot 4.1.1 · Spring Security 7 · Spring Data JPA |
+| Frontend | React 18 · Vite 5 · React Router 6 · vite-plugin-pwa (Workbox) |
 | Autenticación | JWT (HS256) · OAuth2 Resource Server (claims: iss, sub, role, exp) |
 | Base de datos (prod) | PostgreSQL |
 | Base de datos (test/dev) | H2 (in-memory) |
