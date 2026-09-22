@@ -102,6 +102,8 @@
 
 ## Frontend
 
+- [x] Inicializar proyecto Frontend (Vite + React + PWA, proxy `/api` → `:8081`) — [#12](https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/12)
+
 ### REQ-1 · Autenticación
 - [ ] Pantalla de Login (username + contraseña)
 - [ ] Almacenamiento seguro del JWT en cliente
