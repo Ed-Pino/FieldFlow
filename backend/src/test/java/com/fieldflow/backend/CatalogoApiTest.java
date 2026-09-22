@@ -94,4 +94,33 @@ class CatalogoApiTest extends AbstractApiTestBase {
                 .andExpect(jsonPath("$", not(org.hamcrest.Matchers.empty())))
                 .andExpect(jsonPath("$[?(@.nombre == 'Carlos - Mantenimiento')]").exists());
     }
+
+    @Test
+    void catalogosEpica1DevuelvenDatosSembrados() throws Exception {
+        mvc.perform(get("/api/productos")
+                        .header(AUTHORIZATION, bearer(adminToken())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0].codigo").value("PRD-CAL"))
+                .andExpect(jsonPath("$[0].categoria").value("Caldera"));
+
+        mvc.perform(get("/api/tareas-mantenimiento")
+                        .header(AUTHORIZATION, bearer(adminToken())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0].frecuenciaMeses").value(3));
+
+        mvc.perform(get("/api/fallas-recurrentes")
+                        .header(AUTHORIZATION, bearer(adminToken())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0].contadorCasos").value(6));
+
+        mvc.perform(get("/api/checklists")
+                        .header(AUTHORIZATION, bearer(adminToken())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].codigo").value("CHK-CAL-01"))
+                .andExpect(jsonPath("$[0].items", hasSize(3)));
+    }
 }

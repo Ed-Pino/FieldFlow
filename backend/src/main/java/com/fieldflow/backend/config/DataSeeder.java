@@ -22,6 +22,10 @@ public class DataSeeder {
                                EquipoRepository equipoRepository,
                                TecnicoRepository tecnicoRepository,
                                OrdenTrabajoRepository ordenRepository,
+                               ProductoRepository productoRepository,
+                               TareaMantenimientoRepository tareaMantenimientoRepository,
+                               FallaRecurrenteRepository fallaRecurrenteRepository,
+                               ChecklistRepository checklistRepository,
                                PasswordEncoder passwordEncoder) {
         return args -> {
             if (usuarioRepository.count() > 0) {
@@ -50,6 +54,34 @@ public class DataSeeder {
             Tecnico t1 = new Tecnico("Eduin - Senior Gas", Set.of("Gas", "Caldera"));
             Tecnico t2 = new Tecnico("Carlos - Mantenimiento", Set.of("Preventivo"));
             tecnicoRepository.saveAll(List.of(t1, t2));
+
+            Producto p1 = new Producto("PRD-CAL", "Caldera Industrial", "Caldera", "Navien", "NPE-240A");
+            Producto p2 = new Producto("PRD-EST", "Estufa de Laboratorio", "Gasodomestico", "Whirlpool", "SF-150");
+            Producto p3 = new Producto("PRD-HOR", "Horno Industrial", "Horneado", "Blodgett", "XT-61");
+            productoRepository.saveAll(List.of(p1, p2, p3));
+
+            TareaMantenimiento tm1 = new TareaMantenimiento(p1, "Revision de presion y valvula",
+                    "Verificar presion de trabajo, purga y valvula de seguridad", 3, 10);
+            TareaMantenimiento tm2 = new TareaMantenimiento(p1, "Mantenimiento quemador",
+                    "Limpieza de quemador, filtro y analisis de combustion", 6, 15);
+            TareaMantenimiento tm3 = new TareaMantenimiento(p2, "Calibracion termostato",
+                    "Verificar sonda de temperatura y calibracion", 6, 7);
+            tareaMantenimientoRepository.saveAll(List.of(tm1, tm2, tm3));
+
+            FallaRecurrente f1 = new FallaRecurrente(p1, "No enciende el quemador",
+                    "El Piloto no enciende; la combusion no arranca", 6);
+            FallaRecurrente f2 = new FallaRecurrente(p1, "Perdida de presion",
+                    "La presion baja por purga o valvula de seguridad", 4);
+            FallaRecurrente f3 = new FallaRecurrente(p2, "No calibra temperatura",
+                    "El termostato no llega a la temperatura configurada", 3);
+            fallaRecurrenteRepository.saveAll(List.of(f1, f2, f3));
+
+            Checklist chk = new Checklist("CHK-CAL-01", "Checklist Caldera",
+                    "Caldera Industrial",
+                    List.of(new CheckItem("Revisar presion", false),
+                            new CheckItem("Revisar valvula de seguridad", false),
+                            new CheckItem("Medir CO", false)));
+            checklistRepository.save(chk);
 
             OrdenTrabajo ot = new OrdenTrabajo(
                     "OT-1001", "Mantenimiento Preventivo", OrdenTrabajo.EstadoOT.asignada,

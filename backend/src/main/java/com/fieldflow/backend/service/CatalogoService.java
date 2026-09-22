@@ -1,12 +1,20 @@
 package com.fieldflow.backend.service;
 
+import com.fieldflow.backend.dto.ChecklistResponse;
 import com.fieldflow.backend.dto.ClienteResponse;
 import com.fieldflow.backend.dto.EquipoResponse;
+import com.fieldflow.backend.dto.FallaRecurrenteResponse;
+import com.fieldflow.backend.dto.ProductoResponse;
 import com.fieldflow.backend.dto.SedeResponse;
+import com.fieldflow.backend.dto.TareaMantenimientoResponse;
 import com.fieldflow.backend.dto.TecnicoResponse;
+import com.fieldflow.backend.repository.ChecklistRepository;
 import com.fieldflow.backend.repository.ClienteRepository;
 import com.fieldflow.backend.repository.EquipoRepository;
+import com.fieldflow.backend.repository.FallaRecurrenteRepository;
+import com.fieldflow.backend.repository.ProductoRepository;
 import com.fieldflow.backend.repository.SedeRepository;
+import com.fieldflow.backend.repository.TareaMantenimientoRepository;
 import com.fieldflow.backend.repository.TecnicoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,17 +29,49 @@ public class CatalogoService {
     private final SedeRepository sedeRepository;
     private final EquipoRepository equipoRepository;
     private final TecnicoRepository tecnicoRepository;
+    private final ProductoRepository productoRepository;
+    private final TareaMantenimientoRepository tareaMantenimientoRepository;
+    private final FallaRecurrenteRepository fallaRecurrenteRepository;
+    private final ChecklistRepository checklistRepository;
 
     public CatalogoService(ClienteRepository clienteRepository, SedeRepository sedeRepository,
-                           EquipoRepository equipoRepository, TecnicoRepository tecnicoRepository) {
+                           EquipoRepository equipoRepository, TecnicoRepository tecnicoRepository,
+                           ProductoRepository productoRepository,
+                           TareaMantenimientoRepository tareaMantenimientoRepository,
+                           FallaRecurrenteRepository fallaRecurrenteRepository,
+                           ChecklistRepository checklistRepository) {
         this.clienteRepository = clienteRepository;
         this.sedeRepository = sedeRepository;
         this.equipoRepository = equipoRepository;
         this.tecnicoRepository = tecnicoRepository;
+        this.productoRepository = productoRepository;
+        this.tareaMantenimientoRepository = tareaMantenimientoRepository;
+        this.fallaRecurrenteRepository = fallaRecurrenteRepository;
+        this.checklistRepository = checklistRepository;
     }
 
     public List<ClienteResponse> getClientes() {
         return clienteRepository.findAll().stream().map(ClienteResponse::from).toList();
+    }
+
+    public List<ProductoResponse> getProductos() {
+        return productoRepository.findAll().stream().map(ProductoResponse::from).toList();
+    }
+
+    public List<TareaMantenimientoResponse> getTareasMantenimiento(Long productoId) {
+        return (productoId == null ? tareaMantenimientoRepository.findAll()
+                : tareaMantenimientoRepository.findByProductoId(productoId))
+                .stream().map(TareaMantenimientoResponse::from).toList();
+    }
+
+    public List<FallaRecurrenteResponse> getFallasRecurrentes(Long productoId) {
+        return (productoId == null ? fallaRecurrenteRepository.findAll()
+                : fallaRecurrenteRepository.findByProductoId(productoId))
+                .stream().map(FallaRecurrenteResponse::from).toList();
+    }
+
+    public List<ChecklistResponse> getChecklists() {
+        return checklistRepository.findAll().stream().map(ChecklistResponse::from).toList();
     }
 
     public List<SedeResponse> getSedes(Long clienteId) {
@@ -50,6 +90,26 @@ public class CatalogoService {
 
     public List<TecnicoResponse> getTecnicosDisponibles() {
         return tecnicoRepository.findByDisponibleTrue().stream().map(TecnicoResponse::from).toList();
+    }
+
+    @Transactional
+    public void deleteProducto(Long id) {
+        productoRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteTareaMantenimiento(Long id) {
+        tareaMantenimientoRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteFallaRecurrente(Long id) {
+        fallaRecurrenteRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteChecklist(Long id) {
+        checklistRepository.deleteById(id);
     }
 
     @Transactional

@@ -19,4 +19,20 @@ public class CheckItem {
 
     @Column(nullable = false)
     private boolean hecho = false;
+
+    @Column(length = 20)
+    private String tipo;
+
+    @Column(length = 30)
+    private String unidad;
+
+    public CheckItem(String texto) {
+        this.texto = texto;
+        this.hecho = false;
+    }
+
+    public CheckItem(String texto, boolean hecho) {
+        this.texto = texto;
+        this.hecho = hecho;
+    }
 }

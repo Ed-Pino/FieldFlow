@@ -1,8 +1,12 @@
 package com.fieldflow.backend.controller;
 
+import com.fieldflow.backend.dto.ChecklistResponse;
 import com.fieldflow.backend.dto.ClienteResponse;
 import com.fieldflow.backend.dto.EquipoResponse;
+import com.fieldflow.backend.dto.FallaRecurrenteResponse;
+import com.fieldflow.backend.dto.ProductoResponse;
 import com.fieldflow.backend.dto.SedeResponse;
+import com.fieldflow.backend.dto.TareaMantenimientoResponse;
 import com.fieldflow.backend.dto.TecnicoResponse;
 import com.fieldflow.backend.service.CatalogoService;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +46,48 @@ public class CatalogoController {
     @GetMapping("/tecnicos/disponibles")
     public List<TecnicoResponse> getTecnicosDisponibles() {
         return catalogoService.getTecnicosDisponibles();
+    }
+
+    @GetMapping("/productos")
+    public List<ProductoResponse> getProductos() {
+        return catalogoService.getProductos();
+    }
+
+    @GetMapping("/tareas-mantenimiento")
+    public List<TareaMantenimientoResponse> getTareasMantenimiento(
+            @RequestParam(required = false) Long productoId) {
+        return catalogoService.getTareasMantenimiento(productoId);
+    }
+
+    @GetMapping("/fallas-recurrentes")
+    public List<FallaRecurrenteResponse> getFallasRecurrentes(
+            @RequestParam(required = false) Long productoId) {
+        return catalogoService.getFallasRecurrentes(productoId);
+    }
+
+    @GetMapping("/checklists")
+    public List<ChecklistResponse> getChecklists() {
+        return catalogoService.getChecklists();
+    }
+
+    @DeleteMapping("/productos/{id}")
+    public void deleteProducto(@PathVariable Long id) {
+        catalogoService.deleteProducto(id);
+    }
+
+    @DeleteMapping("/tareas-mantenimiento/{id}")
+    public void deleteTareaMantenimiento(@PathVariable Long id) {
+        catalogoService.deleteTareaMantenimiento(id);
+    }
+
+    @DeleteMapping("/fallas-recurrentes/{id}")
+    public void deleteFallaRecurrente(@PathVariable Long id) {
+        catalogoService.deleteFallaRecurrente(id);
+    }
+
+    @DeleteMapping("/checklists/{id}")
+    public void deleteChecklist(@PathVariable Long id) {
+        catalogoService.deleteChecklist(id);
     }
 
     @DeleteMapping("/clientes/{id}")
