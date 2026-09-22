@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getClientes, getSedes, getEquipos, getTecnicos, deleteSede, deleteEquipo } from '../api/catalogos'
+import { getClientes, getSedes, getEquipos, getTecnicos, deleteSede, deleteEquipo, createCliente } from '../api/catalogos'
 
 const TABS = [
   { id: 'clientes', label: 'Clientes' },
@@ -18,6 +18,9 @@ export default function Catalogos() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [sedeSel, setSedeSel] = useState('')
+  const [formCliente, setFormCliente] = useState({ nombre: '', nit: '' })
+  const [saving, setSaving] = useState(false)
+  const [msg, setMsg] = useState('')
 
   async function load() {
     setError('')

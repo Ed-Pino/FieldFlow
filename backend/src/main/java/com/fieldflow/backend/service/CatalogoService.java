@@ -1,6 +1,7 @@
 package com.fieldflow.backend.service;
 
 import com.fieldflow.backend.dto.ChecklistResponse;
+import com.fieldflow.backend.dto.ClienteRequest;
 import com.fieldflow.backend.dto.ClienteResponse;
 import com.fieldflow.backend.dto.EquipoResponse;
 import com.fieldflow.backend.dto.FallaRecurrenteResponse;
@@ -16,8 +17,10 @@ import com.fieldflow.backend.repository.ProductoRepository;
 import com.fieldflow.backend.repository.SedeRepository;
 import com.fieldflow.backend.repository.TareaMantenimientoRepository;
 import com.fieldflow.backend.repository.TecnicoRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -52,6 +55,14 @@ public class CatalogoService {
 
     public List<ClienteResponse> getClientes() {
         return clienteRepository.findAll().stream().map(ClienteResponse::from).toList();
+    }
+
+    @Transactional
+    public ClienteResponse altaCliente(ClienteRequest request) {
+        clienteRepository.findByNit(request.nit()).ifPresent(existente -> {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un cliente con ese NIT");
+        });
+        return ClienteResponse.from(clienteRepository.save(request.toEntity()));
     }
 
     public List<ProductoResponse> getProductos() {
