@@ -1,6 +1,7 @@
 package com.fieldflow.backend.controller;
 
 import com.fieldflow.backend.dto.ChecklistResponse;
+import com.fieldflow.backend.dto.ClienteRequest;
 import com.fieldflow.backend.dto.ClienteResponse;
 import com.fieldflow.backend.dto.EquipoResponse;
 import com.fieldflow.backend.dto.FallaRecurrenteResponse;
@@ -9,6 +10,9 @@ import com.fieldflow.backend.dto.SedeResponse;
 import com.fieldflow.backend.dto.TareaMantenimientoResponse;
 import com.fieldflow.backend.dto.TecnicoResponse;
 import com.fieldflow.backend.service.CatalogoService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +30,12 @@ public class CatalogoController {
     @GetMapping("/clientes")
     public List<ClienteResponse> getClientes() {
         return catalogoService.getClientes();
+    }
+
+    @PostMapping("/clientes")
+    public ResponseEntity<ClienteResponse> altaCliente(@RequestBody @Valid ClienteRequest request) {
+        ClienteResponse creado = catalogoService.altaCliente(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
     @GetMapping("/sedes")

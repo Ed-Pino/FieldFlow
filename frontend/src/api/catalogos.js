@@ -4,6 +4,10 @@ export function getClientes() {
   return request('/api/clientes')
 }
 
+export function createCliente(payload) {
+  return request('/api/clientes', { method: 'POST', body: JSON.stringify(payload) })
+}
+
 export function getSedes(clienteId) {
   const q = clienteId ? `?clienteId=${clienteId}` : ''
   return request(`/api/sedes${q}`)

@@ -13,11 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -122,5 +125,43 @@ class CatalogoApiTest extends AbstractApiTestBase {
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].codigo").value("CHK-CAL-01"))
                 .andExpect(jsonPath("$[0].items", hasSize(3)));
+    }
+
+    @Test
+    void altaClienteCreaClienteYloDevuelveEn201() throws Exception {
+        String nit = "9012345678";
+
+        String resp = mvc.perform(post("/api/clientes")
+                        .header(AUTHORIZATION, bearer(adminToken()))
+                        .contentType(APPLICATION_JSON)
+                        .content(om.writeValueAsString(Map.of("nombre", "Distribuidora Andina S.A.S", "nit", nit))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.nombre").value("Distribuidora Andina S.A.S"))
+                .andExpect(jsonPath("$.nit").value(nit))
+                .andReturn().getResponse().getContentAsString();
+
+        Long idNuevo = om.readTree(resp).get("id").asLong();
+
+        mvc.perform(get("/api/clientes")
+                        .header(AUTHORIZATION, bearer(adminToken())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.id == " + idNuevo + ")]").exists());
+
+        mvc.perform(get("/api/clientes")
+                        .header(AUTHORIZATION, bearer(adminToken())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.nit == '" + nit + "')]").exists());
+    }
+
+    @Test
+    void altaClienteConNitDuplicadoDevuelve409() throws Exception {
+        String nitDuplicado = clienteRepository.findAll().get(0).getNit();
+
+        mvc.perform(post("/api/clientes")
+                        .header(AUTHORIZATION, bearer(adminToken()))
+                        .contentType(APPLICATION_JSON)
+                        .content(om.writeValueAsString(Map.of("nombre", "Cliente Duplicado", "nit", nitDuplicado))))
+                .andExpect(status().isConflict());
     }
 }
