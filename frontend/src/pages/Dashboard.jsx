@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 
 export default function Dashboard() {
-  const user = JSON.parse(localStorage.getItem('ff_user') || '{}')
+  const raw = localStorage.getItem('ff_user')
+  const user = raw && raw !== 'undefined' ? JSON.parse(raw) : {}
   const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN'
 
   return (

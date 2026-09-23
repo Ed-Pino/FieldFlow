@@ -2,7 +2,8 @@ import { Outlet, Link, useNavigate } from 'react-router-dom'
 
 export default function App() {
   const navigate = useNavigate()
-  const user = JSON.parse(localStorage.getItem('ff_user') || '{}')
+  const raw = localStorage.getItem('ff_user')
+  const user = raw && raw !== 'undefined' ? JSON.parse(raw) : {}
 
   function logout() {
     localStorage.removeItem('ff_token')
