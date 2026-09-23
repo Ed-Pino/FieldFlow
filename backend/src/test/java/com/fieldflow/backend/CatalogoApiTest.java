@@ -148,7 +148,7 @@ class CatalogoApiTest extends AbstractApiTestBase {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.id == " + idNuevo + ")]").exists());
 
-        mvc.perform(get("/api/dedos-por-cliente")
+        mvc.perform(get("/api/clientes")
                         .header(AUTHORIZATION, bearer(adminToken())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.nit == '" + nit + "')]").exists());
