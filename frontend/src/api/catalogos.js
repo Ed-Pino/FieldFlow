@@ -18,6 +18,14 @@ export function getEquipos(sedeId) {
   return request(`/api/equipos${q}`)
 }
 
+export function createEquipo(payload) {
+  return request('/api/equipos', { method: 'POST', body: JSON.stringify(payload) })
+}
+
+export function getProductos() {
+  return request('/api/productos')
+}
+
 export function getTecnicos() {
   return request('/api/tecnicos')
 }

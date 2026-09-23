@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getClientes, getSedes, getEquipos, getTecnicos, deleteSede, deleteEquipo, createCliente } from '../api/catalogos'
+import { getClientes, getSedes, getEquipos, getTecnicos, deleteSede, deleteEquipo, createCliente, createEquipo, getProductos } from '../api/catalogos'
 
 const TABS = [
   { id: 'clientes', label: 'Clientes' },
@@ -26,6 +26,11 @@ export default function Catalogos() {
   const [loadingFicha, setLoadingFicha] = useState(false)
   const [equiposPorSede, setEquiposPorSede] = useState({})
   const [sedeExpandida, setSedeExpandida] = useState(null)
+
+  const [showFormEquipo, setShowFormEquipo] = useState(false)
+  const [formEquipo, setFormEquipo] = useState({ codigo: '', nombre: '', tipo: '', sedeId: '' })
+  const [productos, setProductos] = useState([])
+  const [savingEquipo, setSavingEquipo] = useState(false)
 
   async function load() {
     setError('')
@@ -66,6 +71,42 @@ export default function Catalogos() {
     setSedesCliente([])
     setEquiposPorSede({})
     setSedeExpandida(null)
+    setShowFormEquipo(false)
+    setFormEquipo({ codigo: '', nombre: '', tipo: '', sedeId: '' })
+  }
+
+  async function abrirFormEquipo() {
+    setShowFormEquipo(true)
+    if (productos.length === 0) {
+      try {
+        const prods = await getProductos()
+        setProductos(prods)
+      } catch {}
+    }
+    if (sedesCliente.length === 1) {
+      setFormEquipo((prev) => ({ ...prev, sedeId: String(sedesCliente[0].id) }))
+    }
+  }
+
+  async function handleCreateEquipo(e) {
+    e.preventDefault()
+    setSavingEquipo(true)
+    setError('')
+    try {
+      await createEquipo({
+        codigo: formEquipo.codigo,
+        nombre: formEquipo.nombre,
+        tipo: formEquipo.tipo,
+        sedeId: Number(formEquipo.sedeId)
+      })
+      setShowFormEquipo(false)
+      setFormEquipo({ codigo: '', nombre: '', tipo: '', sedeId: '' })
+      await abrirFicha(clienteSel)
+    } catch (err) {
+      setError(err.message || 'Error al crear equipo')
+    } finally {
+      setSavingEquipo(false)
+    }
   }
 
   async function toggleSede(sede) {
@@ -161,12 +202,86 @@ export default function Catalogos() {
                 <h2 style={{ margin: '4px 0' }}>{clienteSel.nombre}</h2>
                 <div className="mono muted" style={{ fontSize: 13 }}>CUIT / DNI: {clienteSel.nit}</div>
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <div className="mono kicker" style={{ marginBottom: 4 }}>SEDES</div>
-                <div style={{ fontSize: 24, fontWeight: 700 }}>{sedesCliente.length}</div>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                <div style={{ textAlign: 'right' }}>
+                  <div className="mono kicker" style={{ marginBottom: 4 }}>SEDES</div>
+                  <div style={{ fontSize: 24, fontWeight: 700 }}>{sedesCliente.length}</div>
+                </div>
+                {sedesCliente.length > 0 && !showFormEquipo && (
+                  <button className="btn btn-primary" onClick={abrirFormEquipo}>
+                    + Nuevo Equipo
+                  </button>
+                )}
               </div>
             </div>
           </div>
+
+          {showFormEquipo && (
+            <div className="card" style={{ marginBottom: 16, borderLeft: '3px solid var(--blue)' }}>
+              <div className="mono kicker" style={{ marginBottom: 8 }}>NUEVO EQUIPO</div>
+              <form onSubmit={handleCreateEquipo} style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 480 }}>
+                <label className="form-row">
+                  Código
+                  <input
+                    value={formEquipo.codigo}
+                    onChange={(e) => setFormEquipo({ ...formEquipo, codigo: e.target.value })}
+                    required
+                    placeholder="Ej: EQ-001"
+                  />
+                </label>
+                <label className="form-row">
+                  Nombre
+                  <input
+                    value={formEquipo.nombre}
+                    onChange={(e) => setFormEquipo({ ...formEquipo, nombre: e.target.value })}
+                    required
+                    placeholder="Nombre del equipo"
+                  />
+                </label>
+                <label className="form-row">
+                  Tipo (producto)
+                  <select
+                    value={formEquipo.tipo}
+                    onChange={(e) => setFormEquipo({ ...formEquipo, tipo: e.target.value })}
+                    required
+                  >
+                    <option value="">Seleccionar tipo…</option>
+                    {productos.map((p) => (
+                      <option key={p.id} value={p.nombre}>{p.nombre}</option>
+                    ))}
+                  </select>
+                </label>
+                {sedesCliente.length > 1 && (
+                  <label className="form-row">
+                    Sede
+                    <select
+                      value={formEquipo.sedeId}
+                      onChange={(e) => setFormEquipo({ ...formEquipo, sedeId: e.target.value })}
+                      required
+                    >
+                      <option value="">Seleccionar sede…</option>
+                      {sedesCliente.map((s) => (
+                        <option key={s.id} value={s.id}>{s.nombre}</option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+                {sedesCliente.length === 1 && (
+                  <div className="muted" style={{ fontSize: 13 }}>
+                    Sede: {sedesCliente[0].nombre}
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button type="submit" className="btn btn-primary" disabled={savingEquipo}>
+                    {savingEquipo ? 'Guardando…' : 'Guardar equipo'}
+                  </button>
+                  <button type="button" className="btn btn-outline" onClick={() => setShowFormEquipo(false)}>
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
 
           {loadingFicha && <div className="muted">Cargando sedes…</div>}
 

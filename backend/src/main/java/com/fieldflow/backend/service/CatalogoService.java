@@ -3,12 +3,15 @@ package com.fieldflow.backend.service;
 import com.fieldflow.backend.dto.ChecklistResponse;
 import com.fieldflow.backend.dto.ClienteRequest;
 import com.fieldflow.backend.dto.ClienteResponse;
+import com.fieldflow.backend.dto.EquipoRequest;
 import com.fieldflow.backend.dto.EquipoResponse;
 import com.fieldflow.backend.dto.FallaRecurrenteResponse;
 import com.fieldflow.backend.dto.ProductoResponse;
 import com.fieldflow.backend.dto.SedeResponse;
 import com.fieldflow.backend.dto.TareaMantenimientoResponse;
 import com.fieldflow.backend.dto.TecnicoResponse;
+import com.fieldflow.backend.entity.Equipo;
+import com.fieldflow.backend.entity.Sede;
 import com.fieldflow.backend.repository.ChecklistRepository;
 import com.fieldflow.backend.repository.ClienteRepository;
 import com.fieldflow.backend.repository.EquipoRepository;
@@ -63,6 +66,17 @@ public class CatalogoService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un cliente con ese NIT");
         });
         return ClienteResponse.from(clienteRepository.save(request.toEntity()));
+    }
+
+    @Transactional
+    public EquipoResponse createEquipo(EquipoRequest request) {
+        equipoRepository.findByCodigo(request.codigo()).ifPresent(existente -> {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un equipo con ese código");
+        });
+        Sede sede = sedeRepository.findById(request.sedeId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sede no encontrada"));
+        Equipo equipo = new Equipo(request.codigo(), request.nombre(), request.tipo(), null, sede);
+        return EquipoResponse.from(equipoRepository.save(equipo));
     }
 
     public List<ProductoResponse> getProductos() {

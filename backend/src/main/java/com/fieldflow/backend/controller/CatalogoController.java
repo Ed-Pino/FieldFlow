@@ -3,6 +3,7 @@ package com.fieldflow.backend.controller;
 import com.fieldflow.backend.dto.ChecklistResponse;
 import com.fieldflow.backend.dto.ClienteRequest;
 import com.fieldflow.backend.dto.ClienteResponse;
+import com.fieldflow.backend.dto.EquipoRequest;
 import com.fieldflow.backend.dto.EquipoResponse;
 import com.fieldflow.backend.dto.FallaRecurrenteResponse;
 import com.fieldflow.backend.dto.ProductoResponse;
@@ -13,6 +14,7 @@ import com.fieldflow.backend.service.CatalogoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,6 +48,13 @@ public class CatalogoController {
     @GetMapping("/equipos")
     public List<EquipoResponse> getEquipos(@RequestParam(required = false) Long sedeId) {
         return catalogoService.getEquipos(sedeId);
+    }
+
+    @PostMapping("/equipos")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<EquipoResponse> createEquipo(@RequestBody @Valid EquipoRequest request) {
+        EquipoResponse creado = catalogoService.createEquipo(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
     @GetMapping("/tecnicos")
