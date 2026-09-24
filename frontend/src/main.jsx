@@ -5,6 +5,7 @@ import App from './App'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Catalogos from './pages/Catalogos'
+import Ordenes from './pages/Ordenes'
 import './styles.css'
 
 function ProtectedRoute({ children }) {
@@ -27,6 +28,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         >
           <Route index element={<Dashboard />} />
           <Route path="catalogos" element={<Catalogos />} />
+          <Route path="ordenes" element={<Ordenes />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

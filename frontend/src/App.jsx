@@ -34,6 +34,9 @@ export default function App() {
               <span className="nav-num">02</span> Catálogos
             </Link>
           )}
+          <Link to="/ordenes" className="nav-item">
+            <span className="nav-num">03</span> Órdenes
+          </Link>
         </div>
 
         <div className="sidebar-foot">
