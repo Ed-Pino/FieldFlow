@@ -32,6 +32,8 @@ const TRANSICIONES = {
   finalizada: []
 }
 
+const FLUJO = ['pendiente', 'asignada', 'enCamino', 'enEjecucion', 'pendienteConformidad', 'finalizada']
+
 export default function DetalleOrden() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -239,10 +241,65 @@ export default function DetalleOrden() {
         </div>
       )}
 
+      {/* Pipeline visual de estado */}
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="mono kicker" style={{ marginBottom: 12 }}>ESTADO DE LA ORDEN</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 0, overflowX: 'auto', padding: '8px 0' }}>
+          {FLUJO.map((step, i) => {
+            const currentIdx = FLUJO.indexOf(orden.estado)
+            const isCompleted = currentIdx > i
+            const isCurrent = orden.estado === step
+            const isFuture = currentIdx < i
+            const isReprogramada = orden.estado === 'reprogramada'
+
+            return (
+              <div key={step} style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 80 }}>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 14, fontWeight: 700, transition: 'all 0.2s',
+                    background: isCompleted ? '#15803d' : isCurrent ? ESTADO_COLORS[step]?.bg || '#e5e7eb' : '#e5e7eb',
+                    color: isCompleted ? '#fff' : isCurrent ? ESTADO_COLORS[step]?.text || '#374151' : '#9ca3af',
+                    border: isCurrent ? `3px solid ${ESTADO_COLORS[step]?.text || '#374151'}` : '3px solid transparent',
+                    boxShadow: isCurrent ? `0 0 0 4px ${ESTADO_COLORS[step]?.bg}40` : 'none'
+                  }}>
+                    {isCompleted ? '✓' : i + 1}
+                  </div>
+                  <div style={{
+                    marginTop: 6, fontSize: 11, fontWeight: isCurrent ? 700 : 400, textAlign: 'center',
+                    color: isCompleted ? '#15803d' : isCurrent ? 'var(--text)' : 'var(--muted)',
+                    lineHeight: 1.2
+                  }}>
+                    {ESTADO_LABEL[step]}
+                  </div>
+                </div>
+                {i < FLUJO.length - 1 && (
+                  <div style={{
+                    width: 24, height: 3, marginTop: -18,
+                    background: isCompleted ? '#15803d' : '#d1d5db',
+                    borderRadius: 2
+                  }} />
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {orden.estado === 'reprogramada' && (
+          <div style={{
+            marginTop: 8, padding: '8px 12px', borderRadius: 8,
+            background: ESTADO_COLORS.reprogramada.bg, color: ESTADO_COLORS.reprogramada.text,
+            fontSize: 13, fontWeight: 600
+          }}>
+            Esta orden fue reprogramada. Seleccioná un nuevo estado para reactivarla.
+          </div>
+        )}
+      </div>
+
       {/* Acciones de estado */}
       {transiciones.length > 0 && (
         <div className="card" style={{ marginBottom: 16 }}>
-          <div className="mono kicker" style={{ marginBottom: 8 }}>CAMBIAR ESTADO</div>
+          <div className="mono kicker" style={{ marginBottom: 8 }}>ACCIONES DISPONIBLES</div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {transiciones.map((t) => (
               <button
@@ -250,8 +307,12 @@ export default function DetalleOrden() {
                 className="btn btn-outline"
                 disabled={updating}
                 onClick={() => handleCambiarEstado(t)}
+                style={{
+                  borderColor: ESTADO_COLORS[t]?.text || undefined,
+                  color: ESTADO_COLORS[t]?.text || undefined
+                }}
               >
-                {ESTADO_LABEL[t]}
+                → {ESTADO_LABEL[t]}
               </button>
             ))}
           </div>
