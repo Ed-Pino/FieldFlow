@@ -8,6 +8,10 @@ export function getOrdenById(id) {
   return request(`/api/ordenes/${id}`)
 }
 
+export function createOrden(payload) {
+  return request('/api/ordenes', { method: 'POST', body: JSON.stringify(payload) })
+}
+
 export function updateEstado(id, estado) {
   return request(`/api/ordenes/${id}/estado`, {
     method: 'PUT',

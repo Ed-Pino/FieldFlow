@@ -14,7 +14,7 @@ export default function Dashboard() {
         </div>
         {isAdmin && (
           <div className="head-actions">
-            <Link to="/admin/ordenes/nueva" className="btn btn-primary">
+            <Link to="/ordenes/nueva" className="btn btn-primary">
               + Nueva OT
             </Link>
             <Link to="/admin/agenda" className="btn btn-outline">

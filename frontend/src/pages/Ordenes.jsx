@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { getOrdenes } from '../api/ordenes'
 
 const ESTADOS = [
@@ -80,6 +81,9 @@ export default function Ordenes() {
           <h1 className="page-title">Órdenes de Trabajo</h1>
         </div>
         <div className="head-actions">
+          <Link to="/ordenes/nueva" className="btn btn-primary">
+            + Nueva OT
+          </Link>
           <button className="btn btn-outline" disabled={loading} onClick={load}>
             Recargar
           </button>
