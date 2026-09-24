@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { getOrdenes } from '../api/ordenes'
 
 const ESTADOS = [
@@ -44,11 +44,11 @@ function estadoLabel(estado) {
 }
 
 export default function Ordenes() {
+  const navigate = useNavigate()
   const [ordenes, setOrdenes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [filtroEstado, setFiltroEstado] = useState('')
-  const [ordenSel, setOrdenSel] = useState(null)
 
   async function load() {
     setError('')
@@ -164,7 +164,7 @@ export default function Ordenes() {
                 <tr
                   key={o.id}
                   style={{ cursor: 'pointer' }}
-                  onClick={() => setOrdenSel(ordenSel?.id === o.id ? null : o)}
+                  onClick={() => navigate(`/ordenes/${o.id}`)}
                 >
                   <td className="mono" style={{ fontWeight: 600 }}>{o.codigo}</td>
                   <td>{o.cliente || '—'}</td>
@@ -197,75 +197,6 @@ export default function Ordenes() {
               ))}
             </tbody>
           </table>
-        </div>
-      )}
-
-      {ordenSel && (
-        <div className="card" style={{ marginTop: 16, borderLeft: '3px solid var(--blue)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div className="mono kicker" style={{ marginBottom: 4 }}>DETALLE DE ORDEN</div>
-              <h2 style={{ margin: '4px 0' }}>{ordenSel.codigo}</h2>
-            </div>
-            <button className="btn btn-outline" onClick={() => setOrdenSel(null)}>
-              Cerrar
-            </button>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginTop: 12 }}>
-            <div>
-              <div className="mono muted" style={{ fontSize: 11, marginBottom: 2 }}>CLIENTE</div>
-              <div style={{ fontWeight: 600 }}>{ordenSel.cliente || '—'}</div>
-            </div>
-            <div>
-              <div className="mono muted" style={{ fontSize: 11, marginBottom: 2 }}>SEDE</div>
-              <div style={{ fontWeight: 600 }}>{ordenSel.sede || '—'}</div>
-            </div>
-            <div>
-              <div className="mono muted" style={{ fontSize: 11, marginBottom: 2 }}>EQUIPO</div>
-              <div style={{ fontWeight: 600 }}>{ordenSel.equipo || '—'}</div>
-            </div>
-            <div>
-              <div className="mono muted" style={{ fontSize: 11, marginBottom: 2 }}>TÉCNICO</div>
-              <div style={{ fontWeight: 600 }}>{ordenSel.tecnico || 'Sin asignar'}</div>
-            </div>
-            <div>
-              <div className="mono muted" style={{ fontSize: 11, marginBottom: 2 }}>TIPO SERVICIO</div>
-              <div>{ordenSel.tipoServicio || '—'}</div>
-            </div>
-            <div>
-              <div className="mono muted" style={{ fontSize: 11, marginBottom: 2 }}>PRIORIDAD</div>
-              <div style={{ color: PRIORIDAD_COLORS[ordenSel.prioridad], fontWeight: 600 }}>
-                {ordenSel.prioridad || '—'}
-              </div>
-            </div>
-            <div>
-              <div className="mono muted" style={{ fontSize: 11, marginBottom: 2 }}>DURACIÓN EST.</div>
-              <div>{ordenSel.duracionEstimadaMin ? `${ordenSel.duracionEstimadaMin} min` : '—'}</div>
-            </div>
-            <div>
-              <div className="mono muted" style={{ fontSize: 11, marginBottom: 2 }}>FECHA CREACIÓN</div>
-              <div>{ordenSel.fechaCreacion || '—'}</div>
-            </div>
-          </div>
-
-          {ordenSel.descripcion && (
-            <div style={{ marginTop: 12 }}>
-              <div className="mono muted" style={{ fontSize: 11, marginBottom: 2 }}>DESCRIPCIÓN</div>
-              <div>{ordenSel.descripcion}</div>
-            </div>
-          )}
-
-          {ordenSel.historial && ordenSel.historial.length > 0 && (
-            <div style={{ marginTop: 12 }}>
-              <div className="mono muted" style={{ fontSize: 11, marginBottom: 6 }}>HISTORIAL</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                {ordenSel.historial.map((h, i) => (
-                  <div key={i} style={{ fontSize: 13, color: 'var(--muted)' }}>• {h}</div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>

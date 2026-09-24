@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import Catalogos from './pages/Catalogos'
 import Ordenes from './pages/Ordenes'
 import NuevaOrden from './pages/NuevaOrden'
+import DetalleOrden from './pages/DetalleOrden'
 import './styles.css'
 
 function ProtectedRoute({ children }) {
@@ -31,6 +32,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="catalogos" element={<Catalogos />} />
           <Route path="ordenes" element={<Ordenes />} />
           <Route path="ordenes/nueva" element={<NuevaOrden />} />
+          <Route path="ordenes/:id" element={<DetalleOrden />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

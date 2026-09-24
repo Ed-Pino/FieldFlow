@@ -18,3 +18,7 @@ export function updateEstado(id, estado) {
     body: JSON.stringify({ estado })
   })
 }
+
+export function getTrazabilidad(id) {
+  return request(`/api/ordenes/${id}/trazabilidad`)
+}
