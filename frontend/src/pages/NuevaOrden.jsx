@@ -29,6 +29,9 @@ export default function NuevaOrden() {
   const [loadingEquipos, setLoadingEquipos] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
+
+  const hoy = new Date().toISOString().split('T')[0]
 
   useEffect(() => {
     Promise.all([getClientes(), getTecnicos()])
@@ -62,6 +65,24 @@ export default function NuevaOrden() {
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
+    setFieldErrors({})
+
+    const errs = {}
+    if (!clienteId) errs.clienteId = 'Seleccioná un cliente'
+    if (!sedeId) errs.sedeId = 'Seleccioná una sede'
+    if (!equipoId) errs.equipoId = 'Seleccioná un equipo'
+    if (!tipoServicio) errs.tipoServicio = 'Seleccioná un tipo de servicio'
+    if (!fechaProgramada) errs.fechaProgramada = 'Ingresá una fecha'
+    if (fechaProgramada && fechaProgramada < hoy) errs.fechaProgramada = 'La fecha no puede ser en el pasado'
+    if (!descripcion.trim()) errs.descripcion = 'Ingresá una descripción'
+    if (duracionEstimadaMin && Number(duracionEstimadaMin) < 1) errs.duracionEstimadaMin = 'La duración debe ser mayor a 0'
+
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs)
+      setError('Completá los campos obligatorios')
+      return
+    }
+
     setSaving(true)
     try {
       await createOrden({
@@ -178,20 +199,27 @@ export default function NuevaOrden() {
               <input
                 type="date"
                 value={fechaProgramada}
+                min={hoy}
                 onChange={(e) => setFechaProgramada(e.target.value)}
                 required
               />
+              {fieldErrors.fechaProgramada && (
+                <span style={{ color: '#b91c1c', fontSize: 12 }}>{fieldErrors.fechaProgramada}</span>
+              )}
             </label>
 
             <label className="form-row">
               Duración estimada (minutos)
               <input
                 type="number"
-                min="0"
+                min="1"
                 value={duracionEstimadaMin}
                 onChange={(e) => setDuracionEstimadaMin(e.target.value)}
                 placeholder="Ej: 120"
               />
+              {fieldErrors.duracionEstimadaMin && (
+                <span style={{ color: '#b91c1c', fontSize: 12 }}>{fieldErrors.duracionEstimadaMin}</span>
+              )}
             </label>
 
             <label className="form-row">
@@ -204,6 +232,9 @@ export default function NuevaOrden() {
                 placeholder="Describe el trabajo a realizar…"
                 style={{ resize: 'vertical' }}
               />
+              {fieldErrors.descripcion && (
+                <span style={{ color: '#b91c1c', fontSize: 12 }}>{fieldErrors.descripcion}</span>
+              )}
             </label>
           </div>
 
