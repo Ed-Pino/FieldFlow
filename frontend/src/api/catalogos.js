@@ -13,6 +13,10 @@ export function getSedes(clienteId) {
   return request(`/api/sedes${q}`)
 }
 
+export function createSede(payload) {
+  return request('/api/sedes', { method: 'POST', body: JSON.stringify(payload) })
+}
+
 export function getEquipos(sedeId) {
   const q = sedeId ? `?sedeId=${sedeId}` : ''
   return request(`/api/equipos${q}`)
@@ -22,12 +26,24 @@ export function createEquipo(payload) {
   return request('/api/equipos', { method: 'POST', body: JSON.stringify(payload) })
 }
 
+export function getEquipo(id) {
+  return request(`/api/equipos/${id}`)
+}
+
 export function getProductos() {
   return request('/api/productos')
 }
 
 export function getTecnicos() {
   return request('/api/tecnicos')
+}
+
+export function getTecnicosDisponibles() {
+  return request('/api/tecnicos/disponibles')
+}
+
+export function getChecklists() {
+  return request('/api/checklists')
 }
 
 export function deleteCliente(id) {

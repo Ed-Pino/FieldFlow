@@ -1,10 +1,12 @@
 package com.fieldflow.backend.controller;
 
+import com.fieldflow.backend.dto.AgendaRequest;
 import com.fieldflow.backend.dto.ConformidadRequest;
 import com.fieldflow.backend.dto.EstadoRequest;
 import com.fieldflow.backend.dto.EvidenciaRequest;
 import com.fieldflow.backend.dto.OrdenRequest;
 import com.fieldflow.backend.dto.OrdenResponse;
+import com.fieldflow.backend.dto.TecnicoRequest;
 import com.fieldflow.backend.service.OrdenService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -45,7 +47,7 @@ public class OrdenController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     public ResponseEntity<OrdenResponse> create(@Valid @RequestBody OrdenRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ordenService.create(request));
     }
@@ -58,6 +60,18 @@ public class OrdenController {
     @PutMapping("/{id}/evidencia")
     public OrdenResponse registrarEvidencia(@PathVariable Long id, @RequestBody EvidenciaRequest request) {
         return ordenService.registrarEvidencia(id, request);
+    }
+
+    @PutMapping("/{id}/tecnico")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+    public OrdenResponse asignarTecnico(@PathVariable Long id, @RequestBody TecnicoRequest request) {
+        return ordenService.asignarTecnico(id, request.tecnicoId());
+    }
+
+    @PutMapping("/{id}/agenda")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+    public OrdenResponse agendar(@PathVariable Long id, @Valid @RequestBody AgendaRequest request) {
+        return ordenService.agendar(id, request.fechaProgramada());
     }
 
     @PostMapping("/{id}/conformidad")

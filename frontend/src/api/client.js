@@ -31,7 +31,9 @@ export async function request(path, options = {}) {
 
   if (!res.ok) {
     const detail = await res.text().catch(() => '')
-    throw new Error(detail || `Error ${res.status}`)
+    const err = new Error(detail || `Error ${res.status}`)
+    err.status = res.status
+    throw err
   }
 
   const ct = res.headers.get('content-type') || ''

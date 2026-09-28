@@ -6,6 +6,7 @@ import com.fieldflow.backend.dto.OrdenRequest;
 import com.fieldflow.backend.dto.OrdenResponse;
 import com.fieldflow.backend.entity.*;
 import com.fieldflow.backend.repository.*;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,26 @@ public class OrdenService {
         this.sedeRepository = sedeRepository;
         this.equipoRepository = equipoRepository;
         this.tecnicoRepository = tecnicoRepository;
+    }
+
+    /**
+     * La secuencia en memoria se pierde en cada reinicio; se reinicia desde el
+     * maximo codigo existente (OT-NNNN) para no generar duplicados (columna unique).
+     */
+    @PostConstruct
+    void initSequence() {
+        int max = 1001;
+        for (OrdenTrabajo ot : ordenRepository.findAll()) {
+            String codigo = ot.getCodigo();
+            if (codigo != null && codigo.startsWith("OT-")) {
+                try {
+                    max = Math.max(max, Integer.parseInt(codigo.substring(3)));
+                } catch (NumberFormatException ignored) {
+                    // codigos con formato no numerico se ignoran
+                }
+            }
+        }
+        SEQUENCE.set(max + 1);
     }
 
     public List<OrdenResponse> getAll() {
@@ -103,6 +124,27 @@ public class OrdenService {
         }
         ot.setEstado(nuevoEstado);
         ot.getHistorial().add(nuevoEstado.name() + " "
+                + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        return OrdenResponse.from(ordenRepository.save(ot));
+    }
+
+    @Transactional
+    public OrdenResponse asignarTecnico(Long id, Long tecnicoId) {
+        OrdenTrabajo ot = getOrThrow(id);
+        Tecnico tecnico = tecnicoId == null ? null
+                : tecnicoRepository.findById(tecnicoId)
+                .orElseThrow(() -> new EntityNotFoundException("Tecnico no encontrado"));
+        ot.setTecnico(tecnico);
+        ot.getHistorial().add("Tecnico asignado: " + (tecnico == null ? "sin asignar" : tecnico.getNombre())
+                + " " + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        return OrdenResponse.from(ordenRepository.save(ot));
+    }
+
+    @Transactional
+    public OrdenResponse agendar(Long id, java.time.LocalDate fechaProgramada) {
+        OrdenTrabajo ot = getOrThrow(id);
+        ot.setFechaProgramada(fechaProgramada);
+        ot.getHistorial().add("Reprogramada para " + fechaProgramada + " "
                 + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         return OrdenResponse.from(ordenRepository.save(ot));
     }

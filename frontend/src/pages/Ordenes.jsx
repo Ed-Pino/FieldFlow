@@ -1,62 +1,59 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { getOrdenes } from '../api/ordenes'
-
-const ESTADOS = [
-  { value: '', label: 'Todas' },
-  { value: 'pendiente', label: 'Pendiente' },
-  { value: 'asignada', label: 'Asignada' },
-  { value: 'enCamino', label: 'En camino' },
-  { value: 'enEjecucion', label: 'En ejecución' },
-  { value: 'pendienteConformidad', label: 'Pend. conformidad' },
-  { value: 'finalizada', label: 'Finalizada' },
-  { value: 'reprogramada', label: 'Reprogramada' }
-]
+import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { getClientes, getTecnicos } from '../api/catalogos'
+import { ESTADOS, getOrdenes } from '../api/ordenes'
 
 const ESTADO_COLORS = {
-  pendiente: { bg: '#fef3c7', text: '#92400e' },
-  asignada: { bg: '#dbeafe', text: '#1e40af' },
-  enCamino: { bg: '#e0e7ff', text: '#3730a3' },
-  enEjecucion: { bg: '#d1fae5', text: '#065f46' },
-  pendienteConformidad: { bg: '#fce7f3', text: '#9d174d' },
-  finalizada: { bg: '#e5e7eb', text: '#374151' },
-  reprogramada: { bg: '#fed7aa', text: '#9a3412' }
+  pendiente: '#64748b',
+  asignada: '#c2410c',
+  enCamino: '#2563eb',
+  enEjecucion: '#7c3aed',
+  pendienteConformidad: '#b45309',
+  finalizada: '#15803d',
+  reprogramada: '#dc2626',
 }
 
-const PRIORIDAD_COLORS = {
-  baja: '#64748b',
-  media: '#1b4f9c',
-  alta: '#c2410c',
-  urgente: '#b91c1c'
+const ESTADO_LABELS = {
+  pendiente: 'Pendiente',
+  asignada: 'Asignada',
+  enCamino: 'En camino',
+  enEjecucion: 'En ejecución',
+  pendienteConformidad: 'Pend. conformidad',
+  finalizada: 'Finalizada',
+  reprogramada: 'Reprogramada',
 }
 
-function estadoLabel(estado) {
-  const map = {
-    pendiente: 'Pendiente',
-    asignada: 'Asignada',
-    enCamino: 'En camino',
-    enEjecucion: 'En ejecución',
-    pendienteConformidad: 'Pend. conformidad',
-    finalizada: 'Finalizada',
-    reprogramada: 'Reprogramada'
-  }
-  return map[estado] || estado
+export function EstadoBadge({ estado }) {
+  const color = ESTADO_COLORS[estado] || '#64748b'
+  return (
+    <span className="badge" style={{ background: `${color}1a`, color }}>
+      {ESTADO_LABELS[estado] || estado}
+    </span>
+  )
 }
 
 export default function Ordenes() {
-  const navigate = useNavigate()
   const [ordenes, setOrdenes] = useState([])
+  const [tecnicos, setTecnicos] = useState([])
+  const [clientes, setClientes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [filtroEstado, setFiltroEstado] = useState('')
+  const [filter, setFilter] = useState({ estado: '', tecnico: '', cliente: '', fecha: '' })
 
   async function load() {
     setError('')
+    setLoading(true)
     try {
-      const data = await getOrdenes()
-      setOrdenes(data)
+      const [orders, technicians, customers] = await Promise.all([
+        getOrdenes(),
+        getTecnicos(),
+        getClientes(),
+      ])
+      setOrdenes(Array.isArray(orders) ? orders : [])
+      setTecnicos(technicians || [])
+      setClientes(customers || [])
     } catch (err) {
-      setError(err.message || 'Error al cargar órdenes')
+      setError(err.message || 'No se pudieron cargar las órdenes')
     } finally {
       setLoading(false)
     }
@@ -64,135 +61,94 @@ export default function Ordenes() {
 
   useEffect(() => { load() }, [])
 
-  const filtradas = filtroEstado
-    ? ordenes.filter((o) => o.estado === filtroEstado)
-    : ordenes
+  const counts = useMemo(() => ordenes.reduce((result, order) => {
+    result[order.estado] = (result[order.estado] || 0) + 1
+    return result
+  }, {}), [ordenes])
 
-  const counts = ordenes.reduce((acc, o) => {
-    acc[o.estado] = (acc[o.estado] || 0) + 1
-    return acc
-  }, {})
+  const filteredOrders = useMemo(() => ordenes.filter((order) => (
+    (!filter.estado || order.estado === filter.estado)
+    && (!filter.tecnico || order.tecnico === filter.tecnico)
+    && (!filter.cliente || order.cliente === filter.cliente)
+    && (!filter.fecha || order.fechaProgramada === filter.fecha)
+  )), [ordenes, filter])
 
   return (
     <div>
       <div className="page-head">
         <div>
           <div className="mono kicker">ADMIN · OPERACIÓN</div>
-          <h1 className="page-title">Órdenes de Trabajo</h1>
+          <h1 className="page-title">Órdenes de trabajo</h1>
         </div>
         <div className="head-actions">
-          <Link to="/ordenes/nueva" className="btn btn-primary">
-            + Nueva OT
-          </Link>
-          <button className="btn btn-outline" disabled={loading} onClick={load}>
-            Recargar
-          </button>
+          <button className="btn btn-outline" disabled={loading} onClick={load}>Recargar</button>
+          <Link to="/ordenes/nueva" className="btn btn-primary">+ Crear orden</Link>
         </div>
       </div>
 
       {error && <div className="error-box" style={{ marginBottom: 14 }}>{error}</div>}
 
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
-        {ESTADOS.map((e) => (
-          <button
-            key={e.value}
-            onClick={() => setFiltroEstado(e.value)}
-            style={{
-              padding: '6px 12px',
-              borderRadius: 20,
-              border: 'none',
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: 'pointer',
-              background: filtroEstado === e.value ? 'var(--navy)' : '#e5e7eb',
-              color: filtroEstado === e.value ? '#fff' : '#374151',
-              fontFamily: 'var(--font-mono)'
-            }}
-          >
-            {e.label}
-            {e.value && counts[e.value] ? ` (${counts[e.value]})` : ''}
-            {!e.value && ` (${ordenes.length})`}
-          </button>
-        ))}
+      <div className="kpi-grid" style={{ marginBottom: 16 }}>
+        <div className="kpi"><div className="kpi-label">Total</div><div className="kpi-value">{ordenes.length}</div></div>
+        <div className="kpi"><div className="kpi-label">Pendientes</div><div className="kpi-value">{counts.pendiente || 0}</div></div>
+        <div className="kpi"><div className="kpi-label">En ejecución</div><div className="kpi-value">{counts.enEjecucion || 0}</div></div>
+        <div className="kpi"><div className="kpi-label">Finalizadas</div><div className="kpi-value">{counts.finalizada || 0}</div></div>
       </div>
 
-      <div className="kpi-grid" style={{ marginBottom: 16 }}>
-        <div className="kpi">
-          <div className="kpi-label">Total</div>
-          <div className="kpi-value">{ordenes.length}</div>
+      <div className="card" style={{ marginBottom: 14 }}>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
+          <button className={`tab ${filter.estado === '' ? 'active' : ''}`} onClick={() => setFilter({ ...filter, estado: '' })}>
+            Todas ({ordenes.length})
+          </button>
+          {ESTADOS.map((estado) => (
+            <button
+              key={estado}
+              className={`tab ${filter.estado === estado ? 'active' : ''}`}
+              onClick={() => setFilter({ ...filter, estado })}
+            >
+              {ESTADO_LABELS[estado] || estado}{counts[estado] ? ` (${counts[estado]})` : ''}
+            </button>
+          ))}
         </div>
-        <div className="kpi">
-          <div className="kpi-label">Pendientes</div>
-          <div className="kpi-value">{counts.pendiente || 0}</div>
-        </div>
-        <div className="kpi">
-          <div className="kpi-label">En ejecución</div>
-          <div className="kpi-value">{counts.enEjecucion || 0}</div>
-        </div>
-        <div className="kpi">
-          <div className="kpi-label">Finalizadas</div>
-          <div className="kpi-value">{counts.finalizada || 0}</div>
+        <div className="filters">
+          <label className="form-row">Técnico
+            <select value={filter.tecnico} onChange={(event) => setFilter({ ...filter, tecnico: event.target.value })}>
+              <option value="">Todos</option>
+              {tecnicos.map((technician) => <option key={technician.id} value={technician.nombre}>{technician.nombre}</option>)}
+            </select>
+          </label>
+          <label className="form-row">Cliente
+            <select value={filter.cliente} onChange={(event) => setFilter({ ...filter, cliente: event.target.value })}>
+              <option value="">Todos</option>
+              {clientes.map((customer) => <option key={customer.id} value={customer.nombre}>{customer.nombre}</option>)}
+            </select>
+          </label>
+          <label className="form-row">Fecha programada
+            <input type="date" value={filter.fecha} onChange={(event) => setFilter({ ...filter, fecha: event.target.value })} />
+          </label>
         </div>
       </div>
 
       {loading && <div className="muted">Cargando órdenes…</div>}
-
-      {!loading && filtradas.length === 0 && (
-        <div className="card">
-          <div className="muted">
-            {filtroEstado ? 'No hay órdenes con ese estado.' : 'No hay órdenes registradas.'}
-          </div>
-        </div>
+      {!loading && filteredOrders.length === 0 && !error && (
+        <div className="card muted">No hay órdenes para los filtros seleccionados.</div>
       )}
-
-      {!loading && filtradas.length > 0 && (
+      {!loading && filteredOrders.length > 0 && (
         <div className="table-wrap">
           <table>
             <thead>
-              <tr>
-                <th>Código</th>
-                <th>Cliente</th>
-                <th>Equipo</th>
-                <th>Técnico</th>
-                <th>Fecha prog.</th>
-                <th>Prioridad</th>
-                <th>Estado</th>
-              </tr>
+              <tr><th>Código</th><th>Servicio</th><th>Cliente / Equipo</th><th>Técnico</th><th>Prog.</th><th>Prioridad</th><th>Estado</th></tr>
             </thead>
             <tbody>
-              {filtradas.map((o) => (
-                <tr
-                  key={o.id}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => navigate(`/ordenes/${o.id}`)}
-                >
-                  <td className="mono" style={{ fontWeight: 600 }}>{o.codigo}</td>
-                  <td>{o.cliente || '—'}</td>
-                  <td>{o.equipo || '—'}</td>
-                  <td>{o.tecnico || 'Sin asignar'}</td>
-                  <td className="muted">{o.fechaProgramada || '—'}</td>
-                  <td>
-                    <span style={{
-                      color: PRIORIDAD_COLORS[o.prioridad] || '#64748b',
-                      fontWeight: 600,
-                      fontSize: 12
-                    }}>
-                      {o.prioridad || '—'}
-                    </span>
-                  </td>
-                  <td>
-                    <span style={{
-                      display: 'inline-block',
-                      padding: '3px 10px',
-                      borderRadius: 20,
-                      fontSize: 11,
-                      fontWeight: 600,
-                      background: ESTADO_COLORS[o.estado]?.bg || '#e5e7eb',
-                      color: ESTADO_COLORS[o.estado]?.text || '#374151'
-                    }}>
-                      {estadoLabel(o.estado)}
-                    </span>
-                  </td>
+              {filteredOrders.map((order) => (
+                <tr key={order.id}>
+                  <td className="mono"><Link to={`/ordenes/${order.id}`}>{order.codigo}</Link></td>
+                  <td>{order.tipoServicio}</td>
+                  <td className="muted">{order.cliente} · {order.equipo}</td>
+                  <td>{order.tecnico || '—'}</td>
+                  <td className="mono">{order.fechaProgramada}</td>
+                  <td>{order.prioridad || '—'}</td>
+                  <td><EstadoBadge estado={order.estado} /></td>
                 </tr>
               ))}
             </tbody>

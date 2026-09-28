@@ -32,7 +32,8 @@ public class AuthService {
         }
 
         String token = tokenService.generateToken(usuario.getUsername(), usuario.getRole().name());
-        return new AuthResponse(token, usuario.getUsername(), usuario.getRole().name());
+        Long tecnicoId = usuario.getTecnico() != null ? usuario.getTecnico().getId() : null;
+        return new AuthResponse(token, usuario.getUsername(), usuario.getRole().name(), tecnicoId);
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -55,6 +56,6 @@ public class AuthService {
         usuarioRepository.save(usuario);
 
         String token = tokenService.generateToken(usuario.getUsername(), usuario.getRole().name());
-        return new AuthResponse(token, usuario.getUsername(), usuario.getRole().name());
+        return new AuthResponse(token, usuario.getUsername(), usuario.getRole().name(), null);
     }
 }

@@ -30,6 +30,10 @@ public class Usuario {
     @Column(nullable = false, length = 20)
     private Rol role;
 
+    @ManyToOne
+    @JoinColumn(name = "tecnico_id")
+    private Tecnico tecnico;
+
     public Usuario(String username, String password, Rol role) {
         this.username = username;
         this.password = password;

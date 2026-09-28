@@ -7,6 +7,7 @@ import com.fieldflow.backend.dto.EquipoRequest;
 import com.fieldflow.backend.dto.EquipoResponse;
 import com.fieldflow.backend.dto.FallaRecurrenteResponse;
 import com.fieldflow.backend.dto.ProductoResponse;
+import com.fieldflow.backend.dto.SedeRequest;
 import com.fieldflow.backend.dto.SedeResponse;
 import com.fieldflow.backend.dto.TareaMantenimientoResponse;
 import com.fieldflow.backend.dto.TecnicoResponse;
@@ -14,6 +15,7 @@ import com.fieldflow.backend.service.CatalogoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,15 +47,26 @@ public class CatalogoController {
         return catalogoService.getSedes(clienteId);
     }
 
+    @PostMapping("/sedes")
+    public ResponseEntity<SedeResponse> altaSede(@RequestBody @Valid SedeRequest request) {
+        SedeResponse creada = catalogoService.altaSede(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creada);
+    }
+
     @GetMapping("/equipos")
     public List<EquipoResponse> getEquipos(@RequestParam(required = false) Long sedeId) {
         return catalogoService.getEquipos(sedeId);
     }
 
+    @GetMapping("/equipos/{id}")
+    public EquipoResponse getEquipo(@PathVariable Long id) {
+        return catalogoService.getEquipo(id);
+    }
+
     @PostMapping("/equipos")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<EquipoResponse> createEquipo(@RequestBody @Valid EquipoRequest request) {
-        EquipoResponse creado = catalogoService.createEquipo(request);
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<EquipoResponse> altaEquipo(@RequestBody @Valid EquipoRequest request) {
+        EquipoResponse creado = catalogoService.altaEquipo(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 

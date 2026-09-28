@@ -28,14 +28,38 @@ public class DataSeeder {
                                ChecklistRepository checklistRepository,
                                PasswordEncoder passwordEncoder) {
         return args -> {
+            // Backfill idempotente: vincular usuarios TECNICO sin tecnico a tecnicos libres (por id).
+            // Cubre BDs ya sembradas antes de existir la columna tecnico_id.
+            List<Usuario> usuarios = usuarioRepository.findAll();
+            if (!usuarios.isEmpty()) {
+                List<Tecnico> tecnicos = tecnicoRepository.findAll();
+                tecnicos.sort((a, b) -> a.getId().compareTo(b.getId()));
+                java.util.Set<Long> vinculados = new java.util.HashSet<>();
+                for (Usuario u : usuarios) {
+                    if (u.getTecnico() != null) {
+                        vinculados.add(u.getTecnico().getId());
+                    }
+                }
+                for (Usuario u : usuarios) {
+                    if (u.getRole() == Usuario.Rol.TECNICO && u.getTecnico() == null) {
+                        Tecnico libre = tecnicos.stream()
+                                .filter(t -> !vinculados.contains(t.getId()))
+                                .findFirst().orElse(null);
+                        if (libre != null) {
+                            u.setTecnico(libre);
+                            usuarioRepository.save(u);
+                            vinculados.add(libre.getId());
+                        }
+                    }
+                }
+            }
+
             if (usuarioRepository.count() > 0) {
                 return;
             }
 
             usuarioRepository.save(new Usuario("admin", passwordEncoder.encode("admin123"), Usuario.Rol.ADMIN));
             usuarioRepository.save(new Usuario("superadmin", passwordEncoder.encode("super123"), Usuario.Rol.SUPER_ADMIN));
-            usuarioRepository.save(new Usuario("tecnico1", passwordEncoder.encode("tecnico123"), Usuario.Rol.TECNICO));
-            usuarioRepository.save(new Usuario("tecnico2", passwordEncoder.encode("tecnico123"), Usuario.Rol.TECNICO));
 
             Cliente c1 = new Cliente("GasSolutions S.A.S", "900123456");
             Cliente c2 = new Cliente("Centro Comercial Andino", "800987654");
@@ -54,6 +78,13 @@ public class DataSeeder {
             Tecnico t1 = new Tecnico("Eduin - Senior Gas", Set.of("Gas", "Caldera"));
             Tecnico t2 = new Tecnico("Carlos - Mantenimiento", Set.of("Preventivo"));
             tecnicoRepository.saveAll(List.of(t1, t2));
+
+            // Vincular usuarios tecnicos con su ficha de tecnico
+            Usuario u1 = new Usuario("tecnico1", passwordEncoder.encode("tecnico123"), Usuario.Rol.TECNICO);
+            u1.setTecnico(t1);
+            Usuario u2 = new Usuario("tecnico2", passwordEncoder.encode("tecnico123"), Usuario.Rol.TECNICO);
+            u2.setTecnico(t2);
+            usuarioRepository.saveAll(List.of(u1, u2));
 
             Producto p1 = new Producto("PRD-CAL", "Caldera Industrial", "Caldera", "Navien", "NPE-240A");
             Producto p2 = new Producto("PRD-EST", "Estufa de Laboratorio", "Gasodomestico", "Whirlpool", "SF-150");
@@ -76,11 +107,14 @@ public class DataSeeder {
                     "El termostato no llega a la temperatura configurada", 3);
             fallaRecurrenteRepository.saveAll(List.of(f1, f2, f3));
 
+            CheckItem medirCO = new CheckItem("Medir CO", false);
+            medirCO.setTipo("NUMERICO");
+            medirCO.setUnidad("ppm");
             Checklist chk = new Checklist("CHK-CAL-01", "Checklist Caldera",
                     "Caldera Industrial",
                     List.of(new CheckItem("Revisar presion", false),
                             new CheckItem("Revisar valvula de seguridad", false),
-                            new CheckItem("Medir CO", false)));
+                            medirCO));
             checklistRepository.save(chk);
 
             OrdenTrabajo ot = new OrdenTrabajo(
@@ -89,10 +123,13 @@ public class DataSeeder {
                     "Revision periodica de caldera, valvula y presion",
                     c1, s1, e1, t1,
                     OrdenTrabajo.Prioridad.media, 120);
+            CheckItem medirCOot = new CheckItem("Medir CO", false);
+            medirCOot.setTipo("NUMERICO");
+            medirCOot.setUnidad("ppm");
             ot.setChecklist(List.of(
                     new CheckItem("Revisar presion", false),
                     new CheckItem("Revisar valvula de seguridad", false),
-                    new CheckItem("Medir CO", false)));
+                    medirCOot));
             ot.setHistorial(List.of("OT creada y asignada a tecnico"));
             ordenRepository.save(ot);
         };

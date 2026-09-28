@@ -26,6 +26,9 @@ public class CheckItem {
     @Column(length = 30)
     private String unidad;
 
+    @Column(length = 100)
+    private String valor;
+
     public CheckItem(String texto) {
         this.texto = texto;
         this.hecho = false;

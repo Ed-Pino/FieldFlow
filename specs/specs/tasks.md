@@ -105,40 +105,40 @@
 - [x] Inicializar proyecto Frontend (Vite + React + PWA, proxy `/api` → `:8081`) — [#12](https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/12)
 
 ### REQ-1 · Autenticación
-- [ ] Pantalla de Login (username + contraseña)
-- [ ] Almacenamiento seguro del JWT en cliente
-- [ ] Redirección post-login según rol (ADMIN → dashboard, TECNICO → mis órdenes)
-- [ ] Logout y limpieza de sesión
+- [x] Pantalla de Login (username + contraseña)
+- [x] Almacenamiento seguro del JWT en cliente
+- [x] Redirección post-login según rol (ADMIN → dashboard, TECNICO → mis órdenes)
+- [x] Logout y limpieza de sesión
 
 ### REQ-2 · Catálogos (ADMIN)
-- [ ] Listado de clientes con sus sedes
-- [ ] Listado de equipos por sede con fecha de último mantenimiento
-- [ ] Listado de técnicos con especialidades y disponibilidad
+- [x] Listado de clientes con sus sedes
+- [x] Listado de equipos por sede con fecha de último mantenimiento
+- [x] Listado de técnicos con especialidades y disponibilidad
 
 ### REQ-3 · Gestión de OTs (ADMIN)
-- [ ] Vista principal con resumen de OTs por estado (pendiente, asignada, en ejecución, finalizada)
-- [ ] Listado de OTs con filtros por estado, técnico, cliente y fecha
-- [ ] Formulario de creación de OT — selección encadenada: cliente → sede → equipo → técnico disponible
-- [ ] Soporte para `prioridad` y `duracionEstimadaMin` en el formulario
-- [ ] Detalle de OT con toda la información (cliente, sede, equipo, técnico, checklist, fotos, historial)
+- [x] Vista principal con resumen de OTs por estado (pendiente, asignada, en ejecución, finalizada)
+- [x] Listado de OTs con filtros por estado, técnico, cliente y fecha
+- [x] Formulario de creación de OT — selección encadenada: cliente → sede → equipo → técnico disponible
+- [x] Soporte para `prioridad` y `duracionEstimadaMin` en el formulario
+- [x] Detalle de OT con toda la información (cliente, sede, equipo, técnico, checklist, fotos, historial)
 
 ### REQ-4 · Seguimiento de estados
-- [ ] Actualización de estado desde el detalle de OT (ADMIN)
-- [ ] Actualización de estado desde la vista del técnico (`enCamino`, `enEjecucion`, `pendienteConformidad`)
+- [x] Actualización de estado desde el detalle de OT (ADMIN)
+- [x] Actualización de estado desde la vista del técnico (`enCamino`, `enEjecucion`, `pendienteConformidad`)
 
 ### REQ-5 · Agenda del técnico
-- [ ] Agenda del técnico — OTs ordenadas por fecha programada (GET `/api/ordenes/agenda/{tecnicoId}`)
+- [x] Agenda del técnico — OTs ordenadas por fecha programada (GET `/api/ordenes/agenda/{tecnicoId}`)
 
 ### REQ-6 · Registro de evidencia (TECNICO)
-- [ ] Detalle de OT con instrucciones y checklist interactivo
-- [ ] Registro de notas y observaciones en la OT
-- [ ] Captura y adjunto de fotos de evidencia
+- [x] Detalle de OT con instrucciones y checklist interactivo
+- [x] Registro de notas y observaciones en la OT
+- [x] Captura y adjunto de fotos de evidencia
 
 ### REQ-7 · Conformidad del cliente (TECNICO)
-- [ ] Pantalla de conformidad — firma digital del cliente + notas finales
+- [x] Pantalla de conformidad — firma digital del cliente + notas finales
 
 ### REQ-8 · Trazabilidad (ADMIN + TECNICO)
-- [ ] Vista de historial / trazabilidad del equipo desde el detalle de OT
+- [x] Vista de historial / trazabilidad del equipo desde el detalle de OT
 
 ---
 

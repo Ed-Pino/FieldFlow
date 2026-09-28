@@ -8,18 +8,29 @@ import Catalogos from './pages/Catalogos'
 import Ordenes from './pages/Ordenes'
 import NuevaOrden from './pages/NuevaOrden'
 import DetalleOrden from './pages/DetalleOrden'
+import OrdenNueva from './pages/OrdenNueva'
+import OrdenDetalle from './pages/OrdenDetalle'
+import Agenda from './pages/Agenda'
+import MisOrdenes from './pages/MisOrdenes'
+import EnCamino from './pages/EnCamino'
+import Ejecucion from './pages/Ejecucion'
+import EquipoDetalle from './pages/EquipoDetalle'
+import { ProtectedRoute, RequireRole, GuestOnly, ROLES, isTecnico } from './auth'
 import './styles.css'
 
-function ProtectedRoute({ children }) {
-  const token = localStorage.getItem('ff_token')
-  return token ? children : <Navigate to="/login" replace />
+const ADMIN = [ROLES.ADMIN, ROLES.SUPER_ADMIN]
+const TECNICO = [ROLES.TECNICO, ROLES.ADMIN, ROLES.SUPER_ADMIN]
+
+function IndexRoute() {
+  if (isTecnico()) return <Navigate to="/en-camino" replace />
+  return <Dashboard />
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<GuestOnly><Login /></GuestOnly>} />
         <Route
           path="/"
           element={
@@ -28,11 +39,16 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </ProtectedRoute>
           }
         >
-          <Route index element={<Dashboard />} />
-          <Route path="catalogos" element={<Catalogos />} />
-          <Route path="ordenes" element={<Ordenes />} />
-          <Route path="ordenes/nueva" element={<NuevaOrden />} />
-          <Route path="ordenes/:id" element={<DetalleOrden />} />
+          <Route index element={<IndexRoute />} />
+          <Route path="ordenes" element={<RequireRole roles={ADMIN}><Ordenes /></RequireRole>} />
+          <Route path="ordenes/nueva" element={<RequireRole roles={ADMIN}><OrdenNueva /></RequireRole>} />
+          <Route path="ordenes/:id" element={<OrdenDetalle />} />
+          <Route path="agenda" element={<Agenda />} />
+          <Route path="mis-ordenes" element={<RequireRole roles={TECNICO} fallback="/"><MisOrdenes /></RequireRole>} />
+          <Route path="equipos/:id" element={<RequireRole roles={ADMIN}><EquipoDetalle /></RequireRole>} />
+          <Route path="en-camino" element={<RequireRole roles={TECNICO} fallback="/"><EnCamino /></RequireRole>} />
+          <Route path="ejecucion" element={<RequireRole roles={TECNICO} fallback="/"><Ejecucion /></RequireRole>} />
+          <Route path="catalogos" element={<RequireRole roles={ADMIN}><Catalogos /></RequireRole>} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

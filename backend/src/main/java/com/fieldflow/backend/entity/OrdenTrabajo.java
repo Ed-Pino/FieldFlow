@@ -82,7 +82,7 @@ public class OrdenTrabajo {
 
     @ElementCollection
     @CollectionTable(name = "ot_fotos", joinColumns = @JoinColumn(name = "ot_id"))
-    @Column(name = "foto_url", length = 1000)
+    @Column(name = "foto_url", length = 500000)
     private List<String> fotos = new ArrayList<>();
 
     @ElementCollection

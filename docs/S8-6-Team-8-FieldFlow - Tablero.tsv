@@ -1,0 +1,25 @@
+Title	URL	Assignees	Status	Linked pull requests	Sub-issues progress
+Validar modelo de entidades existente	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/2	Ed-Pino	Done		
+Modelar entidad Asignación	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/7	Ed-Pino	Done		
+Modelar entidad Agenda	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/8	Ed-Pino	Done		
+Modelar catálogo "Productos que la empresa repara"	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/4	Ed-Pino	Done	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/pull/29	
+Modelar "Tareas de mantenimiento preventivo" por producto	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/5	Ed-Pino	Done		
+Modelar Checklist como contenedor	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/9		Done		
+Modelar catálogo "Fallas recurrentes típicas"	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/6		Done		
+Ampliar roles a 3 niveles	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/3	Ed-Pino	Done	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/pull/16	
+Modelar entidad Evidencia fotográfica	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/10	Ed-Pino	Done		
+Mockup UI/UX general	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/11	coreiagu	Done	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/pull/15	
+Inicializar proyecto Frontend	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/12	grumdeveloper	Done	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/pull/28	
+Pantalla de login	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/13		Done		
+Conectar catálogos base (clientes, sedes, equipos, técnicos)	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/14	grumdeveloper	Done		
+Alta de Cliente	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/17		Backlog		
+Ficha de Cliente (única, adaptable)	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/18		Backlog		
+Alta de Sede	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/19		Backlog		
+Alta de Equipo	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/20		Backlog		
+Listado de Órdenes de Trabajo	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/21		Backlog		
+Endpoint: asignar técnico a una OT	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/22		Backlog		
+Endpoint: agendar intervención	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/23		Backlog		
+Formulario de creación de OT	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/24		Backlog		
+Validaciones del formulario de OT	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/25		Backlog		
+Vista de Detalle de OT	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/26		Backlog		
+Gestión visual del estado de la OT	https://github.com/No-Country-simulation/S8-6-Team-8-FieldFlow/issues/27		Backlog		

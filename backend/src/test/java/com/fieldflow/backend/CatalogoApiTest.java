@@ -164,4 +164,148 @@ class CatalogoApiTest extends AbstractApiTestBase {
                         .content(om.writeValueAsString(Map.of("nombre", "Cliente Duplicado", "nit", nitDuplicado))))
                 .andExpect(status().isConflict());
     }
+
+    @Test
+    void altaSedeCreaSedeYlaDevuelveEn201() throws Exception {
+        Cliente cliente = clienteRepository.findAll().get(0);
+
+        Map<String, Object> body = new java.util.HashMap<>();
+        body.put("clienteId", cliente.getId());
+        body.put("nombre", "Sede Test Norte");
+        body.put("direccion", "Cl 100 # 11-22");
+        body.put("ciudad", "Bogota");
+
+        String resp = mvc.perform(post("/api/sedes")
+                        .header(AUTHORIZATION, bearer(adminToken()))
+                        .contentType(APPLICATION_JSON)
+                        .content(om.writeValueAsString(body)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.nombre").value("Sede Test Norte"))
+                .andExpect(jsonPath("$.clienteId").value(cliente.getId()))
+                .andReturn().getResponse().getContentAsString();
+
+        Long idNueva = om.readTree(resp).get("id").asLong();
+
+        mvc.perform(get("/api/sedes?clienteId=" + cliente.getId())
+                        .header(AUTHORIZATION, bearer(adminToken())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.id == " + idNueva + ")]").exists());
+    }
+
+    @Test
+    void altaSedeConClienteInexistenteDevuelve404() throws Exception {
+        Map<String, Object> body = new java.util.HashMap<>();
+        body.put("clienteId", 999999);
+        body.put("nombre", "Sede Fantasma");
+        body.put("direccion", "Ninguna");
+        body.put("ciudad", "Ninguna");
+
+        mvc.perform(post("/api/sedes")
+                        .header(AUTHORIZATION, bearer(adminToken()))
+                        .contentType(APPLICATION_JSON)
+                        .content(om.writeValueAsString(body)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void tecnicoNoPuedeDarDeAltaClienteNiSede() throws Exception {        mvc.perform(post("/api/clientes")
+                        .header(AUTHORIZATION, bearer(tecnicoToken()))
+                        .contentType(APPLICATION_JSON)
+                        .content(om.writeValueAsString(Map.of("nombre", "X", "nit", "123"))))
+                .andExpect(status().isForbidden());
+
+        Map<String, Object> body = new java.util.HashMap<>();
+        body.put("clienteId", 1);
+        body.put("nombre", "X");
+        body.put("direccion", "X");
+        body.put("ciudad", "X");
+        mvc.perform(post("/api/sedes")
+                        .header(AUTHORIZATION, bearer(tecnicoToken()))
+                        .contentType(APPLICATION_JSON)
+                        .content(om.writeValueAsString(body)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void detalleEquipoDevuelveFichaCompleta() throws Exception {
+        var equipo = equipoRepository.findAll().stream()
+                .filter(e -> e.getCodigo().equals("CAL-001")).findFirst().orElseThrow();
+
+        mvc.perform(get("/api/equipos/" + equipo.getId())
+                        .header(AUTHORIZATION, bearer(adminToken())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(equipo.getId()))
+                .andExpect(jsonPath("$.codigo").value("CAL-001"))
+                .andExpect(jsonPath("$.nombre").value("Caldera Industrial"))
+                .andExpect(jsonPath("$.sedeId").value(equipo.getSede().getId()));
+    }
+
+    @Test
+    void detalleEquipoInexistenteDevuelve404() throws Exception {
+        mvc.perform(get("/api/equipos/999999")
+                        .header(AUTHORIZATION, bearer(adminToken())))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void altaEquipoCreaEquipoYloDevuelveEn201() throws Exception {
+        var sede = sedeRepository.findAll().get(0);
+
+        Map<String, Object> body = new java.util.HashMap<>();
+        body.put("sedeId", sede.getId());
+        body.put("codigo", "E2E-001");
+        body.put("nombre", "Equipo E2E");
+        body.put("tipo", "Caldera");
+        body.put("ultimoMantenimiento", "2026-09-01");
+
+        String resp = mvc.perform(post("/api/equipos")
+                        .header(AUTHORIZATION, bearer(adminToken()))
+                        .contentType(APPLICATION_JSON)
+                        .content(om.writeValueAsString(body)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.codigo").value("E2E-001"))
+                .andExpect(jsonPath("$.sedeId").value(sede.getId()))
+                .andReturn().getResponse().getContentAsString();
+
+        Long idNuevo = om.readTree(resp).get("id").asLong();
+
+        mvc.perform(get("/api/equipos/" + idNuevo)
+                        .header(AUTHORIZATION, bearer(adminToken())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.codigo").value("E2E-001"));
+    }
+
+    @Test
+    void altaEquipoConCodigoDuplicadoDevuelve409() throws Exception {
+        var sede = sedeRepository.findAll().get(0);
+
+        Map<String, Object> body = new java.util.HashMap<>();
+        body.put("sedeId", sede.getId());
+        body.put("codigo", "CAL-001");
+        body.put("nombre", "Duplicado");
+        body.put("tipo", "Caldera");
+
+        mvc.perform(post("/api/equipos")
+                        .header(AUTHORIZATION, bearer(adminToken()))
+                        .contentType(APPLICATION_JSON)
+                        .content(om.writeValueAsString(body)))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void altaEquipoConSedeInexistenteDevuelve404() throws Exception {
+        Map<String, Object> body = new java.util.HashMap<>();
+        body.put("sedeId", 999999);
+        body.put("codigo", "E2E-002");
+        body.put("nombre", "Fantasma");
+        body.put("tipo", "Caldera");
+
+        mvc.perform(post("/api/equipos")
+                        .header(AUTHORIZATION, bearer(adminToken()))
+                        .contentType(APPLICATION_JSON)
+                        .content(om.writeValueAsString(body)))
+                .andExpect(status().isNotFound());
+    }
 }

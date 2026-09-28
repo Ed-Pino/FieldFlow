@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -261,8 +262,7 @@ class OrdenApiTest extends AbstractApiTestBase {
     }
 
     @Test
-    void conformidadValidaFinalizaYRegistraEvento() throws Exception {
-        int id = createOt(admin);
+    void conformidadValidaFinalizaYRegistraEvento() throws Exception {        int id = createOt(admin);
         String[] secuencia = {"asignada", "enCamino", "enEjecucion", "pendienteConformidad"};
         for (String estado : secuencia) {
             mvc.perform(put("/api/ordenes/" + id + "/estado")
@@ -281,5 +281,138 @@ class OrdenApiTest extends AbstractApiTestBase {
                 .andExpect(jsonPath("$.notas").value("Trabajo finalizado"))
                 .andExpect(jsonPath("$.firmaBase64").value("data:image/png;base64,AAA"))
                 .andExpect(jsonPath("$.historial[-1]", containsString("Finalizada con conformidad")));
+    }
+
+    @Test
+    void asignarTecnicoActualizaTecnicoYRegistraEvento() throws Exception {
+        int id = createOt(admin);
+        Tecnico carlos = tecnicoRepository.findAll().stream()
+                .filter(x -> x.getNombre().equals("Carlos - Mantenimiento")).findFirst().orElseThrow();
+
+        mvc.perform(put("/api/ordenes/" + id + "/tecnico")
+                        .header(AUTHORIZATION, admin)
+                        .contentType(APPLICATION_JSON)
+                        .content("{\"tecnicoId\":" + carlos.getId() + "}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tecnico").value("Carlos - Mantenimiento"))
+                .andExpect(jsonPath("$.historial[-1]", containsString("Tecnico asignado: Carlos - Mantenimiento")));
+    }
+
+    @Test
+    void asignarTecnicoConTecnicoInexistenteDevuelve404() throws Exception {
+        int id = createOt(admin);
+        mvc.perform(put("/api/ordenes/" + id + "/tecnico")
+                        .header(AUTHORIZATION, admin)
+                        .contentType(APPLICATION_JSON)
+                        .content("{\"tecnicoId\":999999}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void asignarTecnicoEnOTInexistenteDevuelve404() throws Exception {
+        mvc.perform(put("/api/ordenes/999999/tecnico")
+                        .header(AUTHORIZATION, admin)
+                        .contentType(APPLICATION_JSON)
+                        .content("{\"tecnicoId\":" + tecnicoId + "}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void tecnicoNoPuedeAsignarTecnico() throws Exception {
+        int id = createOt(admin);
+        mvc.perform(put("/api/ordenes/" + id + "/tecnico")
+                        .header(AUTHORIZATION, tecnico)
+                        .contentType(APPLICATION_JSON)
+                        .content("{\"tecnicoId\":" + tecnicoId + "}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void evidenciaConMedicionYFotoLargaPersiste() throws Exception {        int id = createOt(admin);
+        String fotoLarga = "data:image/jpeg;base64," + "A".repeat(5000);
+        mvc.perform(put("/api/ordenes/" + id + "/evidencia")
+                        .header(AUTHORIZATION, tecnico)
+                        .contentType(APPLICATION_JSON)
+                        .content("{\"checklist\":[{\"texto\":\"Medir presion\",\"hecho\":true,\"tipo\":\"NUMERICO\",\"unidad\":\"psi\",\"valor\":\"3.2\"}],"
+                                + "\"fotos\":[\"" + fotoLarga + "\"]}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.checklist[0].valor").value("3.2"))
+                .andExpect(jsonPath("$.checklist[0].unidad").value("psi"))
+                .andExpect(jsonPath("$.fotos[0]").value(fotoLarga));
+    }
+
+    @Test
+    void agendarCambiaFechaProgramadaYRegistraEvento() throws Exception {
+        int id = createOt(admin);
+        mvc.perform(put("/api/ordenes/" + id + "/agenda")
+                        .header(AUTHORIZATION, admin)
+                        .contentType(APPLICATION_JSON)
+                        .content("{\"fechaProgramada\":\"2027-01-15\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fechaProgramada").value("2027-01-15"))
+                .andExpect(jsonPath("$.historial[-1]", containsString("Reprogramada para 2027-01-15")));
+    }
+
+    @Test
+    void agendarConFechaPasadaDevuelve400() throws Exception {
+        int id = createOt(admin);
+        mvc.perform(put("/api/ordenes/" + id + "/agenda")
+                        .header(AUTHORIZATION, admin)
+                        .contentType(APPLICATION_JSON)
+                        .content("{\"fechaProgramada\":\"2020-01-01\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void agendarEnOTInexistenteDevuelve404() throws Exception {
+        mvc.perform(put("/api/ordenes/999999/agenda")
+                        .header(AUTHORIZATION, admin)
+                        .contentType(APPLICATION_JSON)
+                        .content("{\"fechaProgramada\":\"2027-01-15\"}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void tecnicoNoPuedeAgendar() throws Exception {
+        int id = createOt(admin);
+        mvc.perform(put("/api/ordenes/" + id + "/agenda")
+                        .header(AUTHORIZATION, tecnico)
+                        .contentType(APPLICATION_JSON)
+                        .content("{\"fechaProgramada\":\"2027-01-15\"}"))
+                .andExpect(status().isForbidden());
+    }
+    @Test
+    void ordenResponseIncluyeEquipoId() throws Exception {
+        int id = createOt(admin);
+        mvc.perform(get("/api/ordenes/" + id)
+                        .header(AUTHORIZATION, admin))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.equipoId").value(equipoId.intValue()));
+    }
+
+    @Test
+    void superAdminPuedeCrearAsignarYAgendarOT() throws Exception {
+        String superAdmin = bearer(login("superadmin", "super123"));
+
+        String json = mvc.perform(post("/api/ordenes")
+                        .header(AUTHORIZATION, superAdmin)
+                        .contentType(APPLICATION_JSON)
+                        .content(createOtBaseJson()))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        int id = om.readTree(json).get("id").asInt();
+
+        mvc.perform(put("/api/ordenes/" + id + "/tecnico")
+                        .header(AUTHORIZATION, superAdmin)
+                        .contentType(APPLICATION_JSON)
+                        .content("{\"tecnicoId\":" + tecnicoId + "}"))
+                .andExpect(status().isOk());
+
+        mvc.perform(put("/api/ordenes/" + id + "/agenda")
+                        .header(AUTHORIZATION, superAdmin)
+                        .contentType(APPLICATION_JSON)
+                        .content("{\"fechaProgramada\":\"2027-03-01\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fechaProgramada").value("2027-03-01"));
     }
 }

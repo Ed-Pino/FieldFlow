@@ -19,10 +19,10 @@ public record ChecklistResponse(
                 c.getAplicaA(), it);
     }
 
-    public record CheckItemResponse(String texto, String tipo, String unidad) {
+    public record CheckItemResponse(String texto, boolean hecho, String tipo, String unidad, String valor) {
         public static CheckItemResponse from(CheckItem i) {
-            return new CheckItemResponse(i.getTexto(),
-                    i.getTipo() == null ? "SI_NO" : i.getTipo(), i.getUnidad());
+            return new CheckItemResponse(i.getTexto(), i.isHecho(),
+                    i.getTipo() == null ? "SI_NO" : i.getTipo(), i.getUnidad(), i.getValor());
         }
     }
 }

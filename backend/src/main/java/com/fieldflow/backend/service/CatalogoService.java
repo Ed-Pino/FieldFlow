@@ -7,11 +7,14 @@ import com.fieldflow.backend.dto.EquipoRequest;
 import com.fieldflow.backend.dto.EquipoResponse;
 import com.fieldflow.backend.dto.FallaRecurrenteResponse;
 import com.fieldflow.backend.dto.ProductoResponse;
+import com.fieldflow.backend.dto.SedeRequest;
 import com.fieldflow.backend.dto.SedeResponse;
 import com.fieldflow.backend.dto.TareaMantenimientoResponse;
 import com.fieldflow.backend.dto.TecnicoResponse;
+import com.fieldflow.backend.entity.Cliente;
 import com.fieldflow.backend.entity.Equipo;
 import com.fieldflow.backend.entity.Sede;
+import com.fieldflow.backend.entity.Usuario;
 import com.fieldflow.backend.repository.ChecklistRepository;
 import com.fieldflow.backend.repository.ClienteRepository;
 import com.fieldflow.backend.repository.EquipoRepository;
@@ -20,6 +23,7 @@ import com.fieldflow.backend.repository.ProductoRepository;
 import com.fieldflow.backend.repository.SedeRepository;
 import com.fieldflow.backend.repository.TareaMantenimientoRepository;
 import com.fieldflow.backend.repository.TecnicoRepository;
+import com.fieldflow.backend.repository.UsuarioRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,13 +43,15 @@ public class CatalogoService {
     private final TareaMantenimientoRepository tareaMantenimientoRepository;
     private final FallaRecurrenteRepository fallaRecurrenteRepository;
     private final ChecklistRepository checklistRepository;
+    private final UsuarioRepository usuarioRepository;
 
     public CatalogoService(ClienteRepository clienteRepository, SedeRepository sedeRepository,
                            EquipoRepository equipoRepository, TecnicoRepository tecnicoRepository,
                            ProductoRepository productoRepository,
                            TareaMantenimientoRepository tareaMantenimientoRepository,
                            FallaRecurrenteRepository fallaRecurrenteRepository,
-                           ChecklistRepository checklistRepository) {
+                           ChecklistRepository checklistRepository,
+                           UsuarioRepository usuarioRepository) {
         this.clienteRepository = clienteRepository;
         this.sedeRepository = sedeRepository;
         this.equipoRepository = equipoRepository;
@@ -54,6 +60,7 @@ public class CatalogoService {
         this.tareaMantenimientoRepository = tareaMantenimientoRepository;
         this.fallaRecurrenteRepository = fallaRecurrenteRepository;
         this.checklistRepository = checklistRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     public List<ClienteResponse> getClientes() {
@@ -66,17 +73,6 @@ public class CatalogoService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un cliente con ese NIT");
         });
         return ClienteResponse.from(clienteRepository.save(request.toEntity()));
-    }
-
-    @Transactional
-    public EquipoResponse createEquipo(EquipoRequest request) {
-        equipoRepository.findByCodigo(request.codigo()).ifPresent(existente -> {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un equipo con ese código");
-        });
-        Sede sede = sedeRepository.findById(request.sedeId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sede no encontrada"));
-        Equipo equipo = new Equipo(request.codigo(), request.nombre(), request.tipo(), null, sede);
-        return EquipoResponse.from(equipoRepository.save(equipo));
     }
 
     public List<ProductoResponse> getProductos() {
@@ -104,9 +100,35 @@ public class CatalogoService {
                 .stream().map(SedeResponse::from).toList();
     }
 
+    @Transactional
+    public SedeResponse altaSede(SedeRequest request) {
+        Cliente cliente = clienteRepository.findById(request.clienteId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado"));
+        Sede sede = new Sede(request.nombre(), request.direccion(), request.ciudad(), cliente);
+        return SedeResponse.from(sedeRepository.save(sede));
+    }
+
     public List<EquipoResponse> getEquipos(Long sedeId) {
         return (sedeId == null ? equipoRepository.findAll() : equipoRepository.findBySedeId(sedeId))
                 .stream().map(EquipoResponse::from).toList();
+    }
+
+    public EquipoResponse getEquipo(Long id) {
+        return equipoRepository.findById(id)
+                .map(EquipoResponse::from)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipo no encontrado"));
+    }
+
+    @Transactional
+    public EquipoResponse altaEquipo(EquipoRequest request) {
+        equipoRepository.findByCodigo(request.codigo()).ifPresent(existente -> {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un equipo con ese codigo");
+        });
+        Sede sede = sedeRepository.findById(request.sedeId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sede no encontrada"));
+        Equipo equipo = new Equipo(request.codigo(), request.nombre(), request.tipo(),
+                request.ultimoMantenimiento(), sede);
+        return EquipoResponse.from(equipoRepository.save(equipo));
     }
 
     public List<TecnicoResponse> getTecnicos() {
@@ -154,6 +176,11 @@ public class CatalogoService {
 
     @Transactional
     public void deleteTecnico(Long id) {
+        // Desvincular usuarios asociados (la cuenta se conserva, solo pierde el tecnico)
+        for (Usuario u : usuarioRepository.findByTecnicoId(id)) {
+            u.setTecnico(null);
+            usuarioRepository.save(u);
+        }
         tecnicoRepository.deleteById(id);
     }
 }
