@@ -174,3 +174,13 @@ Con datos nuevos de punta a punta:
 | Técnico sin "Mis ordenes" / agenda vacía | Sesión vieja sin `tecnicoId` | Cerrar sesión y volver a entrar |
 | 401/403 inesperados en UI | Token vencido o rol insuficiente | Relogin; revisa rol al pie del sidebar |
 | `OT-10xx` duplicada / 500 al crear | Backend viejo (secuencia en memoria) | Reinicia backend (fix: secuencia desde BD) |
+
+
+#  Credenciales Base de Datos H2 
+
+Usa así:
+
+URL: http://localhost:8081/h2-console/ (con / al final)
+JDBC URL: jdbc:h2:file:./data/fieldflow
+Usuario: sa, sin contraseña → Connect
+Opcional (a futuro, sin tocar nada ahora): registrar un redirect de /h2-console → /h2-console/ para que ambas funcionen.

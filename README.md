@@ -110,7 +110,7 @@ cd backend
 ```
 
 PostgreSQL queda para más adelante (config comentada en `application.yaml`).
-Consola H2: `http://localhost:8081/h2-console` (JDBC `jdbc:h2:file:./data/fieldflow`, usuario `sa`).
+Consola H2: `http://localhost:8081/h2-console/` (JDBC `jdbc:h2:file:./data/fieldflow`, usuario `sa`).
 
 ### Usuarios seed
 
