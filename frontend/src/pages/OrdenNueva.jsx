@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { createOrden, PRIORIDADES } from '../api/ordenes'
 import { getClientes, getSedes, getEquipos, getTecnicos, getTecnicosDisponibles, getChecklists } from '../api/catalogos'
 
@@ -20,6 +20,9 @@ export default function OrdenNueva() {
   const [plantillas, setPlantillas] = useState([])
   const [soloDisponibles, setSoloDisponibles] = useState(true)
   const [loading, setLoading] = useState(true)
+  const [loadingEquipos, setLoadingEquipos] = useState(false)
+  const [errorEquipos, setErrorEquipos] = useState('')
+  const [intentoCargaEquipos, setIntentoCargaEquipos] = useState(0)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -57,9 +60,31 @@ export default function OrdenNueva() {
   }, [clienteId])
 
   useEffect(() => {
-    if (!sedeId) { setEquipos([]); setEquipoId(''); return }
-    getEquipos(Number(sedeId)).then((e) => { setEquipos(e || []); setEquipoId('') }).catch(() => {})
-  }, [sedeId])
+    let activo = true
+    setEquipos([])
+    setEquipoId('')
+    setErrorEquipos('')
+    if (!sedeId) {
+      setLoadingEquipos(false)
+      return () => { activo = false }
+    }
+
+    setLoadingEquipos(true)
+    getEquipos(Number(sedeId))
+      .then((rows) => {
+        if (!activo) return
+        if (!Array.isArray(rows)) throw new Error('La respuesta de equipos no tiene un formato válido')
+        setEquipos(rows)
+      })
+      .catch((err) => {
+        if (activo) setErrorEquipos(err.message || 'No se pudieron cargar los equipos')
+      })
+      .finally(() => {
+        if (activo) setLoadingEquipos(false)
+      })
+
+    return () => { activo = false }
+  }, [sedeId, intentoCargaEquipos])
 
   useEffect(() => {
     const fn = soloDisponibles ? getTecnicosDisponibles : getTecnicos
@@ -163,15 +188,38 @@ export default function OrdenNueva() {
                 ))}
               </select>
             </label>
-            <label className="form-row">
-              Equipo *
-              <select value={equipoId} onChange={(e) => setEquipoId(e.target.value)} disabled={!sedeId}>
-                <option value="">Seleccionar…</option>
+            <div className="form-row">
+              <label htmlFor="equipoId">Equipo *</label>
+              <select id="equipoId" value={equipoId} onChange={(e) => setEquipoId(e.target.value)} disabled={!sedeId || loadingEquipos || !!errorEquipos}>
+                <option value="">
+                  {loadingEquipos
+                    ? 'Cargando equipos…'
+                    : errorEquipos
+                      ? 'No se pudieron cargar los equipos'
+                      : equipos.length
+                        ? 'Seleccionar…'
+                        : sedeId
+                          ? 'No hay equipos en esta sede'
+                          : 'Selecciona una sede primero'}
+                </option>
                 {equipos.map((eq) => (
                   <option key={eq.id} value={eq.id}>{eq.codigo} — {eq.nombre}</option>
                 ))}
               </select>
-            </label>
+              {errorEquipos && (
+                <div className="error-box" role="alert">
+                  {errorEquipos}{' '}
+                  <button type="button" className="btn-link" onClick={() => setIntentoCargaEquipos((n) => n + 1)}>
+                    Reintentar
+                  </button>
+                </div>
+              )}
+              {!loadingEquipos && !errorEquipos && sedeId && equipos.length === 0 && (
+                <span className="muted">
+                  Registra un equipo para esta sede en <Link to="/catalogos">Catálogos</Link>.
+                </span>
+              )}
+            </div>
             <label className="form-row">
               Tecnico
               <select value={tecnicoId} onChange={(e) => setTecnicoId(e.target.value)}>
