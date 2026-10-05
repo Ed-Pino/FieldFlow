@@ -1,0 +1,35 @@
+# FieldFlow — reglas de la raíz del repositorio.
+# Cada paquete mantiene además su propio .gitignore:
+#   backend/.gitignore  -> target/, data/, IDE
+#   frontend/.gitignore -> node_modules, dist, *.local
+
+# ---- Sistema operativo / editores ----
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+# Nota: .vscode/settings.json SÍ se versiona a propósito (config compartida del
+# equipo), por eso no se ignora la carpeta .vscode.
+
+# ---- Secretos y configuración local ----
+.env
+.env.local
+.env.*.local
+*.local
+
+# ---- Logs ----
+*.log
+logs/
+
+# ---- Node / Vite (duplicado a propósito como red de seguridad) ----
+node_modules/
+dist/
+
+# ---- Base de datos local H2 ----
+*.mv.db
+*.trace.db
+
+# ---- Material de demo pesado (no versionado) ----
+/DEMO NO COUNTRY.pdf
+# Si el equipo decide versionarlo: git add -f "DEMO NO COUNTRY.pdf"
