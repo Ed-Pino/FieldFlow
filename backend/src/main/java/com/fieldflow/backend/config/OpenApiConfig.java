@@ -17,7 +17,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("FieldFlow API")
-                        .version("1.0.0")
+                        .version("1.1.1")
                         .description("Backend para gestion de servicios tecnicos en campo"))
                 .addSecurityItem(new SecurityRequirement().addList(schemeName))
                 .components(new Components().addSecuritySchemes(schemeName,
